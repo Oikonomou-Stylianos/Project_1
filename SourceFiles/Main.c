@@ -22,8 +22,8 @@ int main(int argc, char *argv[]){
 	BKT_Insert(myBKT, "fall");
 	BKT_Insert(myBKT, "hell");
 	BKT_Insert(myBKT, "help");
-	BKT_Insert(myBKT, "felt");
 	BKT_Insert(myBKT, "small");
+	BKT_Insert(myBKT, "felt");
 	BKT_Insert(myBKT, "melt");
 	BKT_Insert(myBKT, "fell");
 
