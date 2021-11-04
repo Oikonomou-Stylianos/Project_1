@@ -24,8 +24,8 @@ int main(int argc, char *argv[]){
 	BKT_Insert(myBKT, "felt");
 	BKT_Insert(myBKT, "help");
 	BKT_Insert(myBKT, "melt");
-	BKT_Insert(myBKT, "fell");
 	BKT_Insert(myBKT, "small");
+	BKT_Insert(myBKT, "fell");
 
 	WList myWL = BKT_Search(myBKT, "henn", 2);
 	WL_Print(myWL);
