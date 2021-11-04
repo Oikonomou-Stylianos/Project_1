@@ -48,7 +48,7 @@ int distance(char *a, char *b){
 		}
 	}
 
-	// PRINT
+	// PRINT RESULTS
 	// printf("\n        ");
 	// for(j = 0; j < strlen_b; j++)
 	// 	printf("  %c ", b[j]);
