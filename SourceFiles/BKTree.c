@@ -18,7 +18,7 @@
 #include "../HeaderFiles/BKTree.h"
 #include "../HeaderFiles/CandidateList.h"
 #include "../HeaderFiles/WordList.h"
-#include "../HeaderFiles/common_types.h"
+#include "../HeaderFiles/core.h"
 
 // Create a BK-Tree  
 BKTree BKT_Create(){
@@ -47,6 +47,10 @@ BKTreeNode BKT_CreateNode(char *word){
 BKTreeNode BKT_Insert(BKTree bkt, char *word){
 
 	if(bkt == NULL || word == NULL)
+		return NULL;
+
+	int word_length = strlen(word);
+	if(word_length < MIN_WORD_LENGTH || word_length > MAX_WORD_LENGTH)
 		return NULL;
 
 	if(bkt->root == NULL){

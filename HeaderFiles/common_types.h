@@ -13,4 +13,3 @@
 
 #pragma once
 
-#define MAX_WORD_LENGTH 31

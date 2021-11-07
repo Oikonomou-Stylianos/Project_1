@@ -16,7 +16,6 @@
 #include <string.h>
 
 #include "../HeaderFiles/WordList.h"
-#include "../HeaderFiles/common_types.h"
 
 // Create a Word List
 WList WL_Create(){
