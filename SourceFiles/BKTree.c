@@ -81,7 +81,7 @@ BKTreeNode BKT_InsertNode(BKTreeNode parent, const char *word){
 	else
 		return BKT_InsertNode(parent->children[dist-1], word);
 }
-// Search the BK-Tree for words with edit distance from a given word defined by given contraints
+// Search in the BK-Tree for words with distance from a given word defined by given threshold
 WList BKT_Search(BKTree bkt, const char *word, int threshold){
 
 	if(bkt == NULL || bkt->root == NULL || word == NULL || threshold < 1)

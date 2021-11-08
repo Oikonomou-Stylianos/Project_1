@@ -86,6 +86,21 @@ int CL_IsEmpty(CList cl){
 	
 	return cl->head == NULL ? 0 : 1;
 }
+// Return the size of the Candidate List
+int CL_getSize(CList cl){
+
+	if(cl == NULL)
+		return -1;
+
+	int size = 0;
+	CLNode temp = cl->head;
+	while(temp != NULL){
+
+		size++;
+		temp = temp->next;
+	}
+	return size;
+}
 // Destroy a Candidate List
 int CL_Destroy(CList cl){
 

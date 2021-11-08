@@ -63,6 +63,7 @@ void test_edit_distance(void){
     TEST_CHECK(edit_distance(a, b) == 31);
     strcpy(a, "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"); strcpy(b, "bbbb");
     TEST_CHECK(edit_distance(a, b) == 31);
+    free(a); free(b);
 }
 
 void test_hamming_distance(void){
@@ -97,6 +98,7 @@ void test_hamming_distance(void){
     TEST_CHECK(hamming_distance(a, b) == -1);
     strcpy(a, "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"); strcpy(b, "bbbb");
     TEST_CHECK(hamming_distance(a, b) == -1);
+    free(a); free(b);
 }
 
 void test_exact_match(void){
@@ -127,10 +129,11 @@ void test_exact_match(void){
     TEST_CHECK(exact_match(a, b) == 1);
     strcpy(a, "abcd"); strcpy(b, "abcde"); 
     TEST_CHECK(exact_match(a, b) == 1);
+    free(a); free(b);
 }
 
 TEST_LIST = {
-    
+
 	{ "min_int", test_min_int },
 	{ "edit_distance", test_edit_distance },
 	{ "hamming_distance", test_hamming_distance },

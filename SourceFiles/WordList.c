@@ -72,8 +72,11 @@ int WL_RemoveFirst(WList wl){
 	}
 	return 0;
 }
+// Get the first node of a Word List
 WLNode WL_GetFirst(WList wl){
 
+	if(wl == NULL)
+		return NULL;
 	return wl->head;
 }
 // Print a Word List 
@@ -93,6 +96,21 @@ int WL_Print(WList wl){
 	}
 	printf("]\n");
 	return 0;
+}
+// Return the size of the Word List
+int WL_getSize(WList wl){
+
+	if(wl == NULL)
+		return -1;
+
+	int size = 0;
+	WLNode temp = wl->head;
+	while(temp != NULL){
+
+		size++;
+		temp = temp->next;
+	}
+	return size;
 }
 // Destroy a Word List
 int WL_Destroy(WList wl){

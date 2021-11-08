@@ -34,4 +34,5 @@ WLNode WL_Insert(WList , char *);
 int WL_RemoveFirst(WList );
 WLNode WL_GetFirst(WList );
 int WL_Print(WList );
+int WL_getSize(WList );
 int WL_Destroy(WList );

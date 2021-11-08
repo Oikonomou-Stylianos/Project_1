@@ -34,4 +34,5 @@ CLNode CL_Insert(CList , BKTreeNode *);
 int CL_RemoveFirst(CList );
 CLNode CL_GetFirst(CList );
 int CL_IsEmpty(CList );
+int CL_getSize(CList );
 int CL_Destroy(CList );
