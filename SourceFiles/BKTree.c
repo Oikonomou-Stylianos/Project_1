@@ -19,6 +19,7 @@
 #include "../HeaderFiles/CandidateList.h"
 #include "../HeaderFiles/WordList.h"
 #include "../HeaderFiles/core.h"
+#include "../HeaderFiles/distance.h"
 
 // Create a BK-Tree  
 BKTree BKT_Create(){
@@ -67,7 +68,7 @@ BKTreeNode BKT_InsertNode(BKTreeNode parent, char *word){
 	if(parent == NULL || word == NULL)
 		return NULL;
 
-	int dist = distance(parent->word, word);
+	int dist = edit_distance(parent->word, word);
 
 	if(dist == 0)
 		return parent;
@@ -81,9 +82,9 @@ BKTreeNode BKT_InsertNode(BKTreeNode parent, char *word){
 		return BKT_InsertNode(parent->children[dist-1], word);
 }
 // Search the BK-Tree for words with edit distance from a given word defined by given contraints
-WList BKT_Search(BKTree bkt, char *word, int constraint){
+WList BKT_Search(BKTree bkt, char *word, int threshold){
 
-	if(bkt == NULL || bkt->root == NULL || word == NULL || constraint < 1)
+	if(bkt == NULL || bkt->root == NULL || word == NULL || threshold < 1)
 		return NULL;
 
 	CList candidateList = CL_Create();
@@ -99,14 +100,14 @@ WList BKT_Search(BKTree bkt, char *word, int constraint){
 		cln_temp = CL_GetFirst(candidateList);
 		bktn_temp = cln_temp->candidate;
 		
-		dist = distance(word, (*bktn_temp)->word);
-		if(dist <= constraint){
+		dist = edit_distance(word, (*bktn_temp)->word);
+		if(dist <= threshold){
 
 			WL_Insert(wordList, (*bktn_temp)->word);
 		}
 
-		leftBound = dist - constraint;
-		rightBound = dist + constraint;
+		leftBound = dist - threshold;
+		rightBound = dist + threshold;
 
 		for(i = 0; i < MAX_WORD_LENGTH; i++){
 

@@ -19,27 +19,27 @@ int min_int(int a, int b){
 	return a <= b ? a : b;
 }
 
-int distance(char *a, char *b){
+int edit_distance(const char *a, const char *b){
 
 	if(a == NULL || b == NULL)
 		return -1;
 
-	int strlen_a, strlen_b, i, j;
-	strlen_a = strlen(a);
-	strlen_b = strlen(b);
+	int length_a, length_b, i, j;
+	length_a = strlen(a);
+	length_b = strlen(b);
 
-	if(strlen_a == 0 || strlen_b == 0)
-		return strlen_a == 0 ? strlen_b : strlen_a;
+	if(length_a == 0 || length_b == 0)
+		return length_a == 0 ? length_b : length_a;
 
-	int array[strlen_a + 1][strlen_b + 1];
-	for(i = 0; i < strlen_a + 1; i++)
+	int array[length_a + 1][length_b + 1];
+	for(i = 0; i < length_a + 1; i++)
 		array[i][0] = i;
-	for(j = 0; j < strlen_b + 1; j++)
+	for(j = 0; j < length_b + 1; j++)
 		array[0][j] = j;
 
-	for(i = 1; i < strlen_a + 1; i++){
+	for(i = 1; i < length_a + 1; i++){
 
-		for(j = 1; j < strlen_b + 1; j++){
+		for(j = 1; j < length_b + 1; j++){
 
 			if(a[i-1] == b[j-1])
 				array[i][j] = array[i-1][j-1];
@@ -48,28 +48,56 @@ int distance(char *a, char *b){
 		}
 	}
 
-	// PRINT RESULTS
+	// PRINT RESULTS 
 	// printf("\n        ");
-	// for(j = 0; j < strlen_b; j++)
+	// for(j = 0; j < length_b; j++)
 	// 	printf("  %c ", b[j]);
 	// printf("\n");
-	// for(i = 0; i < strlen_a + 1; i++){
+	// for(i = 0; i < length_a + 1; i++){
 	// 	if(i == 0) 
 	// 		printf("    "); 
 	// 	else 
 	// 		printf("  %c ", a[i-1]);
-	// 	for(j = 0; j < strlen_b + 1; j++)
+	// 	for(j = 0; j < length_b + 1; j++)
 	// 		printf("| %d ", array[i][j]);
 	// 	printf("|\n");
 	// }
-	// printf("\n a = \"%s\", strlen_a = %d \n b = \"%s\", strlen_b = %d \n\n distance = %d\n", a, strlen_a, b, strlen_b, array[strlen_a][strlen_b]);
+	// printf("\n a = \"%s\", length_a = %d \n b = \"%s\", length_b = %d \n\n distance = %d\n", a, length_a, b, length_b, array[length_a][length_b]);
 
-	return array[strlen_a][strlen_b];
+	return array[length_a][length_b];
 }
 
 // int main(int argc, char **argv){
-
 // 	distance(argv[1], argv[2]);
-
 // 	return 0;
 // }
+
+int hamming_distance(const char *a, const char *b){
+
+	if(a == NULL || b == NULL)
+		return -1;
+
+	int length_a, length_b, i, dist;
+	length_a = strlen(a);
+	length_b = strlen(b);
+
+	if(length_a != length_b || length_a == 0 || length_b == 0)
+		return 1;
+
+	dist = 0;
+	for(i = 0; i < length_a; i++){
+
+		if(a[i] != b[i])
+			dist++;
+	}
+
+	return dist;
+}
+
+int exact_match(const char *a, const char *b){
+
+	if(a == NULL || b == NULL)
+		return -1;
+
+	return strcmp(a, b) == 0 ? 0 : 1;
+}

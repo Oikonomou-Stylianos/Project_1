@@ -13,7 +13,7 @@
 
 #pragma once
 
-#include "common_types.h"
+#include "core.h"
 
 typedef struct word_list_node_tag{
 	char word[MAX_WORD_LENGTH];

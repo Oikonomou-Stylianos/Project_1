@@ -38,5 +38,3 @@ BKTreeNode BKT_InsertNode(BKTreeNode , char *);
 WList BKT_Search(BKTree , char *, int );
 int BKT_Destroy(BKTree );
 int BKT_DestroyNodes(BKTreeNode );
-
-int distance(char *, char *);
