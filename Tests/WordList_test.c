@@ -17,100 +17,108 @@
 #include "WordList.h"
 
 void test_create(void){
-    WList temp;
-    TEST_CHECK((temp = WL_Create()) != NULL);
-    WL_Destroy(temp);
+
+    WList wl;
+    TEST_CHECK((wl = WL_Create()) != NULL);
+    WL_Destroy(wl);
 }
 
 void test_destroy(void){
-    WList temp = WL_Create();
-    TEST_CHECK(!(temp = WL_Destroy(temp)));
+
+    WList wl = WL_Create();
+    TEST_CHECK(!(WL_Destroy(wl)));
 }
 
 void test_insert(void){
-    WList temp = WL_Create();
+
+    WList wl = WL_Create();
     WLNode first, second, node;
     char *str = NULL;
-    TEST_CHECK(!WL_Insert(temp, str));
+    TEST_CHECK(!WL_Insert(wl, str));
     str = malloc((MAX_WORD_LENGTH+1)*sizeof(char));
     strcpy(str, "headtesting");
-    TEST_CHECK((first = WL_Insert(temp, str)));
+    TEST_CHECK((first = WL_Insert(wl, str)) != NULL);
     strcpy(str, "nexttesting");
-    TEST_CHECK((second = WL_Insert(temp, str)));
-    node = WL_GetFirst(temp);
+    TEST_CHECK((second = WL_Insert(wl, str)) != NULL);
+    node = WL_GetFirst(wl);
     TEST_CHECK(first == node);
-    WL_RemoveFirst(temp);
-    node = WL_GetFirst(temp);
+    WL_RemoveFirst(wl);
+    node = WL_GetFirst(wl);
     TEST_CHECK(second == node);
-    WL_Destroy(temp);
+    WL_Destroy(wl);
     free(str);
 
     TEST_CHECK(!WL_Insert(NULL, "adsad"));
 }
 
 void test_getfirst(void){
-    WList temp = WL_Create();
-    TEST_CHECK(temp->head == WL_GetFirst(temp));
-    WL_Insert(temp, "testing");
-    TEST_CHECK(temp->head == WL_GetFirst(temp));
-    WL_Insert(temp, "testingagain");
-    TEST_CHECK(temp->head == WL_GetFirst(temp));
-    WL_RemoveFirst(temp);
-    TEST_CHECK(temp->head == WL_GetFirst(temp));
-    WL_Destroy(temp);
+
+    WList wl = WL_Create();
+    TEST_CHECK(wl->head == WL_GetFirst(wl));
+    WL_Insert(wl, "testing");
+    TEST_CHECK(wl->head == WL_GetFirst(wl));
+    WL_Insert(wl, "testingagain");
+    TEST_CHECK(wl->head == WL_GetFirst(wl));
+    WL_RemoveFirst(wl);
+    TEST_CHECK(wl->head == WL_GetFirst(wl));
+    WL_Destroy(wl);
 
     TEST_CHECK(!WL_GetFirst(NULL));
 }
 
 void test_removefirst(void){
+
     TEST_CHECK(WL_RemoveFirst(NULL));
-    WList temp = WL_Create();
-    TEST_CHECK(WL_RemoveFirst(temp));
-    WL_Insert(temp, "testing");
-    TEST_CHECK(!strcmp(temp->head->word, "testing"));
-    TEST_CHECK(!WL_RemoveFirst(temp));
-    TEST_CHECK(WL_RemoveFirst(temp));
-    WL_Insert(temp, "testingagain");
-    WL_Insert(temp, "testingagainagain");
-    TEST_CHECK(!strcmp(temp->head->word, "testingagain"));
-    TEST_CHECK(!WL_RemoveFirst(temp));
-    TEST_CHECK(!strcmp(temp->head->word, "testingagainagain"));
-    TEST_CHECK(!WL_RemoveFirst(temp));
-    TEST_CHECK(WL_RemoveFirst(temp));
-    WL_Destroy(temp);
+    WList wl = WL_Create();
+    TEST_CHECK(WL_RemoveFirst(wl));
+    WL_Insert(wl, "testing");
+    TEST_CHECK(!strcmp(wl->head->word, "testing"));
+    TEST_CHECK(!WL_RemoveFirst(wl));
+    TEST_CHECK(WL_RemoveFirst(wl));
+    WL_Insert(wl, "testingagain");
+    WL_Insert(wl, "testingagainagain");
+    TEST_CHECK(!strcmp(wl->head->word, "testingagain"));
+    TEST_CHECK(!WL_RemoveFirst(wl));
+    TEST_CHECK(!strcmp(wl->head->word, "testingagainagain"));
+    TEST_CHECK(!WL_RemoveFirst(wl));
+    TEST_CHECK(WL_RemoveFirst(wl));
+    WL_Destroy(wl);
 }
 
 void test_print(void){
+
     TEST_CHECK(WL_Print(NULL));
-    WList temp = WL_Create();
-    TEST_CHECK(!WL_Print(temp));
-    WL_Destroy(temp);
+    WList wl = WL_Create();
+    TEST_CHECK(!WL_Print(wl));
+    WL_Destroy(wl);
 }
 
 void test_getsize(void){
-    TEST_CHECK(WL_getSize(NULL) == -1);
-    WList temp = WL_Create();
-    TEST_CHECK(!WL_getSize(temp));
-    WL_Insert(temp, "first");
-    TEST_CHECK(WL_getSize(temp) == 1);
-    WL_RemoveFirst(temp);
-    TEST_CHECK(!WL_getSize(temp));
-    WL_Insert(temp, "first");
-    TEST_CHECK(WL_getSize(temp) == 1);
-    WL_Insert(temp, "second");
-    TEST_CHECK(WL_getSize(temp) == 2);
-    WL_Insert(temp, "third");
-    TEST_CHECK(WL_getSize(temp) == 3);
-    WL_RemoveFirst(temp);
-    TEST_CHECK(WL_getSize(temp) == 2);
-    WL_RemoveFirst(temp);
-    TEST_CHECK(WL_getSize(temp) == 1);
-    WL_RemoveFirst(temp);
-    TEST_CHECK(!WL_getSize(temp));
-    WL_Destroy(temp);
+
+    TEST_CHECK(WL_GetSize(NULL) == -1);
+    WList wl = WL_Create();
+    TEST_CHECK(!WL_GetSize(wl));
+    WL_Insert(wl, "first");
+    TEST_CHECK(WL_GetSize(wl) == 1);
+    WL_RemoveFirst(wl);
+    TEST_CHECK(!WL_GetSize(wl));
+    WL_Insert(wl, "first");
+    TEST_CHECK(WL_GetSize(wl) == 1);
+    WL_Insert(wl, "second");
+    TEST_CHECK(WL_GetSize(wl) == 2);
+    WL_Insert(wl, "third");
+    TEST_CHECK(WL_GetSize(wl) == 3);
+    WL_RemoveFirst(wl);
+    TEST_CHECK(WL_GetSize(wl) == 2);
+    WL_RemoveFirst(wl);
+    TEST_CHECK(WL_GetSize(wl) == 1);
+    WL_RemoveFirst(wl);
+    TEST_CHECK(!WL_GetSize(wl));
+    WL_Destroy(wl);
 }
 
 TEST_LIST = {
+
     { "test_create", test_create },
 	{ "test_destroy", test_destroy },
 	{ "test_insert", test_insert },
