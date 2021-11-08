@@ -67,11 +67,6 @@ int edit_distance(const char *a, const char *b){
 	return array[length_a][length_b];
 }
 
-// int main(int argc, char **argv){
-// 	distance(argv[1], argv[2]);
-// 	return 0;
-// }
-
 int hamming_distance(const char *a, const char *b){
 
 	if(a == NULL || b == NULL)
@@ -101,3 +96,8 @@ int exact_match(const char *a, const char *b){
 
 	return strcmp(a, b) == 0 ? 0 : 1;
 }
+
+// int main(int argc, char **argv){
+// 	distance(argv[1], argv[2]);
+// 	return 0;
+// }
