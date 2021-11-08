@@ -15,7 +15,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "../HeaderFiles/WordList.h"
+#include "WordList.h"
 
 // Create a Word List
 WList WL_Create(){

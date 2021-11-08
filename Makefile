@@ -11,47 +11,61 @@
 # File : 
 ##################################
 
-SF  = ./SourceFiles
-HF  = ./HeaderFiles
-OF  = ./ObjectFiles
-EXE = ./Executables
-AD  = ./AppData
+SF   = ./SourceFiles
+HF   = ./HeaderFiles
+OF   = ./ObjectFiles
+EXE  = ./Executables
+AD   = ./AppData
+TEST = ./Tests
 
 OBJECT = Main.o BKTree.o WordList.o CandidateList.o distance.o
 # SOURCE = Main.c BKTree.c WordList.c CandidateList.c distance.c
 # HEADER = BKTree.c WordList.c CandidateList.c common_types.h
 
-OUT    = Main
-CC     = gcc
-FLAGS  = -Wall -Werror -g
+OUT   = Main
+CC    = gcc
+FLAGS = -Wall -Werror -g
 
-Main: Main.o BKTree.o WordList.o CandidateList.o distance.o
+all: Main tests
+
+Main: $(OBJECT)
 	$(CC) $(FLAGS) -o $(OUT) $(OF)/Main.o $(OF)/BKTree.o $(OF)/WordList.o $(OF)/CandidateList.o $(OF)/distance.o
-	mv $(OUT) $(EXE) 	
+	mv $(OUT) $(EXE)
+
 Main.o: 
-	$(CC) $(FLAGS) -c $(SF)/Main.c
+	$(CC) -I $(HF) $(FLAGS) -c $(SF)/Main.c
 	mv Main.o $(OF) 
 BKTree.o: 
-	$(CC) $(FLAGS) -c $(SF)/BKTree.c
+	$(CC) -I $(HF) $(FLAGS) -c $(SF)/BKTree.c
 	mv BKTree.o $(OF) 
 WordList.o: 
-	$(CC) $(FLAGS) -c $(SF)/WordList.c
+	$(CC) -I $(HF) $(FLAGS) -c $(SF)/WordList.c
 	mv WordList.o $(OF) 
 CandidateList.o: 
-	$(CC) $(FLAGS) -c $(SF)/CandidateList.c
+	$(CC) -I $(HF) $(FLAGS) -c $(SF)/CandidateList.c
 	mv CandidateList.o $(OF) 
 distance.o:
-	$(CC) $(FLAGS) -c $(SF)/distance.c
-	mv distance.o $(OF) 
+	$(CC) -I $(HF) $(FLAGS) -c $(SF)/distance.c
+	mv distance.o $(OF)
 
 run:
 	$(EXE)/$(OUT)
+
+tests: tests.o
+	$(CC) $(FLAGS) -o distance_test $(OF)/distance_test.o
+	mv distance_test $(EXE)
+tests.o:
+	$(CC) -I $(HF) $(FLAGS) -c $(TEST)/distance_test.c
+	mv distance_test.o $(OF)
+
+tests-run:
+	$(EXE)/distance_test
 
 val:
 	valgrind -s --leak-check=full --track-origins=yes $(EXE)/$(OUT)
 
 clean:
-	rm -f $(EXE)/$(OUT) $(OF)/$(OBJECT)
+	rm -f $(OF)/*.o $(EXE)/$(OUT)
 
 count:
 	wc $(SF)/* $(HF)/*

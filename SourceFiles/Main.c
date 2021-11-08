@@ -13,7 +13,7 @@
 
 #include <stdio.h>
 
-#include "../HeaderFiles/BKTree.h"
+#include "BKTree.h"
 
 int main(int argc, char *argv[]){
 

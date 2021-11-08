@@ -14,7 +14,9 @@
 #include <stdio.h>
 #include <string.h>
 
-int min_int(int a, int b){
+#include "distance.h"
+
+int min_int(const int a, const int b){
 
 	return a <= b ? a : b;
 }

@@ -15,11 +15,11 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "../HeaderFiles/BKTree.h"
-#include "../HeaderFiles/CandidateList.h"
-#include "../HeaderFiles/WordList.h"
-#include "../HeaderFiles/core.h"
-#include "../HeaderFiles/distance.h"
+#include "BKTree.h"
+#include "CandidateList.h"
+#include "WordList.h"
+#include "core.h"
+#include "distance.h"
 
 // Create a BK-Tree  
 BKTree BKT_Create(){
@@ -30,7 +30,7 @@ BKTree BKT_Create(){
 	return bkt != NULL ? bkt : NULL;
 }
 // Create a BK-Tree node
-BKTreeNode BKT_CreateNode(char *word){
+BKTreeNode BKT_CreateNode(const char *word){
 
 	if(word == NULL)
 		return NULL;
@@ -45,7 +45,7 @@ BKTreeNode BKT_CreateNode(char *word){
 	return bktn;
 }
 // Insert a word into the BK-Tree
-BKTreeNode BKT_Insert(BKTree bkt, char *word){
+BKTreeNode BKT_Insert(BKTree bkt, const char *word){
 
 	if(bkt == NULL || word == NULL)
 		return NULL;
@@ -63,7 +63,7 @@ BKTreeNode BKT_Insert(BKTree bkt, char *word){
 		return BKT_InsertNode(bkt->root, word);
 }
 // Insert recursively a word into the BK-Tree
-BKTreeNode BKT_InsertNode(BKTreeNode parent, char *word){
+BKTreeNode BKT_InsertNode(BKTreeNode parent, const char *word){
 
 	if(parent == NULL || word == NULL)
 		return NULL;
@@ -82,7 +82,7 @@ BKTreeNode BKT_InsertNode(BKTreeNode parent, char *word){
 		return BKT_InsertNode(parent->children[dist-1], word);
 }
 // Search the BK-Tree for words with edit distance from a given word defined by given contraints
-WList BKT_Search(BKTree bkt, char *word, int threshold){
+WList BKT_Search(BKTree bkt, const char *word, int threshold){
 
 	if(bkt == NULL || bkt->root == NULL || word == NULL || threshold < 1)
 		return NULL;

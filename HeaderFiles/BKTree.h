@@ -32,9 +32,9 @@ typedef struct{
 typedef bktree* BKTree;
 
 BKTree BKT_Create();
-BKTreeNode BKT_CreateNode(char *);
-BKTreeNode BKT_Insert(BKTree , char *);
-BKTreeNode BKT_InsertNode(BKTreeNode , char *);
-WList BKT_Search(BKTree , char *, int );
+BKTreeNode BKT_CreateNode(const char *);
+BKTreeNode BKT_Insert(BKTree , const char *);
+BKTreeNode BKT_InsertNode(BKTreeNode , const char *);
+WList BKT_Search(BKTree , const char *, int );
 int BKT_Destroy(BKTree );
 int BKT_DestroyNodes(BKTreeNode );

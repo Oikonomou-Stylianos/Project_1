@@ -14,8 +14,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "../HeaderFiles/CandidateList.h"
-#include "../HeaderFiles/BKTree.h"
+#include "CandidateList.h"
+#include "BKTree.h"
 
 // Create a Candidate List
 CList CL_Create(){

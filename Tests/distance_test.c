@@ -11,11 +11,16 @@
 // File : 
 ///////////////////////////////////
 
-#pragma once
+#include "acutest.h"
 
-//ADD THRESHOLD
-int edit_distance(const char *, const char *);
-int hamming_distance(const char *, const char *);
-int exact_match(const char *, const char *);
+#include "distance.h"
 
-int min_int(const int , const int );
+void test_min_int(void){
+
+    TEST_CHECK(min_int(0, 0) == 0);
+}
+
+TEST_LIST = {
+	{ "min_int", test_min_int },
+	{ NULL, NULL } // τερματίζουμε τη λίστα με NULL
+};
