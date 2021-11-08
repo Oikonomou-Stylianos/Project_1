@@ -87,7 +87,7 @@ int CL_IsEmpty(CList cl){
 	return cl->head == NULL ? 0 : 1;
 }
 // Return the size of the Candidate List
-int CL_getSize(CList cl){
+int CL_GetSize(CList cl){
 
 	if(cl == NULL)
 		return -1;

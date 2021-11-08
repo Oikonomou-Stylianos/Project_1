@@ -98,7 +98,7 @@ int WL_Print(WList wl){
 	return 0;
 }
 // Return the size of the Word List
-int WL_getSize(WList wl){
+int WL_GetSize(WList wl){
 
 	if(wl == NULL)
 		return -1;
