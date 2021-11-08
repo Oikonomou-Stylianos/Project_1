@@ -54,18 +54,23 @@ run:
 tests: tests.o
 	$(CC) $(FLAGS) -o distance_test $(OF)/distance_test.o $(OF)/distance.o
 	mv distance_test $(EXE)
+	$(CC) $(FLAGS) -o WordList_test $(OF)/WordList_test.o $(OF)/WordList.o
+	mv WordList_test $(EXE)
 tests.o:
 	$(CC) -I $(HF) $(FLAGS) -c $(TEST)/distance_test.c
 	mv distance_test.o $(OF)
+	$(CC) -I $(HF) $(FLAGS) -c $(TEST)/WordList_test.c
+	mv WordList_test.o $(OF)
 
 run-tests:
 	$(EXE)/distance_test
+	$(EXE)/WordList_test
 
 val:
 	valgrind -s --leak-check=full --track-origins=yes $(EXE)/$(OUT)
 
 clean:
-	rm -f $(OF)/*.o $(EXE)/$(OUT) $(EXE)/distance_test
+	rm -f $(OF)/*.o $(EXE)/$(OUT) $(EXE)/distance_test $(EXE)/WordList_test
 
 count:
 	wc $(SF)/* $(HF)/*
