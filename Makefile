@@ -52,13 +52,13 @@ run:
 	$(EXE)/$(OUT)
 
 tests: tests.o
-	$(CC) $(FLAGS) -o distance_test $(OF)/distance_test.o
+	$(CC) $(FLAGS) -o distance_test $(OF)/distance_test.o $(OF)/distance.o
 	mv distance_test $(EXE)
 tests.o:
 	$(CC) -I $(HF) $(FLAGS) -c $(TEST)/distance_test.c
 	mv distance_test.o $(OF)
 
-tests-run:
+run-tests:
 	$(EXE)/distance_test
 
 val:

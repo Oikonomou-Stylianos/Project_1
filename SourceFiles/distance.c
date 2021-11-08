@@ -15,6 +15,7 @@
 #include <string.h>
 
 #include "distance.h"
+#include "core.h"
 
 int min_int(const int a, const int b){
 
@@ -30,8 +31,8 @@ int edit_distance(const char *a, const char *b){
 	length_a = strlen(a);
 	length_b = strlen(b);
 
-	if(length_a == 0 || length_b == 0)
-		return length_a == 0 ? length_b : length_a;
+	if(length_a < MIN_WORD_LENGTH || length_a > MAX_WORD_LENGTH || length_b < MIN_WORD_LENGTH || length_b > MAX_WORD_LENGTH)
+		return -1;
 
 	int array[length_a + 1][length_b + 1];
 	for(i = 0; i < length_a + 1; i++)
@@ -78,8 +79,8 @@ int hamming_distance(const char *a, const char *b){
 	length_a = strlen(a);
 	length_b = strlen(b);
 
-	if(length_a != length_b || length_a == 0 || length_b == 0)
-		return 1;
+	if(length_a != length_b || length_a < MIN_WORD_LENGTH || length_a > MAX_WORD_LENGTH || length_b < MIN_WORD_LENGTH || length_b > MAX_WORD_LENGTH)
+		return -1;
 
 	dist = 0;
 	for(i = 0; i < length_a; i++){
@@ -94,6 +95,13 @@ int hamming_distance(const char *a, const char *b){
 int exact_match(const char *a, const char *b){
 
 	if(a == NULL || b == NULL)
+		return -1;
+
+	int length_a, length_b;
+	length_a = strlen(a);
+	length_b = strlen(b);
+
+	if(length_a < MIN_WORD_LENGTH || length_a > MAX_WORD_LENGTH || length_b < MIN_WORD_LENGTH || length_b > MAX_WORD_LENGTH)
 		return -1;
 
 	return strcmp(a, b) == 0 ? 0 : 1;

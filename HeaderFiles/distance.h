@@ -13,9 +13,8 @@
 
 #pragma once
 
-//ADD THRESHOLD
+int min_int(const int , const int );
+
 int edit_distance(const char *, const char *);
 int hamming_distance(const char *, const char *);
 int exact_match(const char *, const char *);
-
-int min_int(const int , const int );
