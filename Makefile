@@ -65,7 +65,7 @@ val:
 	valgrind -s --leak-check=full --track-origins=yes $(EXE)/$(OUT)
 
 clean:
-	rm -f $(OF)/*.o $(EXE)/$(OUT)
+	rm -f $(OF)/*.o $(EXE)/$(OUT) $(EXE)/distance_test
 
 count:
 	wc $(SF)/* $(HF)/*
