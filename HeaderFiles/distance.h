@@ -18,3 +18,4 @@ int min_int(const int , const int );
 int edit_distance(const char *, const char *);
 int hamming_distance(const char *, const char *);
 int exact_match(const char *, const char *);
+int distance(const char *, const char *, MatchType);
