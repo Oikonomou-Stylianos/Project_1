@@ -75,10 +75,12 @@ int CL_RemoveFirst(CList cl){
 }
 // Get the first node of a Candidate List
 CLNode CL_GetFirst(CList cl){
-
+	
+	if(cl == NULL)
+		return NULL;
 	return cl->head;
 }
-// Return 0 if the Candidate List is empty, 1 if not
+// Return 0 if the Word List is empty, 1 if not
 int CL_IsEmpty(CList cl){
 
 	if(cl == NULL)

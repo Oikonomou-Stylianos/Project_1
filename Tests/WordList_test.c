@@ -85,13 +85,13 @@ void test_removefirst(void){
     WL_Destroy(wl);
 }
 
-void test_print(void){
+// void test_print(void){
 
-    TEST_CHECK(WL_Print(NULL));
-    WList wl = WL_Create();
-    TEST_CHECK(!WL_Print(wl));
-    WL_Destroy(wl);
-}
+//     TEST_CHECK(WL_Print(NULL));
+//     WList wl = WL_Create();
+//     TEST_CHECK(!WL_Print(wl));
+//     WL_Destroy(wl);
+// }
 
 void test_getsize(void){
 
@@ -124,7 +124,6 @@ TEST_LIST = {
 	{ "test_insert", test_insert },
     { "test_getfirst", test_getfirst },
     { "test_removefirst", test_removefirst },
-    { "test_print", test_print },
     { "test_getsize", test_getsize },
 	{ NULL, NULL }
 };

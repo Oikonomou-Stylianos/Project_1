@@ -58,6 +58,11 @@ tests: tests.o
 	mv WordList_test $(EXE)
 	$(CC) $(FLAGS) -o CandidateList_test $(OF)/CandidateList_test.o $(OF)/CandidateList.o
 	mv CandidateList_test $(EXE)
+<<<<<<< HEAD
+	$(CC) $(FLAGS) -o BKTree_test $(OF)/BKTree_test.o $(OF)/BKTree.o $(OF)/WordList.o $(OF)/CandidateList.o $(OF)/distance.o
+	mv BKTree_test $(EXE)
+=======
+>>>>>>> 64de57b0743a61113fe3fc943c08ffbedf337bf8
 tests.o:
 	$(CC) -I $(HF) $(FLAGS) -c $(TEST)/distance_test.c
 	mv distance_test.o $(OF)
@@ -65,6 +70,11 @@ tests.o:
 	mv WordList_test.o $(OF)
 	$(CC) -I $(HF) $(FLAGS) -c $(TEST)/CandidateList_test.c
 	mv CandidateList_test.o $(OF)
+<<<<<<< HEAD
+	$(CC) -I $(HF) $(FLAGS) -c $(TEST)/BKTree_test.c
+	mv BKTree_test.o $(OF)
+=======
+>>>>>>> 64de57b0743a61113fe3fc943c08ffbedf337bf8
 
 run-tests:
 	$(EXE)/distance_test

@@ -37,4 +37,4 @@ BKTreeNode BKT_Insert(BKTree , const char *);
 BKTreeNode BKT_InsertNode(BKTreeNode , const char *);
 WList BKT_Search(BKTree , const char *, int );
 int BKT_Destroy(BKTree );
-int BKT_DestroyNodes(BKTreeNode );
+int BKT_DestroyNode(BKTreeNode );

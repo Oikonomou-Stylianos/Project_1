@@ -97,6 +97,14 @@ int WL_Print(WList wl){
 	printf("]\n");
 	return 0;
 }
+// Return 0 if the Word List is empty, 1 if not
+int WL_IsEmpty(WList wl){
+
+	if(wl == NULL)
+		return -1;
+	
+	return wl->head == NULL ? 0 : 1;
+}
 // Return the size of the Word List
 int WL_GetSize(WList wl){
 

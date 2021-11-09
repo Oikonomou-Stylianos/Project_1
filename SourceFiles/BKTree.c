@@ -18,8 +18,8 @@
 #include "BKTree.h"
 #include "CandidateList.h"
 #include "WordList.h"
-#include "core.h"
 #include "distance.h"
+#include "core.h"
 
 // Create a BK-Tree  
 BKTree BKT_Create(){
@@ -125,19 +125,19 @@ int BKT_Destroy(BKTree bkt){
 	if(bkt == NULL)
 		return 1;
 
-	BKT_DestroyNodes(bkt->root);
+	BKT_DestroyNode(bkt->root);
 	free(bkt);
 	return 0;
 }
 // Destroy the BK-Tree nodes rec
-int BKT_DestroyNodes(BKTreeNode bktn){
+int BKT_DestroyNode(BKTreeNode bktn){
 
 	if(bktn == NULL)
 		return 0;
 
 	int i;
 	for(i = 0; i < MAX_WORD_LENGTH; i++)
-		BKT_DestroyNodes(bktn->children[i]);
+		BKT_DestroyNode(bktn->children[i]);
 	free(bktn->children);
 	free(bktn);
 	return 0;
