@@ -107,6 +107,18 @@ int exact_match(const char *a, const char *b){
 	return strcmp(a, b) == 0 ? 0 : 1;
 }
 
+int distance(const char *a, const char *b, MatchType distype){
+
+	int (*dist)(const char *, const char *);
+	switch(distype){
+		case MT_EDIT_DIST: dist = &edit_distance; break;
+		case MT_HAMMING_DIST: dist = &hamming_distance; break;
+		case MT_EXACT_MATCH: dist = &exact_match; break;
+		default: dist = NULL; break;
+	}
+	return (dist) ? (*dist)(a, b) : -1;
+}
+
 // int main(int argc, char **argv){
 // 	distance(argv[1], argv[2]);
 // 	return 0;

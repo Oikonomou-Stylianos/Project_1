@@ -70,27 +70,38 @@ void test_BKT_Search(void){
 
     TEST_CHECK(BKT_Search(NULL, NULL, 0) == NULL);
     TEST_CHECK(BKT_Search(NULL, NULL, 1) == NULL);
-    char *a = (char *)malloc(sizeof(char )*MAX_WORD_LENGTH);
-    strcpy(a, "abcd");
-    TEST_CHECK(BKT_Search(NULL, a, 0) == NULL);
+    TEST_CHECK(BKT_Search(NULL, "abcd", 0) == NULL);
     BKTree bkt = BKT_Create();
     TEST_CHECK(BKT_Search(bkt, NULL, 0) == NULL);
-    TEST_CHECK(BKT_Search(bkt, a, 0) == NULL);
+    TEST_CHECK(BKT_Search(bkt, "abcd", 0) == NULL);
     TEST_CHECK(BKT_Search(bkt, NULL, 1) == NULL);
-    TEST_CHECK(BKT_Search(NULL, a, 0) == NULL);
-    TEST_CHECK(BKT_Search(bkt, a, 1) == NULL);  // Empty BKT, bkt->root == NULL
-    BKT_Insert(bkt, a);
+    TEST_CHECK(BKT_Search(NULL, "abcd", 1) == NULL);
+    TEST_CHECK(BKT_Search(bkt, "abcd", 1) == NULL);  // Empty BKT, bkt->root == NULL
+    BKT_Insert(bkt, "abcd");
     WList wl = BKT_Search(bkt, "aaaa", 1);
-    TEST_CHECK( wl != NULL);
-    TEST_CHECK( WL_IsEmpty(wl) == 0);
+    TEST_CHECK( wl != NULL);    // Successful search...
+    TEST_CHECK( WL_IsEmpty(wl) == 0);   // ...but no words found
     WL_Destroy(wl);
     wl = BKT_Search(bkt, "abcc", 1);
-    TEST_CHECK( WL_IsEmpty(wl) == 1);
+    TEST_CHECK( wl != NULL);    // Successful search...
+    TEST_CHECK( WL_IsEmpty(wl) == 1);   //...with found words
     WL_Destroy(wl);
     BKT_Destroy(bkt);
-    free(a);
 }
 
+void test_BKT_Destroy(void){
+
+    TEST_CHECK(BKT_Destroy(NULL) == 1);
+    BKTree bkt = BKT_Create();
+    TEST_CHECK(BKT_Destroy(bkt) == 0);
+}
+
+void test_BKT_DestroyNode(void){
+
+    TEST_CHECK(BKT_DestroyNode(NULL) == 1);
+    BKTreeNode bktn = BKT_CreateNode("abcd");
+    TEST_CHECK(BKT_DestroyNode(bktn) == 0);
+}
 
 TEST_LIST = {
     
@@ -99,5 +110,7 @@ TEST_LIST = {
 	{ "BKT_Insert", test_BKT_Insert },
 	{ "BKT_InsertNode", test_BKT_InsertNode },
 	{ "BKT_Search", test_BKT_Search },
+	{ "BKT_Destroy", test_BKT_Destroy },
+	{ "BKT_DestroyNode", test_BKT_DestroyNode },
 	{ NULL, NULL }
 };
