@@ -48,7 +48,7 @@ distance.o:
 	$(CC) -I $(HF) $(FLAGS) -c $(SF)/distance.c
 	mv distance.o $(OF)
 EntryList.o:
-	$(CC) -I $(HF) $(FLAGS) -c $(SF)/EntryList.check
+	$(CC) -I $(HF) $(FLAGS) -c $(SF)/EntryList.c
 	mv EntryList.o $(OF)
 
 run:
