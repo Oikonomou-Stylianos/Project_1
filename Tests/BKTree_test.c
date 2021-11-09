@@ -58,10 +58,9 @@ void test_BKT_InsertNode(void){
     TEST_CHECK(BKT_InsertNode(NULL, a) == NULL);
     BKTree bkt = BKT_Create();
     BKT_Insert(bkt, a);
-    TEST_CHECK(BKT_InsertNode(bkt->root, NULL) == NULL);
-    TEST_CHECK(BKT_InsertNode(bkt->root, a) == bkt->root);
+    TEST_CHECK(BKT_InsertNode(bkt->root, NULL) == NULL);    
     char *b = (char *)malloc(sizeof(char )*MAX_WORD_LENGTH);
-    strcpy(a, "abcde");
+    strcpy(b, "abcde");
     TEST_CHECK(BKT_InsertNode(bkt->root, b) != NULL);
     BKT_Destroy(bkt);
     free(a); free(b);

@@ -58,7 +58,7 @@ tests: tests.o
 	mv WordList_test $(EXE)
 	$(CC) $(FLAGS) -o CandidateList_test $(OF)/CandidateList_test.o $(OF)/CandidateList.o
 	mv CandidateList_test $(EXE)
-	$(CC) $(FLAGS) -o BKTree_test $(OF)/BKTree_test.o $(OF)/CandidateList.o $(OF)/WordList.o $(OF)/distance.o
+	$(CC) $(FLAGS) -o BKTree_test $(OF)/BKTree_test.o $(OF)/BKTree.o $(OF)/CandidateList.o $(OF)/WordList.o $(OF)/distance.o
 	mv BKTree_test $(EXE)
 tests.o:
 	$(CC) -I $(HF) $(FLAGS) -c $(TEST)/distance_test.c
@@ -74,6 +74,7 @@ run-tests:
 	$(EXE)/distance_test
 	$(EXE)/WordList_test
 	$(EXE)/CandidateList_test
+	$(EXE)/BKTree_test
 
 val:
 	valgrind -s --leak-check=full --track-origins=yes $(EXE)/$(OUT)
