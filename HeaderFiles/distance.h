@@ -13,6 +13,8 @@
 
 #pragma once
 
+#include "core.h"
+
 int min_int(const int , const int );
 
 int edit_distance(const char *, const char *);
