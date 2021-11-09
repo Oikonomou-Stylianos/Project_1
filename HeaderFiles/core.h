@@ -96,7 +96,7 @@ typedef enum{
     /**
     * Must be returned only if there is no available result to be returned
     * by GetNextAvailRes(). That is, all results have already been returned
-    * via previous callbgis to GetNextAvailRes().
+    * via previous calls to GetNextAvailRes().
     */
     EC_NO_AVAIL_RES,
     /**
