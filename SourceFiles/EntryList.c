@@ -105,4 +105,5 @@ Entry *get_next(const listnode* ln){    //Placeholder implementation, might chan
 ErrorCode destroy_entry_list(List *l){
     if (!l) return EC_FAIL;
     destroy_list(l, entry);
+    return EC_SUCCESS;
 }
