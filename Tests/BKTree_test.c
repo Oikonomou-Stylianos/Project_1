@@ -14,10 +14,11 @@
 #include "acutest.h"
 
 #include "BKTree.h"
+#include "core.h"
 
 void test_BKT_Create(void){
 
-    BKTree bkt = BKT_Create();
+    BKTree bkt = BKT_Create(MT_EDIT_DIST);
     TEST_CHECK(bkt != NULL);
     BKT_Destroy(bkt);
 }
@@ -25,45 +26,38 @@ void test_BKT_Create(void){
 void test_BKT_CreateNode(void){
 
     TEST_CHECK(BKT_CreateNode(NULL) == NULL);
-    char *a = (char *)malloc(sizeof(char )*MAX_WORD_LENGTH);
-    strcpy(a, "abcd");
-    BKTreeNode bktn = BKT_CreateNode(a);
+    BKTreeNode bktn = BKT_CreateNode("abcd");
     TEST_CHECK(bktn != NULL);
     TEST_CHECK(bktn->children != NULL);
     int i;
     for(i = 0; i < MAX_WORD_LENGTH; i++)
         TEST_CHECK(bktn->children[i] == NULL);
     BKT_DestroyNode(bktn);
-    free(a);
 }
 
 void test_BKT_Insert(void){
 
     TEST_CHECK(BKT_Insert(NULL, NULL) == NULL);
-    char *a = (char *)malloc(sizeof(char )*MAX_WORD_LENGTH);
-    strcpy(a, "abcd");
-    TEST_CHECK(BKT_Insert(NULL, a) == NULL);
-    BKTree bkt = BKT_Create();
+    TEST_CHECK(BKT_Insert(NULL, "abcd") == NULL);
+    BKTree bkt = BKT_Create(MT_EDIT_DIST);
     TEST_CHECK(BKT_Insert(bkt, NULL) == NULL);
-    TEST_CHECK(BKT_Insert(bkt, a) != NULL);
+    TEST_CHECK(BKT_Insert(bkt, "abcd") != NULL);
     BKT_Destroy(bkt);
-    free(a);
 }
 
 void test_BKT_InsertNode(void){
 
-    TEST_CHECK(BKT_InsertNode(NULL, NULL) == NULL);
-    char *a = (char *)malloc(sizeof(char )*MAX_WORD_LENGTH);
-    strcpy(a, "abcd");
-    TEST_CHECK(BKT_InsertNode(NULL, a) == NULL);
-    BKTree bkt = BKT_Create();
-    BKT_Insert(bkt, a);
-    TEST_CHECK(BKT_InsertNode(bkt->root, NULL) == NULL);    
-    char *b = (char *)malloc(sizeof(char )*MAX_WORD_LENGTH);
-    strcpy(b, "abcde");
-    TEST_CHECK(BKT_InsertNode(bkt->root, b) != NULL);
+    TEST_CHECK(BKT_InsertNode(NULL, NULL, NULL) == NULL);
+    BKTree bkt = BKT_Create(MT_EDIT_DIST);
+    BKT_Insert(bkt, "abcd");
+    TEST_CHECK(BKT_InsertNode(bkt, NULL, "abcde") == NULL);
+    TEST_CHECK(BKT_InsertNode(NULL, bkt->root, NULL) == NULL);
+    TEST_CHECK(BKT_InsertNode(NULL, NULL, "abcde") == NULL);
+    TEST_CHECK(BKT_InsertNode(bkt, bkt->root, NULL) == NULL);
+    TEST_CHECK(BKT_InsertNode(bkt, NULL, "abcde") == NULL);
+    TEST_CHECK(BKT_InsertNode(NULL, bkt->root, "abcde") == NULL);
+    TEST_CHECK(BKT_InsertNode(bkt, bkt->root, "abcde") != NULL);
     BKT_Destroy(bkt);
-    free(a); free(b);
 }
 
 void test_BKT_Search(void){
@@ -71,7 +65,7 @@ void test_BKT_Search(void){
     TEST_CHECK(BKT_Search(NULL, NULL, 0) == NULL);
     TEST_CHECK(BKT_Search(NULL, NULL, 1) == NULL);
     TEST_CHECK(BKT_Search(NULL, "abcd", 0) == NULL);
-    BKTree bkt = BKT_Create();
+    BKTree bkt = BKT_Create(MT_EDIT_DIST);
     TEST_CHECK(BKT_Search(bkt, NULL, 0) == NULL);
     TEST_CHECK(BKT_Search(bkt, "abcd", 0) == NULL);
     TEST_CHECK(BKT_Search(bkt, NULL, 1) == NULL);
@@ -92,7 +86,7 @@ void test_BKT_Search(void){
 void test_BKT_Destroy(void){
 
     TEST_CHECK(BKT_Destroy(NULL) == 1);
-    BKTree bkt = BKT_Create();
+    BKTree bkt = BKT_Create(MT_EDIT_DIST);
     TEST_CHECK(BKT_Destroy(bkt) == 0);
 }
 

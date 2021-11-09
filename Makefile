@@ -21,6 +21,7 @@ TEST = ./Tests
 OBJECT = Main.o BKTree.o WordList.o CandidateList.o distance.o EntryList.o
 # SOURCE = Main.c BKTree.c WordList.c CandidateList.c distance.c
 # HEADER = BKTree.c WordList.c CandidateList.c common_types.h
+TESTS = BKTree_test.o CandidateList_test.o WordList_test.o distance_test.o
 
 OUT   = Main
 CC    = gcc
@@ -65,13 +66,10 @@ tests: tests.o
 	mv BKTree_test $(EXE)
 tests.o:
 	$(CC) -I $(HF) $(FLAGS) -c $(TEST)/distance_test.c
-	mv distance_test.o $(OF)
 	$(CC) -I $(HF) $(FLAGS) -c $(TEST)/WordList_test.c
-	mv WordList_test.o $(OF)
 	$(CC) -I $(HF) $(FLAGS) -c $(TEST)/CandidateList_test.c
-	mv CandidateList_test.o $(OF)
 	$(CC) -I $(HF) $(FLAGS) -c $(TEST)/BKTree_test.c
-	mv BKTree_test.o $(OF)
+	mv $(TESTS) $(OF)
 
 run-tests:
 	$(EXE)/distance_test

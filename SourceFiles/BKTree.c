@@ -22,12 +22,13 @@
 #include "core.h"
 
 // Create a BK-Tree  
-BKTree BKT_Create(){
+BKTree BKT_Create(MatchType mt){
 
 	BKTree bkt = (BKTree )malloc(sizeof(bktree));
 	bkt->root = NULL;
+	bkt->matchType = mt;
 
-	return bkt != NULL ? bkt : NULL;
+	return bkt;
 }
 // Create a BK-Tree node
 BKTreeNode BKT_CreateNode(const char *word){
@@ -60,15 +61,15 @@ BKTreeNode BKT_Insert(BKTree bkt, const char *word){
 		return bkt->root;
 	}
 	else
-		return BKT_InsertNode(bkt->root, word);
+		return BKT_InsertNode(bkt, bkt->root, word);
 }
 // Insert recursively a word into the BK-Tree
-BKTreeNode BKT_InsertNode(BKTreeNode parent, const char *word){
+BKTreeNode BKT_InsertNode(BKTree bkt, BKTreeNode parent, const char *word){
 
-	if(parent == NULL || word == NULL)
+	if(bkt == NULL || parent == NULL || word == NULL)
 		return NULL;
 
-	int dist = edit_distance(parent->word, word);
+	int dist = distance(parent->word, word, bkt->matchType);
 
 	if(dist == 0)
 		return parent;
@@ -79,7 +80,7 @@ BKTreeNode BKT_InsertNode(BKTreeNode parent, const char *word){
 		return parent->children[dist-1];
 	}
 	else
-		return BKT_InsertNode(parent->children[dist-1], word);
+		return BKT_InsertNode(bkt, parent->children[dist-1], word);
 }
 // Search in the BK-Tree for words with distance from a given word defined by given threshold
 WList BKT_Search(BKTree bkt, const char *word, int threshold){
@@ -100,7 +101,7 @@ WList BKT_Search(BKTree bkt, const char *word, int threshold){
 		cln_temp = CL_GetFirst(candidateList);
 		bktn_temp = cln_temp->candidate;
 		
-		dist = edit_distance(word, (*bktn_temp)->word);
+		dist = distance(word, (*bktn_temp)->word, bkt->matchType);
 		if(dist <= threshold){
 
 			WL_Insert(wordList, (*bktn_temp)->word);

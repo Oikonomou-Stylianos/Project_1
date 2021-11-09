@@ -12,27 +12,31 @@
 ///////////////////////////////////
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
 #include "EntryList.h"
 #include "core.h"
 
 List *create_list(void){
+
     List *list = (List *)malloc(sizeof(List));
-    if (!list) return NULL;
+    if(!list) return NULL;
     list->head = list->tail = NULL;
     return list;
 }
 
 void destroy_node(listnode *ln, ListType type){
+
     switch(type){   //Can be expanded
-        case entry: destroy_entry((Entry *)(ln->item)); break;
+        case entry: destroy_entry((Entry *)(ln->data)); break;
         default: break; //Do nothing
     }
     free(ln);
 }
 
 void destroy_list(List *l, ListType type){
+
     if (!l) return;
     listnode *temp = l->head, *tbdestr;
     while (temp){
@@ -43,13 +47,14 @@ void destroy_list(List *l, ListType type){
     free(l);
 }
 
-List *insert_list(List *l, void *item){
+List *insert_list(List *l, void *data){
+
     listnode* node = (listnode *)malloc(sizeof(listnode));
     if (!node) return NULL;
-    node->next = NULL; node->item = item;   //Item initialization
-    l->tail->next = node;                   //Item concatination
+    node->next = NULL; node->data = data;   //Data initialization
+    l->tail->next = node;                   //Data concatination
     l->tail = node;                         //Update tail pointer
-    if (!(l->head)) l->head = node;         //If list is empty, make new item head
+    if (!(l->head)) l->head = node;         //If list is empty, make new data head
     return l;
 }
 
@@ -59,6 +64,7 @@ ErrorCode create_entry_list(List *l){
 }
 
 ErrorCode create_entry(const char *word, void *payload, Entry *ret){
+
     ret = NULL;
     Entry *ent = (Entry *)malloc(sizeof(Entry));
     if (!ent) return EC_FAIL;
@@ -72,6 +78,7 @@ ErrorCode create_entry(const char *word, void *payload, Entry *ret){
 }
 
 ErrorCode destroy_entry(Entry *e){
+
     if (!e) return EC_FAIL;
     e->payload = NULL;  //Might revisit to support any added payload functionality
     free(e->word);
@@ -80,9 +87,10 @@ ErrorCode destroy_entry(Entry *e){
 }
 
 unsigned int get_number_entries(const List *el){  //Might replace with a variable in the List struct
+    
     if (!el || !(el->head)) return 0;   //Works thanks to short-circuiting
     unsigned int count = 1;             //Since the program execution reached this,
-    listnode *temp = el->head;          //there is at least 1 item in the list
+    listnode *temp = el->head;          //there is at least 1 data in the list
     while (temp->next && temp != el->tail){ //Either of those conditions should work, using both is overkill
         count++;
         temp = temp->next;
@@ -91,18 +99,22 @@ unsigned int get_number_entries(const List *el){  //Might replace with a variabl
 }
 
 ErrorCode add_entry(List *l, const Entry *entry){
+
     return (insert_list(l, (Entry *)entry)) ? EC_SUCCESS: EC_FAIL;
 }
 
 Entry *get_first(const List* el){
-    return (el) ? el->head->item : NULL;
+
+    return (el) ? el->head->data : NULL;
 }
 
 Entry *get_next(const listnode* ln){    //Placeholder implementation, might change up the whole approach
-    return (ln) ? ln->next->item : NULL;
+    
+    return (ln) ? ln->next->data : NULL;
 }
 
 ErrorCode destroy_entry_list(List *l){
+
     if (!l) return EC_FAIL;
     destroy_list(l, entry);
     return EC_SUCCESS;

@@ -14,10 +14,11 @@
 #include <stdio.h>
 
 #include "BKTree.h"
+#include "core.h"
 
 int main(int argc, char *argv[]){
 
-	BKTree myBKT = BKT_Create();
+	BKTree myBKT = BKT_Create(MT_EDIT_DIST);
 
 	BKT_Insert(myBKT, "fall");
 	BKT_Insert(myBKT, "hell");

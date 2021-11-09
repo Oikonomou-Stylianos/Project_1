@@ -13,13 +13,15 @@
 
 #pragma once
 
+#include "core.h"
+
 typedef struct {
     char *word;
     void *payload;
 } Entry;
 
 typedef struct lnode {
-    void *item;
+    void *data;
     struct lnode *next;
 } listnode;
 
