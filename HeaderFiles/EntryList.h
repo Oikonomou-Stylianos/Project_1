@@ -28,6 +28,7 @@ typedef struct lnode {
 typedef struct {
     listnode *head;
     listnode *tail;
+    unsigned int size;
 } List;
 
 typedef enum { 
@@ -36,8 +37,8 @@ typedef enum {
 } ListType;
 
 List *create_list(void);
-void destroy_node(listnode *, ListType);
-void destroy_list(List *, ListType);
+ErrorCode destroy_node(listnode *, ListType);
+ErrorCode destroy_list(List *, ListType);
 List *insert_list(List *, void *);
 ErrorCode create_entry_list(List *);
 ErrorCode create_entry(const char *, void *, Entry *);
