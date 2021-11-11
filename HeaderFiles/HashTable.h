@@ -25,9 +25,13 @@ typedef struct{
 
 typedef hash_table *HashTable;
 
+unsigned int hash_string(const char *);
+
 HashTable HT_Create();
 WLNode HT_Insert(const HashTable , const char *);
 HashTable HT_Rehash(const HashTable );
-HashTable HT_InitializeFromFile(const HashTable , const char *);
+HashTable HT_InsertFromFile(const HashTable , const char *);
+WList HT_ToList(const HashTable );
+int HT_Destroy(HashTable );
 
-unsigned int hash_string(const char *);
+WList deduplicate(const char *);

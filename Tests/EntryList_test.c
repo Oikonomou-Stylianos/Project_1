@@ -11,16 +11,18 @@
 // File : 
 ///////////////////////////////////
 
+// #include <stdio.h>
+// #include <stdlib.h>
+// #include <string.h>
+
 #include "acutest.h"
 
-#include <stdlib.h>
-#include <string.h>
 #include "EntryList.h"
 #include "core.h"
 
 void test_create_list(void){
     List *temp;
-    TEST_CHECK((temp = create_list()));
+    TEST_CHECK((temp = create_list()) != NULL);
     TEST_CHECK(!(temp->head) && !(temp->tail));
     destroy_list(temp, other);
 }
@@ -59,7 +61,7 @@ void test_destroy_list(void){
 
     list = create_list();
     if (!list) return;
-    int x = 5;
+    x = 5;
     insert_list(list, &x);
     x = 6;
     insert_list(list, &x);
@@ -74,9 +76,9 @@ void test_insert_list(void){
     TEST_CHECK(!insert_list(NULL, NULL));
     TEST_CHECK(!insert_list(NULL, &x));
     list = create_list();
-    TEST_CHECK(insert_list(list, &x));
-    TEST_CHECK(insert_list(list, NULL));
-    TEST_CHECK(insert_list(list, &x));
+    TEST_CHECK(insert_list(list, &x) == list);
+    TEST_CHECK(insert_list(list, NULL) == list);
+    TEST_CHECK(insert_list(list, &x) == list);
     TEST_CHECK(list->head->data == &x);
     TEST_CHECK(!(list->head->next->data));
     TEST_CHECK(list->head->next->next->data == &x);
@@ -92,7 +94,7 @@ void test_create_entry_list(void){
 }
 
 void test_create_entry(void){
-    Entry *entry = 1;
+    Entry *entry = (Entry *)1;
     char *word;
     TEST_CHECK(create_entry(NULL, NULL, entry) == EC_FAIL);
     TEST_CHECK(!entry);
@@ -108,18 +110,18 @@ void test_create_entry(void){
 }
 
 void test_destroy_entry(void){
-    Entry *entry;
+    Entry *entry = NULL;
     TEST_CHECK(destroy_entry(NULL) == EC_FAIL);
     if (create_entry("test", NULL, entry) != EC_SUCCESS) return;
     TEST_CHECK(destroy_entry(entry) == EC_SUCCESS);
 }
 
 void test_get_number_entries(void){
-    List *l;
+    List *l = NULL;
     if (create_entry_list(l) != EC_SUCCESS) return;
     TEST_CHECK(!get_number_entries(NULL));
     TEST_CHECK(!get_number_entries(l));
-    Entry *entry;
+    Entry *entry = NULL;
     create_entry("test", NULL, entry);
     add_entry(l, entry);
     TEST_CHECK(get_number_entries(l) == 1);
@@ -133,7 +135,7 @@ void test_get_number_entries(void){
 }
 
 void test_add_entry(void){
-    List *list; Entry *entry;
+    List *list = NULL; Entry *entry = NULL;
     create_entry("test", NULL, entry);
     TEST_CHECK(add_entry(NULL, NULL) == EC_FAIL);
     TEST_CHECK(add_entry(NULL, entry) == EC_FAIL);
@@ -144,7 +146,7 @@ void test_add_entry(void){
 }
 
 void test_get_first(void){
-    List *list; Entry *entry, *entry2;
+    List *list = NULL; Entry *entry = NULL, *entry2 = NULL;
     TEST_CHECK(!get_first(NULL));
     create_entry_list(list);
     TEST_CHECK(!get_first(list));
@@ -158,12 +160,12 @@ void test_get_first(void){
 }
 
 void test_get_next(void){
-    List *list; listnode *ln;
+    List *list = NULL;
     TEST_CHECK(!get_next(NULL));
     create_entry_list(list);
     TEST_CHECK(!get_next(list->head));
     TEST_CHECK(!get_next(list->tail));
-    Entry *entry;
+    Entry *entry = NULL;
 
     create_entry("test", NULL, entry);
     add_entry(list, entry);
@@ -183,13 +185,13 @@ void test_get_next(void){
 }
 
 void test_destroy_entry_list(void){
-    List *list;
+    List *list = NULL;
     create_entry_list(list);
     TEST_CHECK(destroy_entry_list(NULL) == EC_FAIL);
     TEST_CHECK(destroy_entry_list(list) == EC_SUCCESS);
 
     create_entry_list(list);
-    Entry *entry;
+    Entry *entry = NULL;
     create_entry("test", NULL, entry);
     add_entry(list, entry);
     create_entry("testi", NULL, entry);

@@ -29,9 +29,9 @@ List *create_list(void){
 ErrorCode destroy_node(listnode *ln, ListType type){
 
     if (!ln) return EC_FAIL;
-    ErrorCode ret;
+    // ErrorCode ret;
     switch(type){   //Can be expanded
-        case entry: ret = destroy_entry((Entry *)(ln->data)); break;
+        case entry: destroy_entry((Entry *)(ln->data)); break;
         default: break; //Do nothing
     }
     //if (ret) return EC_FAIL;  //Mixes things up in the supposedly-never-gonna-occur-case where an entry list contains a NULL entry

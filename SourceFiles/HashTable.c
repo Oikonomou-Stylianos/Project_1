@@ -21,6 +21,18 @@
 
 int prime_sizes[] = {53, 97, 193, 389, 769, 1543, 3079, 6151, 12289, 24593, 49157, 98317, 196613, 393241, 786433, 1572869, 3145739, 6291469, 12582917, 25165843, 50331653, 100663319, 201326611, 402653189, 805306457, 1610612741};
 
+// djb2 Hash Function
+unsigned int hash_string(const char *s){
+    
+    if(s == NULL) return -1;
+
+    unsigned int hash = 5381;
+    for(; *s != '\0'; s++) 
+        hash = hash * 33 + *s;
+
+    return hash % INT_MAX;
+}
+// Create a Hash Table
 HashTable HT_Create(){
 
     HashTable ht = (HashTable )malloc(sizeof(hash_table));
@@ -90,16 +102,18 @@ HashTable HT_Rehash(const HashTable ht){
             }
         }
     }
-    
+
     for(i = 0; i < old_capacity; i++)   // Destroy the old buckets
         if(old_buckets[i] != NULL)
-            if(!(WL_Destroy(old_buckets[i]))) return NULL;
+            if(WL_Destroy(old_buckets[i]) != 0) return NULL;
     free(old_buckets);  // Free the old buckets array
+
+    printf("%d -> %d\n", old_capacity, ht->capacity);
 
     return ht;
 }
-//
-HashTable HT_InitializeFromFile(HashTable ht, const char *file){
+// Insert the words of a file in a Hash Table
+HashTable HT_InsertFromFile(const HashTable ht, const char *file){
 
     if(ht == NULL || file == NULL) return NULL;
 
@@ -127,24 +141,58 @@ HashTable HT_InitializeFromFile(HashTable ht, const char *file){
             index++;
         }
     }
-
+    if(fclose(fp) != 0) return NULL;
+     
     return ht;
 }
-// 
-WList HT_TransferToList()
-// djb2 Hash Function
-unsigned int hash_string(const char *s){
-    
-    if(s == NULL) return -1;
+// Insert the contents of a Hash Table in a Word List 
+WList HT_ToList(const HashTable ht){
 
-    unsigned int hash = 5381;
-    for(; *s != '\0'; s++) 
-        hash = hash * 33 + *s;
+    if(ht == NULL) return NULL;
 
-    return hash % INT_MAX;
+    WList wl;
+    if(!(wl = WL_Create())) return NULL;
+
+    WLNode wln_temp;
+    int i;
+    for(i = 0; i < ht->capacity; i++){
+
+        if(ht->buckets[i] != NULL){
+            wln_temp = ht->buckets[i]->head;
+            while(wln_temp != NULL){        // ...insert its values in the new buckets array
+
+                if(!(WL_Insert(wl, wln_temp->word))) return NULL;
+                wln_temp = wln_temp->next;
+            }
+        }
+    }
+    return wl;
 }
+// Destroy a Hash Table
+int HT_Destroy(HashTable ht){
 
-WList deduplication(const char *file){
+    if(ht == NULL) return 1;
 
+    int i;
+    for(i = 0; i < ht->capacity; i++)
+        if(ht->buckets[i] != NULL)
+            if(WL_Destroy(ht->buckets[i])) return 1;
+    free(ht->buckets);
+    free(ht);
 
+    return 0;
+}
+// Deduplicate the words of a given file and put them in a Word List
+WList deduplicate(const char *file){
+
+    if(file == NULL) return NULL;
+
+    HashTable ht;
+    WList wl;
+    if(!(ht = HT_Create())) return NULL;
+    if(!(HT_InsertFromFile(ht, file))) return NULL;
+    if(!(wl = HT_ToList(ht))) return NULL;
+    if(HT_Destroy(ht)) return NULL;
+
+    return wl;
 }

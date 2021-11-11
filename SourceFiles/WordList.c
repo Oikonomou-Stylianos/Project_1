@@ -135,13 +135,11 @@ int WL_Print(WList wl){
 		return 1;
 
 	WLNode temp = wl->head;
-	printf("[");
+	printf("[ ");
 	while(temp != NULL){
 
-		printf("'%s'", temp->word);
+		printf("%s ", temp->word);
 		temp = temp->next;
-		if(temp != NULL)
-			printf(",");
 	}
 	printf("]\n");
 	return 0;
