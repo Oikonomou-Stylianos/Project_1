@@ -31,6 +31,7 @@ typedef wlist *WList;
 
 WList WL_Create();
 WLNode WL_Insert(WList , char *);
+WLNode WL_InsertSortUnique(const WList , const char *);
 int WL_RemoveFirst(WList );
 WLNode WL_GetFirst(WList );
 int WL_Print(WList );

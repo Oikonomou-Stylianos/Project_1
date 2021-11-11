@@ -18,7 +18,7 @@ EXE  = ./Executables
 AD   = ./AppData
 TEST = ./Tests
 
-OBJECT = Main.o BKTree.o WordList.o CandidateList.o distance.o EntryList.o
+OBJECT = Main.o BKTree.o WordList.o CandidateList.o distance.o EntryList.o HashTable.o
 # SOURCE = Main.c BKTree.c WordList.c CandidateList.c distance.c
 # HEADER = BKTree.c WordList.c CandidateList.c common_types.h
 TESTS = BKTree_test.o CandidateList_test.o WordList_test.o distance_test.o
@@ -30,7 +30,7 @@ FLAGS = -Wall -Werror -g
 all: Main tests
 
 Main: $(OBJECT)
-	$(CC) $(FLAGS) -o $(OUT) $(OF)/Main.o $(OF)/BKTree.o $(OF)/WordList.o $(OF)/CandidateList.o $(OF)/distance.o $(OF)/EntryList.o
+	$(CC) $(FLAGS) -o $(OUT) $(OF)/Main.o $(OF)/BKTree.o $(OF)/WordList.o $(OF)/CandidateList.o $(OF)/distance.o $(OF)/EntryList.o $(OF)/HashTable.o
 	mv $(OUT) $(EXE)
 
 Main.o: 
@@ -51,6 +51,10 @@ distance.o:
 EntryList.o:
 	$(CC) -I $(HF) $(FLAGS) -c $(SF)/EntryList.c
 	mv EntryList.o $(OF)
+HashTable.o:
+	$(CC) -I $(HF) $(FLAGS) -c $(SF)/HashTable.c
+	mv HashTable.o $(OF)
+
 
 run:
 	$(EXE)/$(OUT)

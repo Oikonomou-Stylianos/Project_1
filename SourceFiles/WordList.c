@@ -25,7 +25,7 @@ WList WL_Create(){
 
 	return wl != NULL ? wl : NULL;
 }
-// Insert a node at the tail of a Word List
+// Insert a word at the tail of a Word List
 WLNode WL_Insert(WList wl, char *word){
 
 	if(wl == NULL || word == NULL)
@@ -44,6 +44,56 @@ WLNode WL_Insert(WList wl, char *word){
 		wl->tail->next = wln;
 		wl->tail = wln;
 	}
+	return wln;
+}
+// Insert a word in sorted way in a Word List if it does not already exist
+WLNode WL_InsertSortUnique(const WList wl, const char *word){
+
+	if(wl == NULL || word == NULL)
+		return NULL;
+
+	WLNode wln = (WLNode )malloc(sizeof(word_list_node ));
+	strcpy(wln->word, word);
+	wln->next = NULL;
+
+	if(wl->head == NULL){							// If the list is empty insert at the head
+		
+		wl->head = wln;
+		wl->tail = wln;
+	}
+	else if(strcmp(word, wl->head->word) < 0){		// If the new word is the smallest insert at the head
+
+		wln->next = wl->head;
+		wl->head = wln;
+	}
+	else if(strcmp(word, wl->head->word) == 0){		// If the new word is equal to the head free it and return NULL
+
+		free(wln);
+		wln = NULL;
+	}
+	else{
+
+		WLNode temp = wl->head;
+		while(temp->next != NULL && strcmp(word, temp->next->word) > 0)
+			temp = temp->next;
+		
+		if(temp->next == NULL){						// If the new word is the greatest insert it at the tail
+
+			temp->next = wln;
+			wl->tail = wln;
+		}
+		else if(strcmp(word, temp->next->word) < 0){		// If the next word is greatest insert the new word behind it
+
+			wln->next = temp->next;
+			temp->next = wln;
+		}
+		else{										// If the word exists free the new node and return NULL
+
+			free(wln);
+			wln = NULL;
+		}
+	}
+	
 	return wln;
 }
 // Remove the first node of a Word List

@@ -18,21 +18,32 @@
 
 int main(int argc, char *argv[]){
 
-	BKTree myBKT = BKT_Create(MT_EDIT_DIST);
+	// BKTree myBKT = BKT_Create(MT_EDIT_DIST);
 
-	BKT_Insert(myBKT, "fall");
-	BKT_Insert(myBKT, "hell");
-	BKT_Insert(myBKT, "felt");
-	BKT_Insert(myBKT, "help");
-	BKT_Insert(myBKT, "melt");
-	BKT_Insert(myBKT, "small");
-	BKT_Insert(myBKT, "fell");
+	// BKT_Insert(myBKT, "fall");
+	// BKT_Insert(myBKT, "hell");
+	// BKT_Insert(myBKT, "felt");
+	// BKT_Insert(myBKT, "help");
+	// BKT_Insert(myBKT, "melt");
+	// BKT_Insert(myBKT, "small");
+	// BKT_Insert(myBKT, "fell");
 
-	WList myWL = BKT_Search(myBKT, "henn", 2);
-	WL_Print(myWL);
-	WL_Destroy(myWL);
+	// WList myWL = BKT_Search(myBKT, "henn", 2);
+	// WL_Print(myWL);
+	// WL_Destroy(myWL);
 
-	BKT_Destroy(myBKT);
+	// BKT_Destroy(myBKT);
+
+	WList wl = WL_Create();
+
+	WL_InsertSortUnique(wl, "fall");
+	WL_InsertSortUnique(wl, "aall");
+	WL_InsertSortUnique(wl, "aall");
+	WL_InsertSortUnique(wl, "hell");
+	WL_InsertSortUnique(wl, "felt");
+	WL_InsertSortUnique(wl, "felt");
+
+	WL_Print(wl);
 
 	return 0;
 }
