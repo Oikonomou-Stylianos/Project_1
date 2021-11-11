@@ -198,3 +198,20 @@ void test_destroy_entry_list(void){
     add_entry(list, entry);
     TEST_CHECK(destroy_entry_list(list) == EC_SUCCESS);
 }
+
+TEST_LIST = {
+
+    { "test_create_list", test_create_list },
+    { "test_destroy_node", test_destroy_node },
+    { "test_destroy_list", test_destroy_list },
+    { "test_insert_list", test_insert_list },
+    { "test_create_entry_list", test_create_entry_list },
+    { "test_create_entry", test_create_entry },
+    { "test_destroy_entry", test_destroy_entry },
+    { "test_get_number_entries", test_get_number_entries },
+    { "test_add_entry", test_add_entry },
+    { "test_get_first", test_get_first },
+    { "test_get_next", test_get_next },
+    { "test_destroy_entry_list", test_destroy_entry_list },
+    { NULL, NULL }
+};
