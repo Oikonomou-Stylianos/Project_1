@@ -49,8 +49,7 @@ WLNode WL_Insert(WList wl, char *word){
 // Insert a word in sorted way in a Word List if it does not already exist
 WLNode WL_InsertSortUnique(const WList wl, const char *word){
 
-	if(wl == NULL || word == NULL)
-		return NULL;
+	if(wl == NULL || word == NULL) return NULL;
 
 	WLNode wln = (WLNode )malloc(sizeof(word_list_node ));
 	strcpy(wln->word, word);

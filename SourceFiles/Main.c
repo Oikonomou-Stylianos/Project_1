@@ -16,6 +16,8 @@
 #include "BKTree.h"
 #include "core.h"
 
+#include "HashTable.h"
+
 int main(int argc, char *argv[]){
 
 	// BKTree myBKT = BKT_Create(MT_EDIT_DIST);
@@ -45,6 +47,10 @@ int main(int argc, char *argv[]){
 
 	WL_Print(wl);
 	WL_Destroy(wl);
+
+	HashTable ht = HT_Create();
+	if(HT_InitializeFromFile(ht, "./AppData/test_file.txt") == NULL)
+		printf("NULL");
 
 	return 0;
 }

@@ -13,3 +13,4 @@
 
 #pragma once
 
+#define FILE_NAME_SIZE 50
