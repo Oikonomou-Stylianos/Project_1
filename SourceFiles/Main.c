@@ -44,6 +44,7 @@ int main(int argc, char *argv[]){
 	WL_InsertSortUnique(wl, "felt");
 
 	WL_Print(wl);
+	WL_Destroy(wl);
 
 	return 0;
 }
