@@ -13,6 +13,7 @@
 
 #include <stdio.h>
 
+#include "EntryList.h"
 #include "BKTree.h"
 #include "core.h"
 
@@ -21,8 +22,6 @@
 int main(int argc, char *argv[]){
 
 	// ~~! BKTree example !--
-
-    BKTree myBKT = BKT_Create(MT_EDIT_DIST);
     List *el = NULL;
     create_entry_list(&el);
     add_entry(el, create_entry("hell", NULL));
@@ -33,13 +32,12 @@ int main(int argc, char *argv[]){
     add_entry(el, create_entry("small", NULL));
     add_entry(el, create_entry("melt", NULL));
 
-    BKT_InsertFromEntryList(myBKT, el);
+    BKTree myBKT;
+	build_entry_index(el, MT_EDIT_DIST, &myBKT); 
 
-	Entry *entry;
-	entry = create_entry("henn", NULL);
-	List *myWL = BKT_Search(myBKT, entry, 2);
-	WL_Print(myWL);
-	WL_Destroy(myWL);
+	List *myL;
+	lookup_entry_index("henn", &myBKT, 2, &myL);
+	print_entry_list(myL);
 	BKT_Destroy(myBKT);
 
 	// ~~! Word List InsertSortUnique example !~~

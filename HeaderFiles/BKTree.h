@@ -13,8 +13,6 @@
 
 #pragma once
 
-#include "common_types.h"
-#include "WordList.h"
 #include "EntryList.h"
 #include "core.h"
 
@@ -33,11 +31,12 @@ typedef struct{
 }bktree;
 typedef bktree* BKTree;
 
+typedef BKTree *Index;
+
 BKTree BKT_Create(MatchType );
 BKTreeNode BKT_CreateNode(Entry *);
 BKTreeNode BKT_Insert(const BKTree , Entry *);
 BKTreeNode BKT_InsertNode(const BKTree , const BKTreeNode , Entry *);
-BKTree BKT_InsertFromEntryList(const BKTree , const List *);
-WList BKT_Search(const BKTree , const Entry *, int );
+List *BKT_Search(const BKTree , const char *, int );
 int BKT_Destroy(BKTree );
 int BKT_DestroyNode(BKTreeNode );

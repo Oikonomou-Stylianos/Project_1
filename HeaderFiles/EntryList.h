@@ -37,7 +37,6 @@ typedef enum {
     other,
 } ListType;
 
-typedef BKTree *Index;
 
 List *create_list(void);
 ErrorCode destroy_node(listnode *, ListType);

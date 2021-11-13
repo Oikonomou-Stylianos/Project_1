@@ -170,7 +170,6 @@ ErrorCode build_entry_index(const List *el, MatchType type, Index ix){
 
 	return EC_SUCCESS;
 }
-
 ErrorCode lookup_entry_index(const char *w, Index ix, int threshold, List **result){
 
     *result = NULL;
