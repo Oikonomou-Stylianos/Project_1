@@ -24,6 +24,8 @@
 // Create a BK-Tree  
 BKTree BKT_Create(MatchType mt){
 
+	if(mt != MT_HAMMING_DIST && mt != MT_EDIT_DIST) return NULL;
+
 	BKTree bkt = (BKTree )malloc(sizeof(bktree));
 	bkt->root = NULL;
 	bkt->matchType = mt;
@@ -60,8 +62,15 @@ BKTreeNode BKT_Insert(BKTree bkt, const char *word){
 		bkt->root = BKT_CreateNode(word);
 		return bkt->root;
 	}
-	else
+	else{
+
+		if(bkt->matchType == MT_HAMMING_DIST && strlen(bkt->root->word) != strlen(word)){
+			printf("Warning: [word = \"%s\"] : Attempted to insert word of different length in a BKTree with MatchType set to HammingDistance\n", word);
+			return NULL;
+		}
+
 		return BKT_InsertNode(bkt, bkt->root, word);
+	}
 }
 // Insert recursively a word into the BK-Tree
 BKTreeNode BKT_InsertNode(BKTree bkt, BKTreeNode parent, const char *word){

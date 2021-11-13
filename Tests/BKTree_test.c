@@ -18,8 +18,12 @@
 
 void test_BKT_Create(void){
 
-    BKTree bkt = BKT_Create(MT_EDIT_DIST);
-    TEST_CHECK(bkt != NULL);
+
+    BKTree bkt;
+    TEST_CHECK((bkt = BKT_Create(MT_EXACT_MATCH)) == NULL);
+    TEST_CHECK((bkt = BKT_Create(MT_HAMMING_DIST)) != NULL);
+    BKT_Destroy(bkt);
+    TEST_CHECK((bkt = BKT_Create(MT_EDIT_DIST)) != NULL);
     BKT_Destroy(bkt);
 }
 void test_BKT_CreateNode(void){
