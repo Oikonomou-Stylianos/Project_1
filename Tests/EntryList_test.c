@@ -32,7 +32,8 @@ void test_destroy_node(void){
     if (!temp) return;
     TEST_CHECK(destroy_node(NULL, other) == EC_FAIL);
     TEST_CHECK(destroy_node(NULL, entry) == EC_FAIL);
-    TEST_CHECK(destroy_node(temp, entry) == EC_FAIL);
+    TEST_CHECK(destroy_node(temp, entry) == EC_SUCCESS);
+    temp = malloc(sizeof(listnode));
     TEST_CHECK(destroy_node(temp, other) == EC_SUCCESS);
 
     temp = malloc(sizeof(listnode));
@@ -48,42 +49,46 @@ void test_destroy_list(void){
     List *list = create_list();
     if (!list) return;
     TEST_CHECK(destroy_list(list, entry) == EC_SUCCESS);
-
     list = create_list();
     if (!list) return;
     TEST_CHECK(destroy_list(list, other) == EC_SUCCESS);
 
     list = create_list();
     if (!list) return;
-    int x = 5;
-    insert_list(list, &x);
+    int *x = (int *)malloc(sizeof(int )); *x = 5;
+    printf("OK\n");
+    insert_list(list, (void *)x);
+    printf("OK\n");
     TEST_CHECK(destroy_list(list, other) == EC_SUCCESS);
 
     list = create_list();
     if (!list) return;
-    x = 5;
-    insert_list(list, &x);
-    x = 6;
-    insert_list(list, &x);
-    x = 7;
-    insert_list(list, &x);
+    *x = 5;
+    insert_list(list, x);
+    *x = 6;
+    insert_list(list, x);
+    *x = 7;
+    insert_list(list, x);
     TEST_CHECK(destroy_list(list, other) == EC_SUCCESS);
+    free(x);
 }
 
 void test_insert_list(void){
     List *list;
-    int x = 5;
+    int *x = (int *)malloc(sizeof(int )); *x = 5;
     TEST_CHECK(!insert_list(NULL, NULL));
-    TEST_CHECK(!insert_list(NULL, &x));
+    TEST_CHECK(!insert_list(NULL, x));
     list = create_list();
-    TEST_CHECK(insert_list(list, &x) == list);
+    TEST_CHECK(insert_list(list, x) == list);
+    printf("OK\n");
     TEST_CHECK(insert_list(list, NULL) == list);
-    TEST_CHECK(insert_list(list, &x) == list);
-    TEST_CHECK(list->head->data == &x);
+    TEST_CHECK(insert_list(list, x) == list);
+    TEST_CHECK(list->head->data == x);
     TEST_CHECK(!(list->head->next->data));
-    TEST_CHECK(list->head->next->next->data == &x);
+    TEST_CHECK(list->head->next->next->data == x);
     TEST_CHECK(!(list->head->next->next->next));
     destroy_list(list, other);
+    free(x);
 }
 
 void test_create_entry_list(void){
@@ -203,8 +208,8 @@ TEST_LIST = {
 
     { "test_create_list", test_create_list },
     { "test_destroy_node", test_destroy_node },
-    { "test_destroy_list", test_destroy_list },
     { "test_insert_list", test_insert_list },
+    { "test_destroy_list", test_destroy_list },
     { "test_create_entry_list", test_create_entry_list },
     { "test_create_entry", test_create_entry },
     { "test_destroy_entry", test_destroy_entry },

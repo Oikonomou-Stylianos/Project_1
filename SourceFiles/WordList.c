@@ -26,7 +26,7 @@ WList WL_Create(){
 	return wl != NULL ? wl : NULL;
 }
 // Insert a word at the tail of a Word List
-WLNode WL_Insert(WList wl, char *word){
+WLNode WL_Insert(const WList wl, const char *word){
 
 	if(wl == NULL || word == NULL)
 		return NULL;
@@ -96,7 +96,7 @@ WLNode WL_InsertSortUnique(const WList wl, const char *word){
 	return wln;
 }
 // Remove the first node of a Word List
-int WL_RemoveFirst(WList wl){
+int WL_RemoveFirst(const WList wl){
 
 	if(wl == NULL)
 		return 1;
@@ -122,14 +122,14 @@ int WL_RemoveFirst(WList wl){
 	return 0;
 }
 // Get the first node of a Word List
-WLNode WL_GetFirst(WList wl){
+WLNode WL_GetFirst(const WList wl){
 
 	if(wl == NULL)
 		return NULL;
 	return wl->head;
 }
 // Print a Word List 
-int WL_Print(WList wl){
+int WL_Print(const WList wl){
 
 	if(wl == NULL)
 		return 1;
@@ -145,7 +145,7 @@ int WL_Print(WList wl){
 	return 0;
 }
 // Return 0 if the Word List is empty, 1 if not
-int WL_IsEmpty(WList wl){
+int WL_IsEmpty(const WList wl){
 
 	if(wl == NULL)
 		return -1;
@@ -153,7 +153,7 @@ int WL_IsEmpty(WList wl){
 	return wl->head == NULL ? 0 : 1;
 }
 // Return the size of the Word List
-int WL_GetSize(WList wl){
+int WL_GetSize(const WList wl){
 
 	if(wl == NULL)
 		return -1;

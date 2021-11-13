@@ -27,7 +27,7 @@ CList CL_Create(){
 	return cl != NULL ? cl : NULL;
 }
 // Insert a node at the tail of a Candidate List
-CLNode CL_Insert(CList cl, BKTreeNode *bktn){
+CLNode CL_Insert(const CList cl, BKTreeNode *bktn){
 
 	if(cl == NULL || bktn == NULL)
 		return NULL;
@@ -48,7 +48,7 @@ CLNode CL_Insert(CList cl, BKTreeNode *bktn){
 	return cln;
 }
 // Remove the first node of a Candidate List
-int CL_RemoveFirst(CList cl){
+int CL_RemoveFirst(const CList cl){
 
 	if(cl == NULL)
 		return 1;
@@ -74,14 +74,14 @@ int CL_RemoveFirst(CList cl){
 	return 0;
 }
 // Get the first node of a Candidate List
-CLNode CL_GetFirst(CList cl){
+CLNode CL_GetFirst(const CList cl){
 	
 	if(cl == NULL)
 		return NULL;
 	return cl->head;
 }
 // Return 0 if the Word List is empty, 1 if not
-int CL_IsEmpty(CList cl){
+int CL_IsEmpty(const CList cl){
 
 	if(cl == NULL)
 		return -1;
@@ -89,7 +89,7 @@ int CL_IsEmpty(CList cl){
 	return cl->head == NULL ? 0 : 1;
 }
 // Return the size of the Candidate List
-int CL_GetSize(CList cl){
+int CL_GetSize(const CList cl){
 
 	if(cl == NULL)
 		return -1;

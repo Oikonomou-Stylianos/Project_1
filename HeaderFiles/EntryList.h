@@ -40,6 +40,7 @@ List *create_list(void);
 ErrorCode destroy_node(listnode *, ListType);
 ErrorCode destroy_list(List *, ListType);
 List *insert_list(List *, void *);
+
 ErrorCode create_entry_list(List *);
 ErrorCode create_entry(const char *, void *, Entry *);
 ErrorCode destroy_entry(Entry *);

@@ -30,9 +30,9 @@ typedef struct{
 typedef clist *CList;
 
 CList CL_Create();
-CLNode CL_Insert(CList , BKTreeNode *);
-int CL_RemoveFirst(CList );
-CLNode CL_GetFirst(CList );
-int CL_IsEmpty(CList );
-int CL_GetSize(CList );
+CLNode CL_Insert(const CList , BKTreeNode *);
+int CL_RemoveFirst(const CList );
+CLNode CL_GetFirst(const CList );
+int CL_IsEmpty(const CList );
+int CL_GetSize(const CList );
 int CL_Destroy(CList );

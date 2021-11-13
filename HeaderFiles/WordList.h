@@ -30,11 +30,11 @@ typedef struct{
 typedef wlist *WList;
 
 WList WL_Create();
-WLNode WL_Insert(WList , char *);
+WLNode WL_Insert(const WList , const char *);
 WLNode WL_InsertSortUnique(const WList , const char *);
-int WL_RemoveFirst(WList );
-WLNode WL_GetFirst(WList );
-int WL_Print(WList );
-int WL_IsEmpty(WList );
-int WL_GetSize(WList );
+int WL_RemoveFirst(const WList );
+WLNode WL_GetFirst(const WList );
+int WL_Print(const WList );
+int WL_IsEmpty(const WList );
+int WL_GetSize(const WList );
 int WL_Destroy(WList );

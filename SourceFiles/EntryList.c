@@ -22,7 +22,8 @@ List *create_list(void){
 
     List *list = (List *)malloc(sizeof(List));
     if(!list) return NULL;
-    list->head = list->tail = NULL; list->size = 0;
+    list->head = list->tail = NULL; 
+    list->size = 0;
     return list;
 }
 
@@ -42,6 +43,7 @@ ErrorCode destroy_node(listnode *ln, ListType type){
 ErrorCode destroy_list(List *l, ListType type){
 
     if (!l) return EC_FAIL;
+
     listnode *temp = l->head, *tbdestr;
     while (temp){
         tbdestr = temp;
@@ -55,17 +57,23 @@ ErrorCode destroy_list(List *l, ListType type){
 List *insert_list(List *l, void *data){
 
     if (!l) return NULL;
+
+    printf("OK");
     listnode* node = (listnode *)malloc(sizeof(listnode));
     if (!node) return NULL;
+    node->next = NULL; 
+    node->data = (void *)data;   //Data initialization
     (l->size)++;
-    node->next = NULL; node->data = data;   //Data initialization
+    
+    if (!(l->head)) l->head = node;         //If list is empty, make new data head
+
     l->tail->next = node;                   //Data concatination
     l->tail = node;                         //Update tail pointer
-    if (!(l->head)) l->head = node;         //If list is empty, make new data head
     return l;
 }
 
 ErrorCode create_entry_list(List *l){
+    
     l = create_list();
     return (l) ? EC_SUCCESS : EC_FAIL;
 }
@@ -74,6 +82,7 @@ ErrorCode create_entry(const char *word, void *payload, Entry *ret){
 
     ret = NULL;
     if (!word) return EC_FAIL;
+    
     Entry *ent = (Entry *)malloc(sizeof(Entry));
     if (!ent) return EC_FAIL;
     int wlen = strlen(word) + 1;    // +1 for the terminating \0;
@@ -88,6 +97,7 @@ ErrorCode create_entry(const char *word, void *payload, Entry *ret){
 ErrorCode destroy_entry(Entry *e){
 
     if (!e) return EC_FAIL;
+    
     e->payload = NULL;  //Might revisit to support any added payload functionality
     free(e->word);
     free(e);
@@ -110,7 +120,7 @@ unsigned int get_number_entries(const List *el){  //Might replace with a variabl
 
 ErrorCode add_entry(List *l, const Entry *entry){   //Might change up so it creates the entry itself aswell by calling create_entry()
 
-    return (insert_list(l, (Entry *)entry)) ? EC_SUCCESS: EC_FAIL;
+    return (insert_list(l, (Entry *)entry)) ? EC_SUCCESS : EC_FAIL;
 }
 
 Entry *get_first(const List* el){
@@ -120,12 +130,13 @@ Entry *get_first(const List* el){
 
 Entry *get_next(const listnode* ln){    //Placeholder implementation, might change up the whole approach
     
-    return (ln) ? ln->next->data : NULL;
+    return (ln) ? (Entry *)(ln->next->data) : NULL;
 }
 
 ErrorCode destroy_entry_list(List *l){
 
     if (!l) return EC_FAIL;
+    
     destroy_list(l, entry);
     return EC_SUCCESS;
 }
