@@ -58,40 +58,38 @@ List *insert_list(List *l, void *data){
 
     if (!l) return NULL;
 
-    printf("OK");
     listnode* node = (listnode *)malloc(sizeof(listnode));
     if (!node) return NULL;
     node->next = NULL; 
     node->data = (void *)data;   //Data initialization
     (l->size)++;
     
-    if (!(l->head)) l->head = node;         //If list is empty, make new data head
-
-    l->tail->next = node;                   //Data concatination
-    l->tail = node;                         //Update tail pointer
+    if (!(l->head)) {l->head = node; l->tail = node;}        //If list is empty, make new data head and tail
+    else {
+        l->tail->next = node;   //Data concatination
+        l->tail = node;         //Update tail pointer
+    }
     return l;
 }
 
-ErrorCode create_entry_list(List *l){
+ErrorCode create_entry_list(List **l){
     
-    l = create_list();
-    return (l) ? EC_SUCCESS : EC_FAIL;
+    *l = create_list();
+    return (*l) ? EC_SUCCESS : EC_FAIL;
 }
 
-ErrorCode create_entry(const char *word, void *payload, Entry *ret){
+Entry *create_entry(const char *word, void *payload){
 
-    ret = NULL;
-    if (!word) return EC_FAIL;
+    if (!word) return NULL;
     
     Entry *ent = (Entry *)malloc(sizeof(Entry));
-    if (!ent) return EC_FAIL;
+    if (!ent) return NULL;
     int wlen = strlen(word) + 1;    // +1 for the terminating \0;
     ent->payload = payload;
     ent->word = (char *)malloc(wlen*sizeof(char));
-    if (!(ent->word)) { free(ent); return EC_FAIL; }
+    if (!(ent->word)) { free(ent); return NULL; }
     strcpy(ent->word, word);
-    ret = ent;
-    return EC_SUCCESS;
+    return ent;
 }
 
 ErrorCode destroy_entry(Entry *e){
@@ -125,12 +123,12 @@ ErrorCode add_entry(List *l, const Entry *entry){   //Might change up so it crea
 
 Entry *get_first(const List* el){
 
-    return (el) ? (Entry *)(el->head->data) : NULL;
+    return (el) ? (el->head) ? (Entry *)(el->head->data) : NULL : NULL;
 }
 
 Entry *get_next(const listnode* ln){    //Placeholder implementation, might change up the whole approach
     
-    return (ln) ? (Entry *)(ln->next->data) : NULL;
+    return (ln) ? (ln->next) ? (Entry *)(ln->next->data) : NULL : NULL;
 }
 
 ErrorCode destroy_entry_list(List *l){
