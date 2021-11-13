@@ -58,10 +58,6 @@ void test_edit_distance(void){
     TEST_CHECK(edit_distance(a, b) == 8);
     strcpy(a, "aaaaaaaa"); strcpy(b, "bbbb");
     TEST_CHECK(edit_distance(a, b) == 8);
-    strcpy(a, "aaaa"); strcpy(b, "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb");
-    TEST_CHECK(edit_distance(a, b) == 31);
-    strcpy(a, "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"); strcpy(b, "bbbb");
-    TEST_CHECK(edit_distance(a, b) == 31);
     free(a); free(b);
 }
 void test_hamming_distance(void){
@@ -91,10 +87,6 @@ void test_hamming_distance(void){
     strcpy(a, "abcd"); strcpy(b, "abcde");
     TEST_CHECK(hamming_distance(a, b) == -1);
     strcpy(a, "abcde"); strcpy(b, "abcd");
-    TEST_CHECK(hamming_distance(a, b) == -1);
-    strcpy(a, "aaaa"); strcpy(b, "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb");
-    TEST_CHECK(hamming_distance(a, b) == -1);
-    strcpy(a, "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"); strcpy(b, "bbbb");
     TEST_CHECK(hamming_distance(a, b) == -1);
     free(a); free(b);
 }

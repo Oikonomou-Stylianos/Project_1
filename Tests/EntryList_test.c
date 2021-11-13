@@ -28,12 +28,10 @@ void test_create_list(void){
 }
 
 void test_destroy_node(void){
-    listnode *temp = malloc(sizeof(listnode));
+    listnode *temp = (listnode *)malloc(sizeof(listnode));
     if (!temp) return;
     TEST_CHECK(destroy_node(NULL, other) == EC_FAIL);
     TEST_CHECK(destroy_node(NULL, entry) == EC_FAIL);
-    TEST_CHECK(destroy_node(temp, entry) == EC_SUCCESS);
-    temp = malloc(sizeof(listnode));
     TEST_CHECK(destroy_node(temp, other) == EC_SUCCESS);
 
     temp = malloc(sizeof(listnode));

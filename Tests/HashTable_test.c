@@ -84,7 +84,8 @@ void test_deduplicate(void){
 
     WList wl;
     TEST_CHECK(deduplicate(NULL) == NULL);
-    TEST_CHECK(deduplicate("./aushgdkj.txt") == NULL); // Invalid file name
+    TEST_CHECK((wl = deduplicate("./aushgdkj.txt")) == NULL); // Invalid file name
+    WL_Destroy(wl);
     TEST_CHECK((wl = deduplicate("./Tests/HashTable_test.c")) != NULL); // Invalid file name
     WL_Destroy(wl);
 }

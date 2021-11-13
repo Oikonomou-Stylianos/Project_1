@@ -19,7 +19,7 @@
 
 typedef struct bk_tree_node_tag{
 
-	char word[MAX_WORD_LENGTH];
+	char word[MAX_WORD_LENGTH + 1];
 	struct bk_tree_node_tag** children;
 
 }bk_tree_node;

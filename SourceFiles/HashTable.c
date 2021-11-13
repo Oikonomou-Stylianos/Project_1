@@ -160,7 +160,7 @@ WList HT_ToList(const HashTable ht){
             wln_temp = ht->buckets[i]->head;
             while(wln_temp != NULL){        // ...insert its values in the new buckets array
 
-                if(!(WL_Insert(wl, wln_temp->word))) return NULL;
+                if(!(WL_Insert(wl, wln_temp->word))) { WL_Destroy(wl); return NULL; } 
                 wln_temp = wln_temp->next;
             }
         }
@@ -189,8 +189,8 @@ WList deduplicate(const char *file){
     HashTable ht;
     WList wl;
     if(!(ht = HT_Create())) return NULL;
-    if(!(HT_InsertFromFile(ht, file))) return NULL;
-    if(!(wl = HT_ToList(ht))) return NULL;
+    if(!(HT_InsertFromFile(ht, file))) { HT_Destroy(ht); return NULL; }
+    if(!(wl = HT_ToList(ht))) { HT_Destroy(ht); return NULL; }
     if(HT_Destroy(ht)) return NULL;
 
     return wl;

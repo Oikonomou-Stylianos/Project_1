@@ -16,7 +16,7 @@
 #include "core.h"
 
 typedef struct word_list_node_tag{
-	char word[MAX_WORD_LENGTH];
+	char word[MAX_WORD_LENGTH + 1];
 	struct word_list_node_tag *next;
 }word_list_node;
 
