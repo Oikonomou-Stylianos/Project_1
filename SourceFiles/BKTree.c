@@ -134,7 +134,7 @@ int BKT_Destroy(BKTree bkt){
 int BKT_DestroyNode(BKTreeNode bktn){
 
 	if(bktn == NULL)
-		return 0;
+		return 1;
 
 	int i;
 	for(i = 0; i < MAX_WORD_LENGTH; i++)

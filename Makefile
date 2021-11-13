@@ -82,7 +82,7 @@ run-tests:
 	$(EXE)/distance_test
 	$(EXE)/WordList_test
 	$(EXE)/CandidateList_test
-	$(EXE)/EntryList_test
+#	$(EXE)/EntryList_test
 	$(EXE)/BKTree_test
 
 val:

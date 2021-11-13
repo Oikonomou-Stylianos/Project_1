@@ -16,21 +16,14 @@
 
 #include "CandidateList.h"
 
-void test_create(void){
+void test_CL_Create(void){
 
     CList cl;
     TEST_CHECK((cl = CL_Create()) != NULL);
     CL_Destroy(cl);
 }
 
-void test_destroy(void){
-
-    TEST_CHECK(CL_Destroy(NULL));
-    CList cl = CL_Create();
-    TEST_CHECK(!(CL_Destroy(cl)));
-}
-
-void test_insert(void){
+void test_CL_Insert(void){
 
     TEST_CHECK(!CL_Insert(NULL, NULL));
     CList cl = CL_Create();
@@ -52,24 +45,7 @@ void test_insert(void){
 
 }
 
-void test_getfirst(void){
-
-    CList cl = CL_Create();
-    BKTreeNode *bktn = malloc(sizeof(BKT_CreateNode));
-    TEST_CHECK(cl->head == CL_GetFirst(cl));
-    CL_Insert(cl, bktn);
-    TEST_CHECK(cl->head == CL_GetFirst(cl));
-    CL_Insert(cl, bktn);
-    TEST_CHECK(cl->head == CL_GetFirst(cl));
-    CL_RemoveFirst(cl);
-    TEST_CHECK(cl->head == CL_GetFirst(cl));
-    CL_Destroy(cl);
-    free(bktn);
-
-    TEST_CHECK(!CL_GetFirst(NULL));
-}
-
-void test_removefirst(void){
+void test_CL_RemoveFirst(void){
 
     TEST_CHECK(CL_RemoveFirst(NULL));
     CList cl = CL_Create();
@@ -92,7 +68,24 @@ void test_removefirst(void){
     free(bktn2);
 }
 
-void test_isempty(void){
+void test_CL_GetFirst(void){
+
+    CList cl = CL_Create();
+    BKTreeNode *bktn = malloc(sizeof(BKT_CreateNode));
+    TEST_CHECK(cl->head == CL_GetFirst(cl));
+    CL_Insert(cl, bktn);
+    TEST_CHECK(cl->head == CL_GetFirst(cl));
+    CL_Insert(cl, bktn);
+    TEST_CHECK(cl->head == CL_GetFirst(cl));
+    CL_RemoveFirst(cl);
+    TEST_CHECK(cl->head == CL_GetFirst(cl));
+    CL_Destroy(cl);
+    free(bktn);
+
+    TEST_CHECK(!CL_GetFirst(NULL));
+}
+
+void test_CL_IsEmpty(void){
 
     TEST_CHECK(CL_IsEmpty(NULL));
     CList cl = CL_Create();
@@ -104,7 +97,7 @@ void test_isempty(void){
     free(bktn);
 }
 
-void test_getsize(void){
+void test_CL_GetSize(void){
 
     TEST_CHECK(CL_GetSize(NULL) == -1);
     CList cl = CL_Create();
@@ -130,14 +123,21 @@ void test_getsize(void){
     free(bktn);
 }
 
+void test_CL_Destroy(void){
+
+    TEST_CHECK(CL_Destroy(NULL));
+    CList cl = CL_Create();
+    TEST_CHECK(!(CL_Destroy(cl)));
+}
+
 TEST_LIST = {
 
-    { "test_create", test_create },
-	{ "test_destroy", test_destroy },
-	{ "test_insert", test_insert },
-    { "test_getfirst", test_getfirst },
-    { "test_removefirst", test_removefirst },
-    { "test_isempty", test_isempty },
-    { "test_getsize", test_getsize },
+    { "CL_Create", test_CL_Create },
+	{ "CL_Insert", test_CL_Insert },
+    { "CL_RemoveFirst", test_CL_RemoveFirst },
+    { "CL_GetFirst", test_CL_GetFirst },
+    { "CL_IsEmpty", test_CL_IsEmpty },
+    { "CL_GetSize", test_CL_GetSize },
+	{ "CL_Destroy", test_CL_Destroy },
 	{ NULL, NULL }
 };
