@@ -22,7 +22,6 @@ void test_BKT_Create(void){
     TEST_CHECK(bkt != NULL);
     BKT_Destroy(bkt);
 }
-
 void test_BKT_CreateNode(void){
 
     TEST_CHECK(BKT_CreateNode(NULL) == NULL);
@@ -34,7 +33,6 @@ void test_BKT_CreateNode(void){
         TEST_CHECK(bktn->children[i] == NULL);
     BKT_DestroyNode(bktn);
 }
-
 void test_BKT_Insert(void){
 
     TEST_CHECK(BKT_Insert(NULL, NULL) == NULL);
@@ -44,7 +42,6 @@ void test_BKT_Insert(void){
     TEST_CHECK(BKT_Insert(bkt, "abcd") != NULL);
     BKT_Destroy(bkt);
 }
-
 void test_BKT_InsertNode(void){
 
     TEST_CHECK(BKT_InsertNode(NULL, NULL, NULL) == NULL);
@@ -59,7 +56,6 @@ void test_BKT_InsertNode(void){
     TEST_CHECK(BKT_InsertNode(bkt, bkt->root, "abcde") != NULL);
     BKT_Destroy(bkt);
 }
-
 void test_BKT_Search(void){
 
     TEST_CHECK(BKT_Search(NULL, NULL, 0) == NULL);
@@ -82,14 +78,12 @@ void test_BKT_Search(void){
     WL_Destroy(wl);
     BKT_Destroy(bkt);
 }
-
 void test_BKT_Destroy(void){
 
     TEST_CHECK(BKT_Destroy(NULL) == 1);
     BKTree bkt = BKT_Create(MT_EDIT_DIST);
     TEST_CHECK(BKT_Destroy(bkt) == 0);
 }
-
 void test_BKT_DestroyNode(void){
 
     TEST_CHECK(BKT_DestroyNode(NULL) == 1);

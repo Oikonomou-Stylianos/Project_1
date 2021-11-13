@@ -21,7 +21,7 @@ TEST = ./Tests
 OBJECT = Main.o BKTree.o WordList.o CandidateList.o distance.o EntryList.o HashTable.o
 # SOURCE = Main.c BKTree.c WordList.c CandidateList.c distance.c
 # HEADER = BKTree.c WordList.c CandidateList.c common_types.h
-TESTS = BKTree_test.o CandidateList_test.o WordList_test.o distance_test.o EntryList_test.o
+TESTS = BKTree_test.o CandidateList_test.o WordList_test.o distance_test.o EntryList_test.o HashTable_test.o
 
 OUT   = Main
 CC    = gcc
@@ -70,12 +70,15 @@ tests: tests.o
 	mv BKTree_test $(EXE)
 	$(CC) $(FLAGS) -o EntryList_test $(OF)/EntryList_test.o $(OF)/EntryList.o
 	mv EntryList_test $(EXE)
+	$(CC) $(FLAGS) -o HashTable_test $(OF)/HashTable_test.o $(OF)/HashTable.o $(OF)/WordList.o
+	mv HashTable_test $(EXE)
 tests.o:
 	$(CC) -I $(HF) $(FLAGS) -c $(TEST)/distance_test.c
 	$(CC) -I $(HF) $(FLAGS) -c $(TEST)/WordList_test.c
 	$(CC) -I $(HF) $(FLAGS) -c $(TEST)/CandidateList_test.c
 	$(CC) -I $(HF) $(FLAGS) -c $(TEST)/BKTree_test.c
 	$(CC) -I $(HF) $(FLAGS) -c $(TEST)/EntryList_test.c
+	$(CC) -I $(HF) $(FLAGS) -c $(TEST)/HashTable_test.c
 	mv $(TESTS) $(OF)
 
 run-tests:
@@ -84,6 +87,7 @@ run-tests:
 	$(EXE)/CandidateList_test
 #	$(EXE)/EntryList_test
 	$(EXE)/BKTree_test
+	$(EXE)/HashTable_test
 
 val:
 	valgrind -s --leak-check=full --show-leak-kinds=all --track-origins=yes $(EXE)/$(OUT)

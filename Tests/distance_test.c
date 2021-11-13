@@ -26,7 +26,6 @@ void test_min_int(void){
     TEST_CHECK(min_int(1, 2) == 1);
     TEST_CHECK(min_int(-1, -2) == -2);
 }
-
 void test_edit_distance(void){
 
     char *a, *b;
@@ -65,7 +64,6 @@ void test_edit_distance(void){
     TEST_CHECK(edit_distance(a, b) == 31);
     free(a); free(b);
 }
-
 void test_hamming_distance(void){
 
     char *a, *b;
@@ -100,7 +98,6 @@ void test_hamming_distance(void){
     TEST_CHECK(hamming_distance(a, b) == -1);
     free(a); free(b);
 }
-
 void test_exact_match(void){
 
     char *a, *b;

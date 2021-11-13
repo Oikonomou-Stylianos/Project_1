@@ -17,7 +17,6 @@
 
 #include "HashTable.h"
 #include "WordList.h"
-#include "common_types.h"
 
 int prime_sizes[] = {53, 97, 193, 389, 769, 1543, 3079, 6151, 12289, 24593, 49157, 98317, 196613, 393241, 786433, 1572869, 3145739, 6291469, 12582917, 25165843, 50331653, 100663319, 201326611, 402653189, 805306457, 1610612741};
 
@@ -30,7 +29,7 @@ unsigned int hash_string(const char *s){
     for(; *s != '\0'; s++) 
         hash = hash * 33 + *s;
 
-    return hash % INT_MAX;
+    return hash;
 }
 // Create a Hash Table
 HashTable HT_Create(){
@@ -52,7 +51,7 @@ WLNode HT_Insert(const HashTable ht, const char *word){
     if(ht == NULL || word == NULL) return NULL;
 
     int hash, index; 
-    if((hash = (int )hash_string(word)) == -1) return NULL; 
+    if((hash = (int )(hash_string(word) % INT_MAX)) == -1) return NULL; 
     index = hash % ht->capacity;
     
     // printf("Size = %d Capacity = %d Hash = %d Index = %d\n", ht->size, ht->capacity, hash, index);
@@ -108,7 +107,7 @@ HashTable HT_Rehash(const HashTable ht){
             if(WL_Destroy(old_buckets[i]) != 0) return NULL;
     free(old_buckets);  // Free the old buckets array
 
-    printf("%d -> %d\n", old_capacity, ht->capacity);
+    // printf("%d -> %d\n", old_capacity, ht->capacity);
 
     return ht;
 }

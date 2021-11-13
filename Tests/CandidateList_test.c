@@ -22,7 +22,6 @@ void test_CL_Create(void){
     TEST_CHECK((cl = CL_Create()) != NULL);
     CL_Destroy(cl);
 }
-
 void test_CL_Insert(void){
 
     TEST_CHECK(!CL_Insert(NULL, NULL));
@@ -44,7 +43,6 @@ void test_CL_Insert(void){
     free(bktn2);
 
 }
-
 void test_CL_RemoveFirst(void){
 
     TEST_CHECK(CL_RemoveFirst(NULL));
@@ -67,7 +65,6 @@ void test_CL_RemoveFirst(void){
     free(bktn1);
     free(bktn2);
 }
-
 void test_CL_GetFirst(void){
 
     CList cl = CL_Create();
@@ -84,7 +81,6 @@ void test_CL_GetFirst(void){
 
     TEST_CHECK(!CL_GetFirst(NULL));
 }
-
 void test_CL_IsEmpty(void){
 
     TEST_CHECK(CL_IsEmpty(NULL));
@@ -96,7 +92,6 @@ void test_CL_IsEmpty(void){
     CL_Destroy(cl);
     free(bktn);
 }
-
 void test_CL_GetSize(void){
 
     TEST_CHECK(CL_GetSize(NULL) == -1);
@@ -122,7 +117,6 @@ void test_CL_GetSize(void){
     CL_Destroy(cl);
     free(bktn);
 }
-
 void test_CL_Destroy(void){
 
     TEST_CHECK(CL_Destroy(NULL));

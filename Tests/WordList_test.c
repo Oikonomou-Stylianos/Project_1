@@ -22,7 +22,6 @@ void test_WL_Create(void){
     TEST_CHECK((wl = WL_Create()) != NULL);
     WL_Destroy(wl);
 }
-
 void test_WL_Insert(void){
 
     WList wl = WL_Create();
@@ -44,7 +43,6 @@ void test_WL_Insert(void){
 
     TEST_CHECK(!WL_Insert(NULL, "adsad"));
 }
-
 void test_WL_InsertSortUnique(void){
 
     WList wl = WL_Create();
@@ -68,7 +66,6 @@ void test_WL_InsertSortUnique(void){
     TEST_CHECK((wln = WL_InsertSortUnique(wl, "abcde")) == NULL); // Insert a word that already exists in a WList
     WL_Destroy(wl);
 }
-
 void test_WL_RemoveFirst(void){
 
     TEST_CHECK(WL_RemoveFirst(NULL));
@@ -87,7 +84,6 @@ void test_WL_RemoveFirst(void){
     TEST_CHECK(WL_RemoveFirst(wl));
     WL_Destroy(wl);
 }
-
 void test_WL_GetFirst(void){
 
     WList wl = WL_Create();
@@ -109,7 +105,6 @@ void test_WL_Print(void){
     TEST_CHECK(WL_Print(wl) == 0);
     WL_Destroy(wl);
 }
-
 void test_WL_IsEmpty(void){
 
     TEST_CHECK(WL_IsEmpty(NULL) == -1);
@@ -119,7 +114,6 @@ void test_WL_IsEmpty(void){
     TEST_CHECK(WL_IsEmpty(wl) == 1);
     WL_Destroy(wl);
 }
-
 void test_WL_GetSize(void){
 
     TEST_CHECK(WL_GetSize(NULL) == -1);

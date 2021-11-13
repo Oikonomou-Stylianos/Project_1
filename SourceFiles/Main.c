@@ -49,6 +49,7 @@ int main(int argc, char *argv[]){
 	// ~~! Deduplicate example !~~
 	WList wl = deduplicate("./AppData/small_test.txt");
 	WL_Print(wl);
+	printf("Deduplicated Words Count = %d\n",WL_GetSize(wl));
 	WL_Destroy(wl);
 
 	return 0;
