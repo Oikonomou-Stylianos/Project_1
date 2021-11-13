@@ -15,6 +15,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "common_types.h"
+
 #include "BKTree.h"
 #include "CandidateList.h"
 #include "distance.h"
@@ -114,7 +116,7 @@ List *BKT_Search(const BKTree bkt, const char *word, int threshold){
 		dist = distance(word, (*bktn_temp)->entry->word, bkt->matchType);
 		if(dist <= threshold){
 
-			add_entry(wordList, (*bktn_temp)->entry);
+			add_entry(wordList, copy_entry((*bktn_temp)->entry));
 		}
 
 		leftBound = dist - threshold;
