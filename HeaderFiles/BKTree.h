@@ -15,23 +15,7 @@
 
 #include "EntryList.h"
 #include "core.h"
-
-typedef struct bk_tree_node_tag{
-
-	Entry *entry;
-	struct bk_tree_node_tag** children;
-
-}bk_tree_node;
-typedef bk_tree_node* BKTreeNode;
-
-typedef struct{
-
-	BKTreeNode root;
-	MatchType matchType;
-}bktree;
-typedef bktree* BKTree;
-
-typedef BKTree *Index;
+#include "common_types.h"
 
 BKTree BKT_Create(MatchType );
 BKTreeNode BKT_CreateNode(Entry *);

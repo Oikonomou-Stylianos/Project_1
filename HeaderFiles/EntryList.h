@@ -16,27 +16,7 @@
 #include "BKTree.h"
 #include "core.h"
 
-typedef struct {
-    char *word;
-    void *payload;
-} Entry;
-
-typedef struct lnode {
-    void *data;
-    struct lnode *next;
-} listnode;
-
-typedef struct {
-    listnode *head;
-    listnode *tail;
-    unsigned int size;
-} List;
-
-typedef enum { 
-    entry,          //Can be expanded
-    other,
-} ListType;
-
+#include "common_types.h"
 
 List *create_list(void);
 ErrorCode destroy_node(listnode *, ListType);
@@ -55,3 +35,4 @@ Entry *copy_entry(const Entry *);
 void print_entry_list(const List *);
 ErrorCode build_entry_index(const List *, MatchType, Index);
 ErrorCode lookup_entry_index(const char *, Index, int, List **);
+ErrorCode destroy_entry_index(Index);
