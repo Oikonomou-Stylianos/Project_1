@@ -13,6 +13,7 @@
 
 #pragma once
 
+#include "BKTree.h"
 #include "core.h"
 
 typedef struct {
@@ -36,6 +37,8 @@ typedef enum {
     other,
 } ListType;
 
+typedef BKTree *Index;
+
 List *create_list(void);
 ErrorCode destroy_node(listnode *, ListType);
 ErrorCode destroy_list(List *, ListType);
@@ -50,3 +53,6 @@ Entry *get_first(const List *);
 Entry *get_next(const listnode *);
 ErrorCode destroy_entry_list(List *);
 Entry *copy_entry(const Entry *);
+void print_entry_list(const List *);
+ErrorCode build_entry_index(const List *, MatchType, Index);
+ErrorCode lookup_entry_index(const char *, Index, int, List **);

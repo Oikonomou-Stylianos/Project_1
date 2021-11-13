@@ -16,6 +16,7 @@
 #include <string.h>
 
 #include "EntryList.h"
+#include "BKTree.h"
 #include "core.h"
 
 List *create_list(void){
@@ -146,3 +147,35 @@ Entry *copy_entry(const Entry *e){
     return (!e) ? NULL : create_entry(e->word, e->payload);
 }
 
+void print_entry_list(const List *l){
+    if (!l) return;
+    listnode *ln = l->head;
+    printf("EntryList contains: \n");
+    while (ln) {
+        printf("%s\n", ((Entry *)(ln->data))->word);
+    }
+    printf("End of EntryList\n");
+}
+
+ErrorCode build_entry_index(const List *el, MatchType type, Index ix){
+
+	if (!el) return EC_FAIL;
+
+    *ix = BKT_Create(type);
+	listnode *ln = el->head;
+	while (ln){
+		BKT_Insert(*ix, (Entry *)(ln->data));
+		ln = ln->next;
+	}
+
+	return EC_SUCCESS;
+}
+
+ErrorCode lookup_entry_index(const char *w, Index ix, int threshold, List **result){
+
+    *result = NULL;
+    List *list;
+	if (!(list = BKT_Search(*ix, w, threshold))) return EC_FAIL;
+    *result = list;
+    return EC_SUCCESS;
+}
