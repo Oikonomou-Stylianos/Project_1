@@ -138,3 +138,8 @@ ErrorCode destroy_entry_list(List *l){
     destroy_list(l, entry);
     return EC_SUCCESS;
 }
+
+Entry *copy_entry(Entry *e){
+    
+    return (!e) ? NULL : create_entry(e->word, e->payload);
+}
