@@ -153,6 +153,7 @@ void print_entry_list(const List *l){
     printf("EntryList contains: \n");
     while (ln) {
         printf("%s\n", ((Entry *)(ln->data))->word);
+        ln = ln->next;
     }
     printf("End of EntryList\n");
 }
@@ -177,4 +178,8 @@ ErrorCode lookup_entry_index(const char *w, Index ix, int threshold, List **resu
 	if (!(list = BKT_Search(*ix, w, threshold))) return EC_FAIL;
     *result = list;
     return EC_SUCCESS;
+}
+
+ErrorCode destroy_entry_index(Index ix){
+    return (BKT_Destroy(*ix)) ? EC_FAIL : EC_SUCCESS;
 }

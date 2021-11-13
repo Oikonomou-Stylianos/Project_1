@@ -38,7 +38,9 @@ int main(int argc, char *argv[]){
 	List *myL;
 	lookup_entry_index("henn", &myBKT, 2, &myL);
 	print_entry_list(myL);
-	BKT_Destroy(myBKT);
+	destroy_entry_index(&myBKT);
+	destroy_entry_list(myL);
+	destroy_entry_list(el);
 
 	// ~~! Word List InsertSortUnique example !~~
 	// WList wl = WL_Create();
