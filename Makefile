@@ -27,7 +27,7 @@ OUT   = Main
 CC    = gcc
 FLAGS = -Wall -Werror -g
 
-all: Main tests
+all: Main 
 
 Main: $(OBJECT)
 	$(CC) $(FLAGS) -o $(OUT) $(OF)/Main.o $(OF)/BKTree.o $(OF)/WordList.o $(OF)/CandidateList.o $(OF)/distance.o $(OF)/EntryList.o $(OF)/HashTable.o
@@ -66,7 +66,7 @@ tests: tests.o
 	mv WordList_test $(EXE)
 	$(CC) $(FLAGS) -o CandidateList_test $(OF)/CandidateList_test.o $(OF)/CandidateList.o
 	mv CandidateList_test $(EXE)
-	$(CC) $(FLAGS) -o BKTree_test $(OF)/BKTree_test.o $(OF)/BKTree.o $(OF)/CandidateList.o $(OF)/WordList.o $(OF)/distance.o
+	$(CC) $(FLAGS) -o BKTree_test $(OF)/BKTree_test.o $(OF)/BKTree.o $(OF)/EntryList.o $(OF)/CandidateList.o $(OF)/WordList.o $(OF)/distance.o
 	mv BKTree_test $(EXE)
 	$(CC) $(FLAGS) -o EntryList_test $(OF)/EntryList_test.o $(OF)/EntryList.o
 	mv EntryList_test $(EXE)

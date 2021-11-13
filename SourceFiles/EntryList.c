@@ -141,7 +141,8 @@ ErrorCode destroy_entry_list(List *l){
     return EC_SUCCESS;
 }
 
-Entry *copy_entry(Entry *e){
+Entry *copy_entry(const Entry *e){
     
     return (!e) ? NULL : create_entry(e->word, e->payload);
 }
+

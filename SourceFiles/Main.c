@@ -21,19 +21,26 @@
 int main(int argc, char *argv[]){
 
 	// ~~! BKTree example !--
-	BKTree myBKT = BKT_Create(MT_EDIT_DIST);
-	BKT_Insert(myBKT, "hell");
-	BKT_Insert(myBKT, "help");
-	BKT_Insert(myBKT, "fall");
-	BKT_Insert(myBKT, "felt");
-	BKT_Insert(myBKT, "fell");
-	BKT_Insert(myBKT, "small");
-	BKT_Insert(myBKT, "melt");
-	WList myWL = BKT_Search(myBKT, "henn", 2);
+
+    BKTree myBKT = BKT_Create(MT_EDIT_DIST);
+    List *el = NULL;
+    create_entry_list(&el);
+    add_entry(el, create_entry("hell", NULL));
+    add_entry(el, create_entry("help", NULL));
+    add_entry(el, create_entry("fall", NULL));
+    add_entry(el, create_entry("felt", NULL));
+    add_entry(el, create_entry("fell", NULL));
+    add_entry(el, create_entry("small", NULL));
+    add_entry(el, create_entry("melt", NULL));
+
+    BKT_InsertFromEntryList(myBKT, el);
+
+	Entry *entry;
+	entry = create_entry("henn", NULL);
+	List *myWL = BKT_Search(myBKT, entry, 2);
 	WL_Print(myWL);
 	WL_Destroy(myWL);
 	BKT_Destroy(myBKT);
-
 
 	// ~~! Word List InsertSortUnique example !~~
 	// WList wl = WL_Create();
@@ -47,10 +54,10 @@ int main(int argc, char *argv[]){
 	// WL_Destroy(wl);
 
 	// ~~! Deduplicate example !~~
-	WList wl = deduplicate("./AppData/small_test.txt");
-	WL_Print(wl);
-	printf("Deduplicated Words Count = %d\n",WL_GetSize(wl));
-	WL_Destroy(wl);
+	// WList wl = deduplicate("./AppData/small_test.txt");
+	// WL_Print(wl);
+	// printf("Deduplicated Words Count = %d\n",WL_GetSize(wl));
+	// WL_Destroy(wl);
 
 	return 0;
 }

@@ -15,11 +15,12 @@
 
 #include "common_types.h"
 #include "WordList.h"
+#include "EntryList.h"
 #include "core.h"
 
 typedef struct bk_tree_node_tag{
 
-	char word[MAX_WORD_LENGTH + 1];
+	Entry *entry;
 	struct bk_tree_node_tag** children;
 
 }bk_tree_node;
@@ -33,9 +34,10 @@ typedef struct{
 typedef bktree* BKTree;
 
 BKTree BKT_Create(MatchType );
-BKTreeNode BKT_CreateNode(const char *);
-BKTreeNode BKT_Insert(BKTree , const char *);
-BKTreeNode BKT_InsertNode(BKTree , BKTreeNode , const char *);
-WList BKT_Search(BKTree , const char *, int );
+BKTreeNode BKT_CreateNode(Entry *);
+BKTreeNode BKT_Insert(const BKTree , Entry *);
+BKTreeNode BKT_InsertNode(const BKTree , const BKTreeNode , Entry *);
+BKTree BKT_InsertFromEntryList(const BKTree , const List *);
+WList BKT_Search(const BKTree , const Entry *, int );
 int BKT_Destroy(BKTree );
 int BKT_DestroyNode(BKTreeNode );

@@ -49,4 +49,4 @@ ErrorCode add_entry(List *, const Entry *); //Prefer to use create_entry as seco
 Entry *get_first(const List *);
 Entry *get_next(const listnode *);
 ErrorCode destroy_entry_list(List *);
-Entry *copy_entry(Entry *);
+Entry *copy_entry(const Entry *);

@@ -19,6 +19,7 @@
 #include "CandidateList.h"
 #include "WordList.h"
 #include "distance.h"
+#include "EntryList.h"
 #include "core.h"
 
 // Create a BK-Tree  
@@ -33,72 +34,86 @@ BKTree BKT_Create(MatchType mt){
 	return bkt;
 }
 // Create a BK-Tree node
-BKTreeNode BKT_CreateNode(const char *word){
+BKTreeNode BKT_CreateNode(Entry *e){
 
-	if(word == NULL)
-		return NULL;
+	if(e == NULL) return NULL;
 
 	BKTreeNode bktn = (BKTreeNode )malloc(sizeof(bk_tree_node));
-	strcpy(bktn->word, word);
+	bktn->entry = copy_entry(e);	
 	bktn->children = (bk_tree_node **)malloc(sizeof(bk_tree_node *) * MAX_WORD_LENGTH);
 	int i;
 	for(i = 0; i < MAX_WORD_LENGTH; i++)
 		bktn->children[i] = NULL;
 
+
 	return bktn;
 }
 // Insert a word into the BK-Tree
-BKTreeNode BKT_Insert(BKTree bkt, const char *word){
+BKTreeNode BKT_Insert(const BKTree bkt, Entry *e){
 
-	if(bkt == NULL || word == NULL)
-		return NULL;
+	if(bkt == NULL || e == NULL) return NULL;
 
-	int word_length = strlen(word);
+
+	int word_length = strlen(e->word);
 	if(word_length < MIN_WORD_LENGTH || word_length > MAX_WORD_LENGTH)
 		return NULL;
 
 	if(bkt->root == NULL){
 
-		bkt->root = BKT_CreateNode(word);
+		bkt->root = BKT_CreateNode(e);
+
 		return bkt->root;
 	}
 	else{
 
-		if(bkt->matchType == MT_HAMMING_DIST && strlen(bkt->root->word) != strlen(word)){
-			printf("Warning: [word = \"%s\"] : Attempted to insert word of different length in a BKTree with MatchType set to HammingDistance\n", word);
+		if(bkt->matchType == MT_HAMMING_DIST && strlen(bkt->root->entry->word) != strlen(e->word)){
+			printf("Warning: [word = \"%s\"] : Attempted to insert word of different length in a BKTree with MatchType set to HammingDistance\n", e->word);
 			return NULL;
 		}
 
-		return BKT_InsertNode(bkt, bkt->root, word);
+		return BKT_InsertNode(bkt, bkt->root, e);
 	}
 }
 // Insert recursively a word into the BK-Tree
-BKTreeNode BKT_InsertNode(BKTree bkt, BKTreeNode parent, const char *word){
+BKTreeNode BKT_InsertNode(const BKTree bkt, const BKTreeNode parent, Entry *e){
 
-	if(bkt == NULL || parent == NULL || word == NULL)
-		return NULL;
+	if(bkt == NULL || parent == NULL || e == NULL) return NULL;
 
-	int dist = distance(parent->word, word, bkt->matchType);
+	int dist = distance(parent->entry->word, e->word, bkt->matchType);
 
 	if(dist == 0)
 		return parent;
 
 	if(parent->children[dist-1] == NULL){
 
-		parent->children[dist-1] = BKT_CreateNode(word);
+		parent->children[dist-1] = BKT_CreateNode(e);
 		return parent->children[dist-1];
 	}
 	else
-		return BKT_InsertNode(bkt, parent->children[dist-1], word);
+		return BKT_InsertNode(bkt, parent->children[dist-1], e);
+}
+// Insert the entries of a given Entry List to a BKTree
+BKTree BKT_InsertFromEntryList(const BKTree bkt, const List *l){
+
+    if(bkt == NULL || l == NULL) return NULL;
+
+    listnode *ln = l->head;
+    while(ln){
+
+        BKT_Insert(bkt, (Entry *)(ln->data));
+        ln = ln->next;
+    }
+
+    return bkt;
 }
 // Search in the BK-Tree for words with distance from a given word defined by given threshold
-WList BKT_Search(BKTree bkt, const char *word, int threshold){
+List *BKT_Search(const BKTree bkt, const Entry *e, int threshold){
 
-	if(bkt == NULL || bkt->root == NULL || word == NULL || threshold < 1)
+	if(bkt == NULL || bkt->root == NULL || e == NULL || threshold < 1)
 		return NULL;
 
 	CList candidateList = CL_Create();
-	WList wordList = WL_Create();
+	List *wordList = create_list();
 
 	CL_Insert(candidateList, &(bkt->root));
 
@@ -110,10 +125,10 @@ WList BKT_Search(BKTree bkt, const char *word, int threshold){
 		cln_temp = CL_GetFirst(candidateList);
 		bktn_temp = cln_temp->candidate;
 		
-		dist = distance(word, (*bktn_temp)->word, bkt->matchType);
+		dist = distance(e->word, (*bktn_temp)->entry->word, bkt->matchType);
 		if(dist <= threshold){
 
-			WL_Insert(wordList, (*bktn_temp)->word);
+			add_entry(wordList, (*bktn_temp)->entry);
 		}
 
 		leftBound = dist - threshold;
@@ -149,6 +164,7 @@ int BKT_DestroyNode(BKTreeNode bktn){
 	for(i = 0; i < MAX_WORD_LENGTH; i++)
 		BKT_DestroyNode(bktn->children[i]);
 	free(bktn->children);
+	destroy_entry(bktn->entry);
 	free(bktn);
 	return 0;
 }
