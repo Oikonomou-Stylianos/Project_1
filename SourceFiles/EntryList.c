@@ -81,10 +81,12 @@ ErrorCode create_entry_list(List **l){
 Entry *create_entry(const char *word, void *payload){
 
     if (!word) return NULL;
+    int wlen = strlen(word) + 1;    // +1 for the terminating \0;
+    if (wlen > MAX_WORD_LENGTH + 1 || wlen < MIN_WORD_LENGTH + 1) return NULL;
+
     
     Entry *ent = (Entry *)malloc(sizeof(Entry));
     if (!ent) return NULL;
-    int wlen = strlen(word) + 1;    // +1 for the terminating \0;
     ent->payload = payload;
     ent->word = (char *)malloc(wlen*sizeof(char));
     if (!(ent->word)) { free(ent); return NULL; }
