@@ -151,12 +151,12 @@ Entry *copy_entry(const Entry *e){
 void print_entry_list(const List *l){
     if (!l) return;
     listnode *ln = l->head;
-    printf("EntryList contains: \n");
+    printf("[ ");
     while (ln) {
-        printf("%s\n", ((Entry *)(ln->data))->word);
+        printf("%s ", ((Entry *)(ln->data))->word);
         ln = ln->next;
     }
-    printf("End of EntryList\n");
+    printf("]\n");
 }
 
 ErrorCode build_entry_index(const List *el, MatchType type, Index ix){

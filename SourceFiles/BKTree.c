@@ -17,11 +17,11 @@
 
 #include "common_types.h"
 
-#include "BKTree.h"
-#include "CandidateList.h"
-#include "DataStructs.h"
-#include "distance.h"
 #include "EntryList.h"
+#include "BKTree.h"
+#include "DataStructs.h"
+#include "CandidateList.h"
+#include "distance.h"
 #include "core.h"
 
 // Create a BK-Tree  

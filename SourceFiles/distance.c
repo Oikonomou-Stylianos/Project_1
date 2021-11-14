@@ -109,6 +109,8 @@ int exact_match(const char *a, const char *b){
 
 int distance(const char *a, const char *b, MatchType distype){
 	
+	if(a == NULL || b == NULL) return -1;
+
 	int (*dist)(const char *, const char *);
 	switch(distype){
 		

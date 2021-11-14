@@ -19,8 +19,6 @@ AD   = ./AppData
 TEST = ./Tests
 
 OBJECT = Main.o BKTree.o WordList.o CandidateList.o distance.o EntryList.o HashTable.o
-# SOURCE = Main.c BKTree.c WordList.c CandidateList.c distance.c
-# HEADER = BKTree.c WordList.c CandidateList.c common_types.h
 TESTS = BKTree_test.o CandidateList_test.o WordList_test.o distance_test.o EntryList_test.o HashTable_test.o
 
 OUT   = Main
@@ -68,7 +66,7 @@ tests: tests.o
 	mv CandidateList_test $(EXE)
 	$(CC) $(FLAGS) -o BKTree_test $(OF)/BKTree_test.o $(OF)/BKTree.o $(OF)/EntryList.o $(OF)/CandidateList.o $(OF)/WordList.o $(OF)/distance.o
 	mv BKTree_test $(EXE)
-	$(CC) $(FLAGS) -o EntryList_test $(OF)/EntryList_test.o $(OF)/EntryList.o
+	$(CC) $(FLAGS) -o EntryList_test $(OF)/EntryList_test.o $(OF)/EntryList.o $(OF)/BKTree.o $(OF)/distance.o $(OF)/CandidateList.o 
 	mv EntryList_test $(EXE)
 	$(CC) $(FLAGS) -o HashTable_test $(OF)/HashTable_test.o $(OF)/HashTable.o $(OF)/WordList.o
 	mv HashTable_test $(EXE)
@@ -85,9 +83,9 @@ run-tests:
 	$(EXE)/distance_test
 	$(EXE)/WordList_test
 	$(EXE)/CandidateList_test
-	$(EXE)/BKTree_test
 	$(EXE)/HashTable_test
 	$(EXE)/EntryList_test
+	$(EXE)/BKTree_test
 
 val:
 	valgrind -s --leak-check=full --show-leak-kinds=all --track-origins=yes $(EXE)/$(OUT)

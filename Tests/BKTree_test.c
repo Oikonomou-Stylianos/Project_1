@@ -57,8 +57,7 @@ void test_BKT_Insert(void){
 }
 void test_BKT_InsertNode(void){
 
-    Entry *e1 = create_entry("abcd", NULL);
-    Entry *e2 = create_entry("abcde", NULL);
+    Entry *e1 = create_entry("abcd", NULL), *e2 = create_entry("abcde", NULL);
     BKTree bkt = BKT_Create(MT_EDIT_DIST);
     BKT_Insert(bkt, e1);
     TEST_CHECK(BKT_InsertNode(NULL, NULL, NULL) == NULL);
@@ -69,8 +68,7 @@ void test_BKT_InsertNode(void){
     TEST_CHECK(BKT_InsertNode(bkt, bkt->root, NULL) == NULL);
     BKTreeNode bktn;
     TEST_CHECK((bktn = BKT_InsertNode(bkt, bkt->root, e2)) != NULL);
-    TEST_CHECK(strcmp(bktn->entry->word, "abcd") == 0);
-    TEST_CHECK(BKT_InsertNode(bkt, bkt->root, e2) == NULL); // duplicate entry
+    TEST_CHECK(strcmp(bktn->entry->word, "abcde") == 0);
     BKT_Destroy(bkt);
     destroy_entry(e1); destroy_entry(e2);
 }
@@ -91,8 +89,8 @@ void test_BKT_Search(void){
     TEST_CHECK((l = BKT_Search(bkt, "abcd", 1)) != NULL); // Successful search with 1 word found
     TEST_CHECK(l->head != NULL);
     destroy_entry_list(l);
-    TEST_CHECK((l = BKT_Search(bkt, "abcde", 1)) != NULL); // Successful search with 0 words found
-    TEST_CHECK(l->head == NULL);
+    TEST_CHECK((l = BKT_Search(bkt, "abcdefg", 1)) != NULL); // Successful search with 0 words found
+    TEST_CHECK(l->size == 0);
     destroy_entry_list(l);
     BKT_Destroy(bkt);
     destroy_entry(e);
@@ -109,6 +107,7 @@ void test_BKT_DestroyNode(void){
     TEST_CHECK(BKT_DestroyNode(NULL) == 1);
     BKTreeNode bktn = BKT_CreateNode(e);
     TEST_CHECK(BKT_DestroyNode(bktn) == 0);
+    destroy_entry(e);
 }
 
 TEST_LIST = {

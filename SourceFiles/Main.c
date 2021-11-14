@@ -21,43 +21,33 @@
 
 int main(int argc, char *argv[]){
 
-	// ~~! BKTree example !--
+	// ~~! Project example !~~
     List *el = NULL;
-    create_entry_list(&el);
-    add_entry(el, create_entry("hell", NULL));
-    add_entry(el, create_entry("help", NULL));
-    add_entry(el, create_entry("fall", NULL));
-    add_entry(el, create_entry("felt", NULL));
-    add_entry(el, create_entry("fell", NULL));
-    add_entry(el, create_entry("small", NULL));
-    add_entry(el, create_entry("melt", NULL));
+    if(create_entry_list(&el) != EC_SUCCESS) return 1;
+    if(add_entry(el, create_entry("hell", NULL)) != EC_SUCCESS) return 1;
+    if(add_entry(el, create_entry("help", NULL)) != EC_SUCCESS) return 1;
+    if(add_entry(el, create_entry("fall", NULL)) != EC_SUCCESS) return 1;
+    if(add_entry(el, create_entry("felt", NULL)) != EC_SUCCESS) return 1;
+    if(add_entry(el, create_entry("fell", NULL)) != EC_SUCCESS) return 1;
+    if(add_entry(el, create_entry("small", NULL)) != EC_SUCCESS) return 1;
+    if(add_entry(el, create_entry("melt", NULL)) != EC_SUCCESS) return 1;
 
     BKTree myBKT;
-	build_entry_index(el, MT_EDIT_DIST, &myBKT); 
+	if(build_entry_index(el, MT_EDIT_DIST, &myBKT) != EC_SUCCESS) return 1; 
 
 	List *myL;
-	lookup_entry_index("henn", &myBKT, 2, &myL);
+	if(lookup_entry_index("henn", &myBKT, 2, &myL) != EC_SUCCESS) return 1;
 	print_entry_list(myL);
-	destroy_entry_index(&myBKT);
-	destroy_entry_list(myL);
-	destroy_entry_list(el);
-
-	// ~~! Word List InsertSortUnique example !~~
-	// WList wl = WL_Create();
-	// WL_InsertSortUnique(wl, "fall");
-	// WL_InsertSortUnique(wl, "aall");
-	// WL_InsertSortUnique(wl, "aall");
-	// WL_InsertSortUnique(wl, "hell");
-	// WL_InsertSortUnique(wl, "felt");
-	// WL_InsertSortUnique(wl, "felt");
-	// WL_Print(wl);
-	// WL_Destroy(wl);
+	if(destroy_entry_index(&myBKT) != EC_SUCCESS) return 1;
+	if(destroy_entry_list(myL) != EC_SUCCESS) return 1;
+	if(destroy_entry_list(el) != EC_SUCCESS) return 1;
 
 	// ~~! Deduplicate example !~~
-	// WList wl = deduplicate("./AppData/small_test.txt");
-	// WL_Print(wl);
+	// WList wl;
+	// if((wl = deduplicate("./AppData/small_test.txt")) == NULL) return 1;
+	// if(WL_Print(wl) == 1) return 1;
 	// printf("Deduplicated Words Count = %d\n",WL_GetSize(wl));
-	// WL_Destroy(wl);
+	// if(WL_Destroy(wl) == 1) return 1;
 
 	return 0;
 }
