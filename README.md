@@ -8,7 +8,7 @@ EntryList
 - The EntryList.c file contains implementation of functions that create and utilize a generic List data structure, which are built upon to create the Entry-List implementation. More specifically: 
 - - create/destroy_list() act as the generic list's constructor and destructor, respectively
 - - insert_list() pushes items of any form into the list by creating a listnode on which it attaches the given data and concatinating it to the list's tail
-- - destroy_node() is called by the list's destructor and it recursively destroys every listnode contained in the list, as well as calling any item destructor for the listnode's data, if specified (for the needs of this project, it just supports an entry's destructor)+
+- - destroy_node() is called by the list's destructor and it recursively destroys every listnode contained in the list, as well as calling any item destructor for the listnode's data, if specified (for the needs of this project, it just supports an entry's destructor)
 
 - The entry_list (including add_entry()) functions are implemented by calling all generic list functions. They use/return the List data structure's pointers, as there is no EntryList specific data type (which we skipped creating, it would add better abstraction but provide zero functionality).
 - The create_entry(), destroy_entry() and copy_entry() functions are simple constructor, destructor and copy-constructor for the entry data structure.
