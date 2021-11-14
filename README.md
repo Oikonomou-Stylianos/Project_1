@@ -1,15 +1,13 @@
-///////////////////////////////////
-// University: UoA DIT
-// Course : [K23a] Software Development for Computer Systems
-// Semester : Fall 2021-2022
-// Professor : Yannis Ioannidis 
-// --------------------------------
-// Students: Stylianos Oikonomou , Anastasios Triantafyllou
-// ID : 1115201500243 , 1115201600173 
-// --------------------------------
-// Project : Assignment_1
-// File : README.md
-///////////////////////////////////
+ University: UoA DIT
+ Course : [K23a] Software Development for Computer Systems
+ Semester : Fall 2021-2022
+ Professor : Yannis Ioannidis 
+ --------------------------------
+ Students: Stylianos Oikonomou , Anastasios Triantafyllou
+ ID : 1115201500243 , 1115201600173 
+ --------------------------------
+ Project : Assignment_1
+ File : README.md
 
 CandidateList
 - The candidate list data structure is a simple linked list implementation and it is used during the search of an index BKTree. It is the list that houses all the "candidate" words of the tree, meaning all the words that meet the range criteria to be explored, according to the definition of the BKTree. The functions implemented are self explanatory, no need to expand upon them.
