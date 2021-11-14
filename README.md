@@ -3,7 +3,7 @@ BK-Tree
 
 EntryList
 
-- NOTE: The data structures used in this file are all defined in the "common_types.h" header, in order to avoid recursive inclusion, as they are also used by the BKTree source file.
+- NOTE: The data structures used in this file are all defined in the "DataStructs.h" header, in order to avoid recursive inclusion, as they are also used by the BKTree source file.
 
 - The EntryList.c file contains implementation of functions that create and utilize a generic List data structure, which are built upon to create the Entry-List implementation. More specifically: 
 - - create/destroy_list() act as the generic list's constructor and destructor, respectively
