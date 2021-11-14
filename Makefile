@@ -88,15 +88,15 @@ run-tests:
 	$(EXE)/BKTree_test
 
 val:
-	valgrind -s --leak-check=full --show-leak-kinds=all --track-origins=yes $(EXE)/$(OUT)
+	valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes $(EXE)/$(OUT)
 
 val-tests:
-	valgrind -s --leak-check=full --show-leak-kinds=all --track-origins=yes $(EXE)/distance_test
-	valgrind -s --leak-check=full --show-leak-kinds=all --track-origins=yes $(EXE)/WordList_test
-	valgrind -s --leak-check=full --show-leak-kinds=all --track-origins=yes $(EXE)/CandidateList_test
-	valgrind -s --leak-check=full --show-leak-kinds=all --track-origins=yes $(EXE)/BKTree_test
-	valgrind -s --leak-check=full --show-leak-kinds=all --track-origins=yes $(EXE)/HashTable_test
-	valgrind -s --leak-check=full --show-leak-kinds=all --track-origins=yes $(EXE)/EntryList_test
+	valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes $(EXE)/distance_test
+	valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes $(EXE)/WordList_test
+	valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes $(EXE)/CandidateList_test
+	valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes $(EXE)/BKTree_test
+	valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes $(EXE)/HashTable_test
+	valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes $(EXE)/EntryList_test
 
 clean:
 	rm -f $(OF)/*.o $(EXE)/$(OUT) $(EXE)/*_test
