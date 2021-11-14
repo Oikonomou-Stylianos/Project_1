@@ -102,4 +102,4 @@ clean:
 	rm -f $(OF)/*.o $(EXE)/$(OUT) $(EXE)/*_test
 
 count:
-	wc $(SF)/* $(HF)/*
+	wc $(SF)/* $(HF)/* $(TEST)/*
