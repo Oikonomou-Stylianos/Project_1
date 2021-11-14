@@ -115,9 +115,9 @@ int distance(const char *a, const char *b, MatchType distype){
 		case MT_EDIT_DIST: dist = &edit_distance; break;
 		case MT_HAMMING_DIST: dist = &hamming_distance; break;
 		case MT_EXACT_MATCH: dist = &exact_match; break;
-		default: dist = NULL; break;
+		default: return -1;
 	}
-	return (dist) ? (*dist)(a, b) : -1;
+	return (*dist)(a, b);
 }
 
 // int main(int argc, char **argv){
