@@ -15,12 +15,12 @@
 
 #include "EntryList.h"
 #include "core.h"
-#include "common_types.h"
+#include "DataStructs.h"
 
 BKTree BKT_Create(MatchType );
 BKTreeNode BKT_CreateNode(Entry *);
 BKTreeNode BKT_Insert(const BKTree , Entry *);
 BKTreeNode BKT_InsertNode(const BKTree , const BKTreeNode , Entry *);
-List *BKT_Search(const BKTree , const char *, int );
+List *BKT_Search(const BKTree , const char *, const int );
 int BKT_Destroy(BKTree );
 int BKT_DestroyNode(BKTreeNode );

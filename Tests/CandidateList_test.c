@@ -12,9 +12,10 @@
 ///////////////////////////////////
 
 #include "acutest.h"
-#include "core.h"
 
+#include "DataStructs.h"
 #include "CandidateList.h"
+#include "core.h"
 
 void test_CL_Create(void){
 
@@ -68,7 +69,7 @@ void test_CL_RemoveFirst(void){
 void test_CL_GetFirst(void){
 
     CList cl = CL_Create();
-    BKTreeNode *bktn = malloc(sizeof(BKT_CreateNode));
+    BKTreeNode *bktn = malloc(sizeof(BKTreeNode));
     TEST_CHECK(cl->head == CL_GetFirst(cl));
     CL_Insert(cl, bktn);
     TEST_CHECK(cl->head == CL_GetFirst(cl));

@@ -18,6 +18,7 @@
 #include "acutest.h"
 
 #include "EntryList.h"
+#include "DataStructs.h"
 #include "core.h"
 
 void test_create_list(void){

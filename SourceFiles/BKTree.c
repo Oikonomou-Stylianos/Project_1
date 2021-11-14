@@ -19,6 +19,7 @@
 
 #include "BKTree.h"
 #include "CandidateList.h"
+#include "DataStructs.h"
 #include "distance.h"
 #include "EntryList.h"
 #include "core.h"
@@ -94,7 +95,7 @@ BKTreeNode BKT_InsertNode(const BKTree bkt, const BKTreeNode parent, Entry *e){
 		return BKT_InsertNode(bkt, parent->children[dist-1], e);
 }
 // Search in the BK-Tree for words with distance from a given word defined by given threshold
-List *BKT_Search(const BKTree bkt, const char *word, int threshold){
+List *BKT_Search(const BKTree bkt, const char *word, const int threshold){
 
 	if(bkt == NULL || bkt->root == NULL || word == NULL || threshold < 1)
 		return NULL;

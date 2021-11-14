@@ -15,8 +15,7 @@
 
 #include "BKTree.h"
 #include "core.h"
-
-#include "common_types.h"
+#include "DataStructs.h"
 
 //Generic List functions, called by entry list functions
 List *create_list(void);

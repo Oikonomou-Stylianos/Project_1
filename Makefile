@@ -27,7 +27,7 @@ OUT   = Main
 CC    = gcc
 FLAGS = -Wall -Werror -g
 
-all: Main 
+all: Main tests
 
 Main: $(OBJECT)
 	$(CC) $(FLAGS) -o $(OUT) $(OF)/Main.o $(OF)/BKTree.o $(OF)/WordList.o $(OF)/CandidateList.o $(OF)/distance.o $(OF)/EntryList.o $(OF)/HashTable.o

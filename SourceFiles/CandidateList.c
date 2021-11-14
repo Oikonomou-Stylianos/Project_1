@@ -15,6 +15,7 @@
 #include <stdlib.h>
 
 #include "CandidateList.h"
+#include "DataStructs.h"
 #include "BKTree.h"
 
 // Create a Candidate List

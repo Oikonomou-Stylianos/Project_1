@@ -16,6 +16,7 @@
 #include <string.h>
 
 #include "EntryList.h"
+#include "DataStructs.h"
 #include "BKTree.h"
 #include "core.h"
 
