@@ -13,7 +13,7 @@
 
 #pragma once
 
-#include "BKTree.h"
+#include "DataStructs.h"
 
 typedef struct candidate_list_node_tag{
 	BKTreeNode *candidate;
