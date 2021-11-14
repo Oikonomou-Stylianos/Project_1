@@ -29,3 +29,8 @@ Tests
 Main
 
 - The main.c file can also be viewed as a small testing unit, putting together everything implemented to support the project's demands.
+
+References:
+- For the edit distance algorithm, this video was consulted: https://www.youtube.com/watch?v=We3YDTzNXEk, which contains a variation of the algorithm found in some lecture slides by Professor Misyrlis. The original algorithm finds the longest common subsequence (ΜΚΥ - Μέγιστη Κοινή Υπακολουθία) between two sequences and I unfortunately cannot embed it here, but is included in the repository.
+- int prime_sizes[] used in hashtables was taken from https://github.com/chatziko-k08/lecture-code
+- the djb2 algorithm: http://www.cse.yorku.ca/~oz/hash.html
