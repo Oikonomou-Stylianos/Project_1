@@ -17,3 +17,7 @@ EntryList
 - The print_entry_list() was created to serve as a debugging and program validation utility.
 
 - The 3 entry_index related functions all use the BKTree implementation, which has been described.
+
+Distance
+
+- The distance.c file implements the hamming distance, edit distance and exact match functions, that are called by the generic function distance(), depending on its MatchType parameter. The file also includes a small min_int utility function that returns the smallest of 2 ints.
