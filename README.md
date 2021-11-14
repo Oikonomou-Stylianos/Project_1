@@ -10,7 +10,7 @@ EntryList
 - - insert_list() pushes items of any form into the list by creating a listnode on which it attaches the given data and concatinating it to the list's tail
 - - destroy_node() is called by the list's destructor and it recursively destroys every listnode contained in the list, as well as calling any item destructor for the listnode's data, if specified (for the needs of this project, it just supports an entry's destructor)
 
-- The entry_list (including add_entry()) functions are implemented by calling all generic list functions. They use/return the List data structure's pointers, as there is no EntryList specific data type (which we skipped creating, it would add better abstraction but provide zero functionality).
+- The entry_list (including add_entry()) functions are implemented by calling all generic list functions. They use/return the List data structure's pointers, as there is no EntryList specific data type (which we skipped creating, it would add better abstraction but provide zero extra functionality).
 - The create_entry(), destroy_entry() and copy_entry() functions are simple constructor, destructor and copy-constructor for the entry data structure.
 - The get_number_entries() function returns the amount of listnodes in a given list, which is saved in the List structure. The amount of listnodes should always equal the amount of entries in an EntryList.
 - The get_first() and get_next() functions only work on EntryLists, as they typecast the (list's head) / (next of given listnode's) data to Entry* in order to return it.
