@@ -14,6 +14,7 @@ Execution
 - To compile the program, run "make". To compile the tests, run "make tests".
 - To run the program, run "make run". To run the tests, run "make run-tests".
 - To run valgrind on the executables, run "make val" and make "val-tests".
+- To remove all generated object and executable files, run "make clean".
 
 CandidateList
 - The candidate list data structure is a simple linked list implementation and it is used during the search of an index BKTree. It is the list that houses all the "candidate" words of the tree, meaning all the words that meet the range criteria to be explored, according to the definition of the BKTree. The functions implemented are self explanatory, no need to expand upon them.
