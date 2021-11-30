@@ -9,7 +9,7 @@
  Project : Assignment_1
  File : README.md
  --------------------------------
-testing vscode sync
+
 Execution
 - To compile the program, run "make". To compile the tests, run "make tests".
 - To run the program, run "make run". To run the tests, run "make run-tests".
