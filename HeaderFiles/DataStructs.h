@@ -49,6 +49,6 @@ typedef struct{
 	BKTreeNode root;
 	MatchType matchType;
 }bktree;
-typedef bktree* BKTree;
 
+typedef bktree* BKTree;
 typedef BKTree *Index;
