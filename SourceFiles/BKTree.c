@@ -21,6 +21,7 @@
 #include "BKTree.h"
 #include "DataStructs.h"
 #include "CandidateList.h"
+#include "ItemDestructs.h"
 #include "distance.h"
 #include "core.h"
 

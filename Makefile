@@ -18,17 +18,17 @@ EXE  = ./Executables
 AD   = ./AppData
 TEST = ./Tests
 
-OBJECT = Main.o BKTree.o WordList.o CandidateList.o distance.o EntryList.o HashTable.o List.o
+OBJECT = Main.o BKTree.o WordList.o CandidateList.o distance.o EntryList.o HashTable.o List.o ItemDestructs.o
 TESTS = BKTree_test.o CandidateList_test.o WordList_test.o distance_test.o EntryList_test.o HashTable_test.o
 
 OUT   = Main
 CC    = gcc
 FLAGS = -Wall -Werror -g
 
-all: Main tests
+all: Main
 
 Main: $(OBJECT)
-	$(CC) $(FLAGS) -o $(OUT) $(OF)/Main.o $(OF)/BKTree.o $(OF)/WordList.o $(OF)/CandidateList.o $(OF)/distance.o $(OF)/EntryList.o $(OF)/HashTable.o
+	$(CC) $(FLAGS) -o $(OUT) $(OF)/Main.o $(OF)/BKTree.o $(OF)/WordList.o $(OF)/CandidateList.o $(OF)/distance.o $(OF)/EntryList.o $(OF)/HashTable.o $(OF)/List.o $(OF)/ItemDestructs.o
 	mv $(OUT) $(EXE)
 
 Main.o: 
