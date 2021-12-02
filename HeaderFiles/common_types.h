@@ -14,3 +14,8 @@
 #pragma once
 
 #define FILE_NAME_SIZE 50
+
+typedef void *Pointer;
+typedef int (*CompareFunction)(Pointer , Pointer );
+typedef void (*DestroyFunction)(Pointer );
+

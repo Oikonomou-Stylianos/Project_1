@@ -32,10 +32,21 @@ unsigned int hash_string(const char *s){
     return hash;
 }
 // Create a Hash Table
-HashTable HT_Create(){
+HashTable HT_Create(DataType dt){
 
     HashTable ht = (HashTable )malloc(sizeof(hash_table));
-    ht->buckets = (WList *)malloc(sizeof(WList ) * prime_sizes[0]);
+    ht->dataType = dt;
+    switch(ht->dataType){
+        case string:
+            ht->buckets = (WList *)malloc(sizeof(WList ) * prime_sizes[0]);
+            break;
+        case other:
+            ht->buckets = (List **)malloc(sizeof(List *) * prime_sizes[0]);
+            break;
+        default:
+            print("Error : [HT_Create] : Unsupported data type\n");
+            return NULL;
+    }
     if(ht == NULL || ht->buckets == NULL) return NULL;
     int i;
     for(i = 0; i < prime_sizes[0]; i++)
@@ -46,19 +57,40 @@ HashTable HT_Create(){
     return ht;
 }
 // Insert a word in a Hash Table
-WLNode HT_Insert(const HashTable ht, const char *word){
+WLNode HT_Insert(const HashTable ht, const void *data){
 
-    if(ht == NULL || word == NULL) return NULL;
+    if(ht == NULL || data == NULL) return NULL;
 
     int hash, index; 
-    if((hash = (int )(hash_string(word) % INT_MAX)) == -1) return NULL; 
+    switch(ht->dataType){
+        case string:
+            if((hash = (int )(hash_string((char *)data) % INT_MAX)) == -1) return NULL; 
+            break;
+        case entry:
+            if((hash = (int )(hash_string((Entry *)data)->word % INT_MAX)) == -1) return NULL; 
+            break;
+        default:
+            print("Error : [HT_Insert] : Unsupported data type\n");
+            return NULL;
+    }
     index = hash % ht->capacity;
     
     // printf("Size = %d Capacity = %d Hash = %d Index = %d\n", ht->size, ht->capacity, hash, index);
     WLNode wln;
-    if(ht->buckets[index] == NULL)  // If the bucket is not initialized initialize it
-        if(!(ht->buckets[index] = WL_Create())) return NULL;
-    if(!(wln = WL_InsertSortUnique(ht->buckets[index], word))) return NULL;
+    if(ht->buckets[index] == NULL){  // If the bucket is not initialized initialize it
+        switch(ht->dataType){
+            case string:
+                if(!(ht->buckets[index] = WL_Create())) return NULL;
+                if(!(wln = WL_InsertSortUnique(ht->buckets[index], word))) return NULL;
+                break;
+            case entry:
+                if(!(ht->buckets[index] = create_list())) return NULL;
+                break;
+            default:
+                print("Error : [HT_Insert] : Unsupported data type\n");
+                return NULL;
+        }
+    }    
     ht->size++;
 
     float load_factor = (float)ht->size / ht->capacity;

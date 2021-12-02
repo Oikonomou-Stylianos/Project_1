@@ -18,9 +18,11 @@
 #define MAX_LOAD_FACTOR 0.9
 
 typedef struct{
-	WList *buckets;
+	void **buckets;
     int size;       // Number of entries
     int capacity;   // Number of buckets
+
+    DataType dataType;
 }hash_table;
 
 typedef hash_table *HashTable;

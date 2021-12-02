@@ -16,8 +16,9 @@
 #include "core.h"
 
 typedef enum { 
-    entry,          //Can be expanded
+    entry,
     query,
+    string,
     other
 }DataType;
 
@@ -60,5 +61,5 @@ typedef struct{
 	MatchType matchType;
 }bktree;
 
-typedef bktree* BKTree;
+typedef bktree *BKTree;
 typedef BKTree *Index;
