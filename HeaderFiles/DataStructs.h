@@ -20,7 +20,7 @@ typedef enum {
     query,
     string,
     other
-}DataType;
+} DataType;
 
 typedef struct {
     char *word;
