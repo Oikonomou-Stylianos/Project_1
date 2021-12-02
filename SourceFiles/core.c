@@ -15,7 +15,7 @@
 //Will use, unfortunately and unevadably, global structures
 
 static List *el, *ql;
-static BKTree bke, bkh[28];
+static BKTree bke, bkh[MAX_WORD_LENGTH-MIN_WORD_LENGTH+1];
 static HashTable hte;
 
 
@@ -24,17 +24,18 @@ ErrorCode InitializeIndex(){
     el = ql = NULL;
     bke = NULL;
     hte = NULL;
+    int i;
+    for (i = 0; i < MAX_WORD_LENGTH-MIN_WORD_LENGTH+1; i++) bkh[i] = NULL;
     //Actual initialization with proper memory deallocation in case of error
-    for (i = 0; i < 28; i++) bkh[i] = NULL;
     if (create_entry_list(&el) != EC_SUCCESS) return EC_FAIL;
-    if (create_entry_list(&ql) != EC_SUCCESS) { free(el); return EC_FAIL;}
-    if (!(bke = BKT_Create(MT_EDIT_DIST))) { free(el); free(ql); return EC_FAIL;}
-    if (!(hte = HT_Create(entry))) { free(el); free(ql); free(bke); return EC_FAIL;}
-    int i, j;
-    for (i = 0; i < 28; i++){
+    if (create_entry_list(&ql) != EC_SUCCESS) { destroy_entry_list(el); return EC_FAIL;}
+    if (!(bke = BKT_Create(MT_EDIT_DIST))) { destroy_entry_list(el); destroy_query_list(ql); return EC_FAIL;}
+    if (!(hte = HT_Create(entry))) { destroy_entry_list(el); destroy_query_list(ql); BKT_Destroy(bke); return EC_FAIL;}
+    int j;
+    for (i = 0; i < MAX_WORD_LENGTH-MIN_WORD_LENGTH+1; i++){
         if (!(bkh[i] = BKT_Create(MT_HAMMING_DIST))) {
-            for (j = 0; j < i; j++) free(bkh[j]);
-            free(el); free(ql); free(bke); free(hte); return EC_FAIL;
+            for (j = 0; j < i; j++) BKT_Destroy(bkh[j]);
+            destroy_entry_list(el); destroy_query_list(ql); BKT_Destroy(bke); HT_Destroy(hte); return EC_FAIL;
         }
     }
     //Getting down to business...
@@ -45,7 +46,13 @@ ErrorCode InitializeIndex(){
 }
 
 ErrorCode DestroyIndex(){
-
+    //Definitely not complete
+    destroy_entry_list(el);
+    destroy_query_list(ql);
+    BKT_Destroy(bke);
+    HT_Destroy(hte);
+    int i;
+    for (i = 0; i < MAX_WORD_LENGTH-MIN_WORD_LENGTH+1; i++) BKT_Destroy(bkh[i]);
     return EC_SUCCESS;
 }
 
