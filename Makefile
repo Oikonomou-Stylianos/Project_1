@@ -18,7 +18,7 @@ EXE  = ./Executables
 AD   = ./AppData
 TEST = ./Tests
 
-OBJECT = Main.o BKTree.o WordList.o CandidateList.o distance.o EntryList.o HashTable.o
+OBJECT = Main.o BKTree.o WordList.o CandidateList.o distance.o EntryList.o HashTable.o List.o
 TESTS = BKTree_test.o CandidateList_test.o WordList_test.o distance_test.o EntryList_test.o HashTable_test.o
 
 OUT   = Main
@@ -52,6 +52,12 @@ EntryList.o:
 HashTable.o:
 	$(CC) -I $(HF) $(FLAGS) -c $(SF)/HashTable.c
 	mv HashTable.o $(OF)
+List.o:
+	$(CC) -I $(HF) $(FLAGS) -c $(SF)/List.c
+	mv List.o $(OF)
+ItemDestructs.o:
+	$(CC) -I $(HF) $(FLAGS) -c $(SF)/ItemDestructs.c
+	mv ItemDestructs.o $(OF)
 
 
 run:
