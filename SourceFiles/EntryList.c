@@ -88,6 +88,12 @@ Entry *entry_exists(const List *l, const char *word){
     return temp;
 }
 
+ErrorCode update_payload(Entry *entry, void *payload){
+    if (!entry) return EC_FAIL;
+    entry->payload = payload;
+    return EC_SUCCESS;
+}
+
 void print_entry_list(const List *l){
     if (!l) return;
     listnode *ln = l->head;

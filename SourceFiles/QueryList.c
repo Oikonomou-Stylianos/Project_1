@@ -23,7 +23,7 @@ ErrorCode destroy_query_list(List *l){
 Query *create_query(const QueryID id, const MatchType mt, const unsigned int md, const unsigned int wc){
     Query *q = (Query *)malloc(sizeof(Query));
     if (!q) return NULL;
-    q->id = id; q->match_type = mt; q->match_dist = md; q->word_count = wc;
+    q->id = id; q->match_type = mt; q->match_dist = md; q->word_count = wc; q->isActive = 1;
     q->entries = (Entry **)malloc(wc*sizeof(Entry *));
     if (!q->entries){ free(q); return NULL; }
     int i;

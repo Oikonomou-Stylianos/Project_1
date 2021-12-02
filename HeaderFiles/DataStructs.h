@@ -29,6 +29,7 @@ typedef struct {
 
 typedef struct {
     QueryID id;
+    char isActive;
     MatchType match_type;
     unsigned int match_dist;
     unsigned int word_count;
