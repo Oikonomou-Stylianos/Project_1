@@ -2,7 +2,6 @@
 #include "ItemDestructs.h"
 #include "DataStructs.h"
 
-
 List *create_list(void){
 
     List *list = (List *)malloc(sizeof(List));
