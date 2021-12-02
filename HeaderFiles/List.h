@@ -8,3 +8,4 @@ List *create_list(void);
 ErrorCode destroy_node(listnode *, DataType);
 ErrorCode destroy_list(List *, DataType);
 List *insert_list(List *, void *);
+unsigned int get_list_size(const List *);

@@ -45,20 +45,12 @@ ErrorCode create_entry_list(List **l){
 
 unsigned int get_number_entries(const List *el){  //Might replace with a variable in the List struct
     
-    return (el) ? el->size: 0;
-
-    /*if (!el || !(el->head)) return 0;   //Works thanks to short-circuiting
-    unsigned int count = 1;             //Since the program execution reached this,
-    listnode *temp = el->head;          //there is at least 1 data in the list
-    while (temp->next && temp != el->tail){ //Either of those conditions should work, using both is overkill
-        count++;
-        temp = temp->next;
-    }
-    return count;*/
+    return get_list_size(el);
 }
 
 ErrorCode add_entry(List *l, const Entry *entry){   //Might change up so it creates the entry itself aswell by calling create_entry()
 
+    if (!l || !entry) return EC_FAIL;
     return (insert_list(l, (Entry *)entry)) ? EC_SUCCESS : EC_FAIL;
 }
 
@@ -83,6 +75,17 @@ ErrorCode destroy_entry_list(List *l){
 Entry *copy_entry(const Entry *e){
     
     return (!e) ? NULL : create_entry(e->word, e->payload);
+}
+
+Entry *entry_exists(const List *l, const char *word){
+    if (!l || !word) return NULL;
+    listnode ln = l->head;
+    Entry *temp = get_first(l); // = l->head->data
+    while (temp){
+        if (!strcmp(temp->word, word)) break;
+        temp = get_next(ln);
+    }
+    return temp;
 }
 
 void print_entry_list(const List *l){

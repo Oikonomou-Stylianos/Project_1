@@ -15,3 +15,12 @@ ErrorCode destroy_entry(Entry *e){
     free(e);
     return EC_SUCCESS;
 }
+
+ErrorCode destroy_query(Query *q){
+    if (!q) return EC_FAIL;
+    int i;
+    for (i = 0; i < q->word_count; i++) free(q->entries[i]);
+    free(q->entries);
+    free(q);
+    return EC_SUCCESS;
+}

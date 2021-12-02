@@ -27,6 +27,7 @@ Entry *get_first(const List *);
 Entry *get_next(const listnode *);
 ErrorCode destroy_entry_list(List *);
 Entry *copy_entry(const Entry *);
+Entry *entry_exists(const List *, const char *);
 void print_entry_list(const List *);
 ErrorCode build_entry_index(const List *, MatchType, Index);
 ErrorCode lookup_entry_index(const char *, Index, int, List **);

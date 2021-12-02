@@ -17,13 +17,22 @@
 
 typedef enum { 
     entry,          //Can be expanded
-    other,
+    query,
+    other
 }DataType;
 
 typedef struct {
     char *word;
     void *payload;
 } Entry;
+
+typedef struct {
+    QueryID id;
+    MatchType match_type;
+    unsigned int match_dist;
+    unsigned int word_count;
+    Entry **entries;
+} Query;
 
 typedef struct lnode {
     void *data;

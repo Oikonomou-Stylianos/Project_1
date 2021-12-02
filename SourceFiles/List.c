@@ -17,6 +17,7 @@ ErrorCode destroy_node(listnode *ln, DataType type){
     // ErrorCode ret;
     switch(type){   //Can be expanded
         case entry: destroy_entry((Entry *)(ln->data)); break;
+        case query: destroy_query((Query *)(ln->data)); break;
         default: break; //Do nothing
     }
     //if (ret) return EC_FAIL;  //Mixes things up in the supposedly-never-gonna-occur-case where an entry list contains a NULL entry
@@ -54,4 +55,8 @@ List *insert_list(List *l, void *data){
         l->tail = node;         //Update tail pointer
     }
     return l;
+}
+
+unsigned int get_list_size(const List *el){
+    return (el) ? el->size: 0;
 }
