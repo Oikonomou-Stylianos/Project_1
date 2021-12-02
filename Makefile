@@ -58,6 +58,9 @@ List.o:
 ItemDestructs.o:
 	$(CC) -I $(HF) $(FLAGS) -c $(SF)/ItemDestructs.c
 	mv ItemDestructs.o $(OF)
+QueryList.o:
+	$(CC) -I $(HF) $(FLAGS) -c $(SF)/QueryList.c
+	mv QueryList.o $(OF)
 
 
 run:
