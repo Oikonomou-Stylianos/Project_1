@@ -16,69 +16,10 @@
 #include <string.h>
 
 #include "EntryList.h"
+#include "List.h"
 #include "DataStructs.h"
 #include "BKTree.h"
 #include "core.h"
-
-List *create_list(void){
-
-    List *list = (List *)malloc(sizeof(List));
-    if(!list) return NULL;
-    list->head = list->tail = NULL; 
-    list->size = 0;
-    return list;
-}
-
-ErrorCode destroy_node(listnode *ln, ListType type){
-
-    if (!ln) return EC_FAIL;
-    // ErrorCode ret;
-    switch(type){   //Can be expanded
-        case entry: destroy_entry((Entry *)(ln->data)); break;
-        default: break; //Do nothing
-    }
-    //if (ret) return EC_FAIL;  //Mixes things up in the supposedly-never-gonna-occur-case where an entry list contains a NULL entry
-    free(ln);
-    return EC_SUCCESS;
-}
-
-ErrorCode destroy_list(List *l, ListType type){
-
-    if (!l) return EC_FAIL;
-
-    listnode *temp = l->head, *tbdestr;
-    while (temp){
-        tbdestr = temp;
-        temp = temp->next;
-        destroy_node(tbdestr, type);
-    }
-    free(l);
-    return EC_SUCCESS;
-}
-
-List *insert_list(List *l, void *data){
-
-    if (!l) return NULL;
-
-    listnode* node = (listnode *)malloc(sizeof(listnode));
-    if (!node) return NULL;
-    node->next = NULL; 
-    node->data = (void *)data;   //Data initialization
-    (l->size)++;
-    
-    if (!(l->head)) {l->head = node; l->tail = node;}        //If list is empty, make new data head and tail
-    else {
-        l->tail->next = node;   //Data concatination
-        l->tail = node;         //Update tail pointer
-    }
-    return l;
-}
-
-ErrorCode create_entry_list(List **l){
-    
-    *l = create_list();
-    return (*l) ? EC_SUCCESS : EC_FAIL;
-}
 
 Entry *create_entry(const char *word, void *payload){
 
@@ -96,14 +37,10 @@ Entry *create_entry(const char *word, void *payload){
     return ent;
 }
 
-ErrorCode destroy_entry(Entry *e){
-
-    if (!e) return EC_FAIL;
+ErrorCode create_entry_list(List **l){
     
-    e->payload = NULL;  //Might revisit to support any added payload functionality
-    free(e->word);
-    free(e);
-    return EC_SUCCESS;
+    *l = create_list();
+    return (*l) ? EC_SUCCESS : EC_FAIL;
 }
 
 unsigned int get_number_entries(const List *el){  //Might replace with a variable in the List struct
