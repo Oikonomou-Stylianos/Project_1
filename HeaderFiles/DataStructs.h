@@ -15,6 +15,11 @@
 
 #include "core.h"
 
+typedef enum { 
+    entry,          //Can be expanded
+    other,
+}DataType;
+
 typedef struct {
     char *word;
     void *payload;
@@ -31,10 +36,6 @@ typedef struct {
     unsigned int size;
 } List;
 
-typedef enum { 
-    entry,          //Can be expanded
-    other,
-} ListType;
 
 typedef struct bk_tree_node_tag{
 

@@ -12,7 +12,7 @@ List *create_list(void){
     return list;
 }
 
-ErrorCode destroy_node(listnode *ln, ListType type){
+ErrorCode destroy_node(listnode *ln, DataType type){
 
     if (!ln) return EC_FAIL;
     // ErrorCode ret;
@@ -25,7 +25,7 @@ ErrorCode destroy_node(listnode *ln, ListType type){
     return EC_SUCCESS;
 }
 
-ErrorCode destroy_list(List *l, ListType type){
+ErrorCode destroy_list(List *l, DataType type){
 
     if (!l) return EC_FAIL;
 
