@@ -39,13 +39,13 @@ HashTable HT_Create(DataType dt){
     ht->dataType = dt;
     switch(ht->dataType){
         case string:
-            ht->buckets = (WList *)malloc(sizeof(WList ) * prime_sizes[0]);
+            (WList *)ht->buckets = (WList *)malloc(sizeof(WList ) * prime_sizes[0]);
             break;
         case other:
-            ht->buckets = (List **)malloc(sizeof(List *) * prime_sizes[0]);
+            (List **)ht->buckets = (List **)malloc(sizeof(List *) * prime_sizes[0]);
             break;
         default:
-            print("Error : [HT_Create] : Unsupported data type\n");
+            printf("Error : [HT_Create] : Unsupported data type\n");
             return NULL;
     }
     if(ht == NULL || ht->buckets == NULL) return NULL;
@@ -68,7 +68,7 @@ WLNode HT_Insert(const HashTable ht, const void *data){
             if((hash = (int )(hash_string((char *)data) % INT_MAX)) == -1) return NULL; 
             break;
         case entry:
-            if((hash = (int )(hash_string((Entry *)data)->word % INT_MAX)) == -1) return NULL; 
+            if((hash = (int )(hash_string((char *)((Entry *)data->word) % INT_MAX)) == -1) return NULL; 
             break;
         default:
             print("Error : [HT_Insert] : Unsupported data type\n");
@@ -82,10 +82,10 @@ WLNode HT_Insert(const HashTable ht, const void *data){
         switch(ht->dataType){
             case string:
                 if(!(ht->buckets[index] = WL_Create())) return NULL;
-                if(!(wln = WL_InsertSortUnique(ht->buckets[index], word))) return NULL;
+                if(!(wln = WL_InsertSortUnique(ht->buckets[index], (char *)data))) return NULL;
                 break;
             case entry:
-                if(!(ht->buckets[index] = create_list())) return NULL;
+                if(create_entry_list(&(ht->buckets[index])) != EC_SUCCESS) return NULL;
                 break;
             default:
                 print("Error : [HT_Insert] : Unsupported data type\n");
@@ -221,7 +221,7 @@ WList deduplicate(const char *file){
 
     HashTable ht;
     WList wl;
-    if(!(ht = HT_Create())) return NULL;
+    if(!(ht = HT_Create(string))) return NULL;
     if(!(HT_InsertFromFile(ht, file))) { HT_Destroy(ht); return NULL; }
     if(!(wl = HT_ToList(ht))) { HT_Destroy(ht); return NULL; }
     if(HT_Destroy(ht)) return NULL;
