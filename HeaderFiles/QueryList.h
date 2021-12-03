@@ -11,3 +11,4 @@ Query *create_query(const QueryID q_id, const MatchType q_match_type, const unsi
 Query *copy_query(const Query *);
 ErrorCode add_query(List *, const Query *);
 char query_active(Query *);
+char toggle_query_active(Query *);

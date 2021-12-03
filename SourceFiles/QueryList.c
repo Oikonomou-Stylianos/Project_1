@@ -45,5 +45,9 @@ ErrorCode add_query(List *l, const Query *q){
 }
 
 char query_active(Query *q){
-    return (!q) 0 : q->isActive;
+    return (!q) ? 0 : q->isActive;
+}
+
+char toggle_query_active(Query *q){
+    return (!q) ? 0 : (q->isActive = !(q->isActive));
 }
