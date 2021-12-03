@@ -43,3 +43,7 @@ ErrorCode add_query(List *l, const Query *q){
     if (!l || !q) return EC_FAIL;
     return (insert_list(l, (Query *)q)) ? EC_SUCCESS : EC_FAIL;
 }
+
+char query_active(Query *q){
+    return (!q) 0 : q->isActive;
+}
