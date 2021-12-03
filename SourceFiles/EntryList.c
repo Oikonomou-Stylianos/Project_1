@@ -79,7 +79,7 @@ Entry *copy_entry(const Entry *e){
 
 Entry *entry_exists(const List *l, const char *word){
     if (!l || !word) return NULL;
-    listnode ln = l->head;
+    listnode *ln = l->head;
     Entry *temp = get_first(l); // = l->head->data
     while (temp){
         if (!strcmp(temp->word, word)) break;
