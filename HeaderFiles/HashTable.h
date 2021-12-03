@@ -14,6 +14,7 @@
 #pragma once
 
 #include "WordList.h"
+#include "DataStructs.h"
 
 #define MAX_LOAD_FACTOR 0.9
 
