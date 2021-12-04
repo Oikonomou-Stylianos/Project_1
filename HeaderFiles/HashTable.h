@@ -30,8 +30,8 @@ typedef hash_table *HashTable;
 
 unsigned int hash_string(const char *);
 
-HashTable HT_Create(DataType);
-WLNode HT_Insert(const HashTable , const void *);
+HashTable HT_Create(DataType );
+WLNode HT_Insert(const HashTable , const char *);
 HashTable HT_Rehash(const HashTable );
 HashTable HT_InsertFromFile(const HashTable , const char *);
 WList HT_ToList(const HashTable );

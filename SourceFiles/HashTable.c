@@ -85,7 +85,8 @@ WLNode HT_Insert(const HashTable ht, const void *data){
                 if(!(wln = WL_InsertSortUnique(ht->buckets[index], (char *)data))) return NULL;
                 break;
             case entry:
-                if(create_entry_list(&(ht->buckets[index])) != EC_SUCCESS) return NULL;
+                if(create_entry_list(&(ht->buckets[index])) == EC_FAIL) return NULL;
+                if(add_entry(ht->buckets[index], (Entry *)data) == EC_FAIL) return NULL;
                 break;
             default:
                 print("Error : [HT_Insert] : Unsupported data type\n");
