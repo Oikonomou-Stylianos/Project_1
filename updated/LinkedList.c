@@ -250,7 +250,7 @@ LLNode LL_Search(const LList ll, Pointer value){
                 if(*(unsigned int *)value == ((Query )(temp->data))->query_id)
                     return temp;
                 break;
-            case QueryPtrType:  //////////////////////
+            case QueryPtrType:
                 if(*(unsigned int *)value == ((*(Query *)(temp->data)))->query_id)
                     return temp;
                 break;
