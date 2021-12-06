@@ -138,6 +138,4 @@ typedef struct{
     LList query_list;
     LList result_list;
 
-}index_data_structures;
-
-typedef index_data_structures *IndexDataStructures;
+}Index;
