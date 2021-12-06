@@ -61,9 +61,16 @@ ErrorCode StartQuery(QueryID query_id, const char *query_str, MatchType match_ty
 
     //Crete query and initialize entry list as empty
 
+    Query q = createQuery(query_id, match_type, match_dist);
+    //Add query to main index.querylist
+    
     //Create entries or update existing entries based on the query string tokens and update query's entry list pointers/contents
 
+
+
     //Update Index pointers on any new entries and update all entries' payloads to contain new query
+
+
 
     // Below code will be converted to tokenize each word and follow the above guideline
     // Split the query string into words and insert them in the query words List
