@@ -120,22 +120,17 @@ int compareEntryPtr(Pointer e1, Pointer e2){
     return strcmp((*(Entry *)e1)->word, (*(Entry *)e2)->word);
 }
 //////////////////////////////////////////////
-Query createQuery(unsigned int id, char *str, MatchType mt, unsigned int md){
+Query createQuery(unsigned int id, MatchType mt, unsigned int md){
 
     Query newQuery = (Query )malloc(sizeof(query ));
     if(newQuery == NULL) return NULL;
 
-    newQuery->query_id = id;
-
-    if(str == NULL)
-        newQuery->query_words = NULL;
-    else{
-        if((newQuery->query_words = LL_Create(EntryPtrType, NULL, &compareEntryPtr)) == NULL){
-            free(newQuery);
-            return NULL;
-        }
+    if((newQuery->query_words = LL_Create(EntryPtrType, NULL, &compareEntryPtr)) == NULL){
+        free(newQuery);
+        return NULL;
     }
-
+    
+    newQuery->query_id = id;
     newQuery->match_type = mt;
     newQuery->match_dist = md;
     newQuery->active = 1;

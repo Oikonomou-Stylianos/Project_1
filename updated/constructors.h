@@ -35,7 +35,7 @@ int compareEntry(Pointer , Pointer );
 void destroyEntryPtr(Pointer );
 int compareEntryPtr(Pointer , Pointer );
 
-Query createQuery(unsigned int , char *, MatchType , unsigned int );
+Query createQuery(unsigned int, MatchType , unsigned int );
 void destroyQuery(Pointer );
 int compareQuery(Pointer , Pointer );
 int compareQueryPtr(Pointer , Pointer );
