@@ -297,6 +297,10 @@ LLNode LL_SearchRec(const LList ll, const LLNode lln, Pointer value){
             if(*(unsigned int *)value == ((Query )(lln->data))->query_id)
                 return lln;
             break;
+        case QueryPtrType:
+            if(*(unsigned int *)value == ((*(Query *)(temp->data)))->query_id)
+                return temp;
+            break;
         case QueryResultType:
             if(*(unsigned int *)value == ((Query )(lln->data))->doc_id)
                 return temp;
@@ -470,7 +474,12 @@ int LL_Print(const LList ll){
             case QueryType:
                 printf("\n {\n query_id = %u\n query_words = ", ((Query )(temp->data))->query_id);
                 LL_Print(((Query )(temp->data))->query_words);
-                printf(" match_type = %d\n match_dist = %u\n active = %c\n }", ((Query )(temp->data))->match_type, ((Query )(temp->data))->match_dist, ((Query )(temp->data))->active);
+                printf(" match_type = %d\n match_dist = %u\n active = %d\n }", ((Query )(temp->data))->match_type, ((Query )(temp->data))->match_dist, ((Query )(temp->data))->active);
+                break;
+            case QueryPtrType:
+                printf("\n {\n query_id = %u\n query_words = ", (*(Query *)(temp->data))->query_id);
+                LL_Print(((Query )(temp->data))->query_words);
+                printf(" match_type = %d\n match_dist = %u\n active = %d\n }", (*(Query *)(temp->data))->match_type, (*(Query *)(temp->data))->match_dist, (*(Query *)(temp->data))->active);
                 break;
             case QueryResultType:
                 printf("\n {\n doc_id = %u\n num_res = %u\n query_ids = [ ", ((QueryResult )(temp->data))->doc_id, ((QueryResult )(temp->data))->num_res);
