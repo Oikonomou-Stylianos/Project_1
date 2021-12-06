@@ -84,9 +84,9 @@ Entry createEntry(char *w){
     Entry e = (Entry )malloc(sizeof(entry ));
     if(e == NULL) return NULL;
     e->word = (char *)malloc(sizeof(char ) * (strlen(w) + 1));
-    if(e->word == NULL) return NULL;
+    if(e->word == NULL) { free(e); return NULL; }
     strcpy(e->word, w);
-    if((e->payload = LL_Create(UIntType, &destroyUInt, &compareUInt)) == NULL) return NULL;
+    if((e->payload = LL_Create(QueryPtrType, NULL, &compareQueryPtr)) == NULL) { free(e->word); free(e); return NULL; }
     
     return e; 
 }
@@ -154,6 +154,13 @@ int compareQuery(Pointer q1, Pointer q2){
     if(q1 == NULL || q2 == NULL) return -2;
 
     return ((Query )q1)->query_id == ((Query )q2)->query_id ? 0 : ((Query )q1)->query_id < ((Query )q2)->query_id ? -1 : 1;  
+}
+//////////////////////////////////////////////
+int compareQueryPtr(Pointer q1, Pointer q2){
+
+    if(q1 == NULL || q2 == NULL) return -2;
+
+    return ((*(Query )q1))->query_id == (*(Query )q2))->query_id ? 0 : (*(Query )q1))->query_id < (*(Query )q2))->query_id ? -1 : 1;  
 }
 //////////////////////////////////////////////
 int compareBKTNPtrString(Pointer w1, Pointer w2){
