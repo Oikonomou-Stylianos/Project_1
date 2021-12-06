@@ -45,7 +45,7 @@ List *insert_list(List *l, void *data){
 
     listnode* node = (listnode *)malloc(sizeof(listnode));
     if (!node) return NULL;
-    node->next = NULL; 
+    node->next = NULL;
     node->data = (void *)data;   //Data initialization
     (l->size)++;
     

@@ -19,6 +19,7 @@ typedef enum {
     entry,
     query,
     string,
+    WListType,
     other
 } DataType;
 
