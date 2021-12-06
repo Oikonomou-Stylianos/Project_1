@@ -61,8 +61,57 @@ ErrorCode StartQuery(QueryID        query_id,
                      MatchType      match_type,
                      unsigned int   match_dist)
 {
+    //...
 
+    //Crete query and initialize entry list as empty
+
+    Query q = createQuery(query_id, match_type, match_dist);
+    //Add query to main index.querylist
     
+    //Create entries or update existing entries based on the query string tokens and update query's entry list pointers/contents
 
 
+
+    //Update Index pointers on any new entries and update all entries' payloads to contain new query
+
+
+
+    // Below code will be converted to tokenize each word and follow the above guideline
+    // Split the query string into words and insert them in the query words List
+    char *word = (char *)malloc(sizeof(char ) * (MAX_WORD_LENGTH + 1));
+    int index = 0;
+    for(; ; query_str++){
+        if(*query_str == 32 || *query_str == '\0'){
+            word[index] = '\0';
+                
+            LL_InsertTail(newQuery->query_words, createString(word));
+
+            index = 0;
+            free(word);
+            if(*query_str == '\0') break;
+            word = (char *)malloc(sizeof(char ) * (MAX_WORD_LENGTH + 1));
+        }
+        else{
+            word[index] = *query_str;
+            index++;
+        }
+    }
+
+
+    return EC_SUCCESS;
+}
+
+ErrorCode EndQuery(QueryID query_id){
+
+    return EC_SUCCESS;
+}
+
+ErrorCode MatchDocument(DocID doc_id, const char *doc_str){
+
+    return EC_SUCCESS;
+}
+
+ErrorCode GetNextAvailRes(DocID *p_doc_id, unsigned int *p_num_res, QueryID **p_query_ids){
+
+    return EC_SUCCESS;
 }
