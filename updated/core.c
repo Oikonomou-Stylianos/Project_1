@@ -59,6 +59,13 @@ ErrorCode DestroyIndex(){
 ErrorCode StartQuery(QueryID query_id, const char *query_str, MatchType match_type, unsigned int match_dist){
     //...
 
+    //Crete query and initialize entry list as empty
+
+    //Create entries or update existing entries based on the query string tokens and update query's entry list pointers/contents
+
+    //Update Index pointers on any new entries and update all entries' payloads to contain new query
+
+    // Below code will be converted to tokenize each word and follow the above guideline
     // Split the query string into words and insert them in the query words List
     char *word = (char *)malloc(sizeof(char ) * (MAX_WORD_LENGTH + 1));
     int index = 0;
