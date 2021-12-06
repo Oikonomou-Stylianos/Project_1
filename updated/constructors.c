@@ -84,9 +84,9 @@ Entry createEntry(char *w){
     Entry e = (Entry )malloc(sizeof(entry ));
     if(e == NULL) return NULL;
     e->word = (char *)malloc(sizeof(char ) * (strlen(w) + 1));
-    if(e->word == NULL) { free(e); return NULL; }
+    if(e->word == NULL) return NULL;
     strcpy(e->word, w);
-    if((e->payload = LL_Create(QueryPtrType, NULL, &compareQueryPtr)) == NULL) { free(e->word); free(e); return NULL; }
+    if((e->payload = LL_Create(UIntType, &destroyUInt, &compareUInt)) == NULL) return NULL;
     
     return e; 
 }
@@ -130,25 +130,9 @@ Query createQuery(unsigned int id, char *str, MatchType mt, unsigned int md){
     if(str == NULL)
         newQuery->query_words = NULL;
     else{
-        if((newQuery->query_words = LL_Create(StringType, &destroyString, &compareString)) == NULL) return NULL;
-        // Split the query string into words and insert them in the query words List
-        char *word = (char *)malloc(sizeof(char ) * (MAX_WORD_LENGTH + 1));
-        int index = 0;
-        for(; ; str++){
-            if(*str == 32 || *str == '\0'){
-                word[index] = '\0';
-                
-                LL_InsertTail(newQuery->query_words, createString(word));
-
-                index = 0;
-                free(word);
-                if(*str == '\0') break;
-                word = (char *)malloc(sizeof(char ) * (MAX_WORD_LENGTH + 1));
-            }
-            else{
-                word[index] = *str;
-                index++;
-            }
+        if((newQuery->query_words = LL_Create(EntryPtrType, NULL, &compareEntryPtr)) == NULL){
+            free(newQuery);
+            return NULL;
         }
     }
 
@@ -170,13 +154,6 @@ int compareQuery(Pointer q1, Pointer q2){
     if(q1 == NULL || q2 == NULL) return -2;
 
     return ((Query )q1)->query_id == ((Query )q2)->query_id ? 0 : ((Query )q1)->query_id < ((Query )q2)->query_id ? -1 : 1;  
-}
-//////////////////////////////////////////////
-int compareQueryPtr(Pointer q1, Pointer q2){
-
-    if(q1 == NULL || q2 == NULL) return -2;
-
-    return ((*(Query )q1))->query_id == (*(Query )q2))->query_id ? 0 : (*(Query )q1))->query_id < (*(Query )q2))->query_id ? -1 : 1;  
 }
 //////////////////////////////////////////////
 int compareBKTNPtrString(Pointer w1, Pointer w2){
