@@ -76,7 +76,7 @@ typedef struct{
 	MatchType match_type;
 	unsigned int match_dist;
 
-    char active;    // 0 if True, 1 if False
+    char active;    // 1 if True, 0 if False
 
 }query;
 
