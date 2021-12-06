@@ -250,6 +250,14 @@ LLNode LL_Search(const LList ll, Pointer value){
                 if(*(unsigned int *)value == ((Query )(temp->data))->query_id)
                     return temp;
                 break;
+            case QueryPtrType:  //////////////////////
+                if(*(unsigned int *)value == ((*(Query *)(temp->data)))->query_id)
+                    return temp;
+                break;
+            case QueryResultType:
+                if(*(unsigned int *)value == ((QueryResult )(temp->data))->doc_id)
+                    return temp;
+                break;
             default:
                 printf("Error: [LL_Search] : Unsupported data type\n");
         }
@@ -288,6 +296,10 @@ LLNode LL_SearchRec(const LList ll, const LLNode lln, Pointer value){
         case QueryType:
             if(*(unsigned int *)value == ((Query )(lln->data))->query_id)
                 return lln;
+            break;
+        case QueryResultType:
+            if(*(unsigned int *)value == ((Query )(lln->data))->doc_id)
+                return temp;
             break;
         default:
             printf("Error: [LL_Search] : Unsupported data type\n");
@@ -459,6 +471,13 @@ int LL_Print(const LList ll){
                 printf("\n {\n query_id = %u\n query_words = ", ((Query )(temp->data))->query_id);
                 LL_Print(((Query )(temp->data))->query_words);
                 printf(" match_type = %d\n match_dist = %u\n active = %c\n }", ((Query )(temp->data))->match_type, ((Query )(temp->data))->match_dist, ((Query )(temp->data))->active);
+                break;
+            case QueryResultType:
+                printf("\n {\n doc_id = %u\n num_res = %u\n query_ids = [ ", ((QueryResult )(temp->data))->doc_id, ((QueryResult )(temp->data))->num_res);
+                int i;
+                for(i = 0; i < ((QueryResult )(temp->data))->num_res; i++)
+                    printf("%u ", ((QueryResult )(temp->data))->query_ids[i]);
+                printf("]\n }");
                 break;
             default:
                 printf("Error: [LL_Print] : Unsupported data type\n");
