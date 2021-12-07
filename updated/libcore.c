@@ -74,7 +74,7 @@ ErrorCode StartQuery(QueryID        query_id,
     int i = 0;
     while(*query_str){
 
-        if (*quert_str != ' ' && *query_str) {
+        if (*query_str != ' ' && *query_str) {
             token[i++] = *query_str++;
             continue;
         }
