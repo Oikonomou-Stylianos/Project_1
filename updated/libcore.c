@@ -66,37 +66,43 @@ ErrorCode StartQuery(QueryID        query_id,
     //Crete query and initialize entry list as empty
 
     Query q = createQuery(query_id, match_type, match_dist);
-    //Add query to main index.querylist
+    LL_InsertTail(INDEX.query_list, (Pointer)q);
     
     //Create entries or update existing entries based on the query string tokens and update query's entry list pointers/contents
 
+    char token[MAX_WORD_LENGTH+1];
+    int i = 0;
+    while(*query_str){
 
-
-    //Update Index pointers on any new entries and update all entries' payloads to contain new query
-
-
-
-    // Below code will be converted to tokenize each word and follow the above guideline
-    // Split the query string into words and insert them in the query words List
-    char *word = (char *)malloc(sizeof(char ) * (MAX_WORD_LENGTH + 1));
-    int index = 0;
-    for(; ; query_str++){
-        if(*query_str == 32 || *query_str == '\0'){
-            word[index] = '\0';
-                
-            LL_InsertTail(newQuery->query_words, createString(word));
-
-            index = 0;
-            free(word);
-            if(*query_str == '\0') break;
-            word = (char *)malloc(sizeof(char ) * (MAX_WORD_LENGTH + 1));
+        if (*quert_str != ' ' && *query_str) {
+            token[i++] = *query_str++;
+            continue;
         }
-        else{
-            word[index] = *query_str;
-            index++;
-        }
+        token[i] = '\0';
+
+        LLNode node = LL_Search(INDEX.entry_list, (Pointer)token);
+        Entry e = NULL;
+        if (!node){
+            //Create new entry and add it to list
+            
+            e = createEntry(token);
+            LL_InsertTail(INDEX.entry_list, (Pointer)e);
+            
+            //Update Index pointers on any new entries | (done below) and update all entries' payloads to contain new query
+
+            HT_Insert(INDEX.exact_match_ht, (Pointer)&e);
+            BKT_Insert(INDEX.hamming_distance_bkt[i-MIN_WORD_LENGTH], (Pointer)&e);   //i holds the current token length
+            BKT_Insert(INDEX.edit_distance_bkt, (Pointer)&e);
+
+        } else e = (Entry)(node->data);
+
+        LL_InsertTail(e->payload, (Pointer)q);  // Add Query to Payload
+        LL_InsertTail(q->query_words, (Pointer)e);  // Add Entry to Query_word entry list
+    
+        //Prepare for next iteration if not at end of query_string
+        i = 0;
+        if (*query_str) query_str++;
     }
-
 
     return EC_SUCCESS;
 }
