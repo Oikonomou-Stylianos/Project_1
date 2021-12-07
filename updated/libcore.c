@@ -109,6 +109,11 @@ ErrorCode StartQuery(QueryID        query_id,
 
 ErrorCode EndQuery(QueryID query_id){
 
+    //Toggle query active status
+    LLNode node = LL_Search(INDEX.query_list, query_id);
+    if (!q) return EC_FAIL;
+    Query q = (Query)(node->data);
+    query_active_false(q);
     return EC_SUCCESS;
 }
 
@@ -119,6 +124,45 @@ ErrorCode MatchDocument(DocID doc_id, const char *doc_str){
     //that matches those parameters and save the results
     //Check to see if an exact same lookup has been done before by an earlier query
     //and skip redoing it, link that query's results to the one's with the same search parameters
+    
+    //Tokenize document
+    LList doc_words = LL_Create(StringType, &destroyString, &compareString);
+    char token[MAX_WORD_LENGTH + 1], *word = NULL;
+    int i = 0;
+    
+    while(*doc_str){
+        if (*doc_str != ' ' && *doc_str) {
+            token[i++] = *doc_str++;
+            continue;
+        }
+        token[i] = '\0';
+        word = malloc((i+1)*sizeof(char));
+        if (!word) { LL_Destroy(doc_words); return EC_FAIL; }
+        LL_InsertTail(doc_words, (char *)word);
+
+        i = 0;
+        if (*doc_str) doc_str++;
+    }
+
+    //Apply search for all queries
+    unsigned int qcount = LL_GetSize(INDEX.query_list);
+    LLNode node = LL_GetHead(INDEX.query_list);
+    if (!qcount || !node) return EC_FAIL;
+
+    while (qcount--){
+        Query q = (Query)(node->data);
+        MatchType mt = q->match_type;
+        unsigned int md = q->match_dist;
+        QueryID id = query_id;
+        LList qw = q->query_words;
+
+        if (q->active){
+            //Make search for all document words and save results
+        }
+        node = LL_Next(INDEX.query_list, node);
+    }
+
+    //Save all query_id results in INDEX.result_list based on individual query results
 
     return EC_SUCCESS;
 }

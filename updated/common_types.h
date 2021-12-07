@@ -71,7 +71,7 @@ typedef entry *Entry;
 //////////////////////////////////////////////
 typedef struct{
 
-    unsigned int query_id;
+    QueryID query_id;
 	LList query_words;
 	MatchType match_type;
 	unsigned int match_dist;
