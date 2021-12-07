@@ -114,6 +114,12 @@ ErrorCode EndQuery(QueryID query_id){
 
 ErrorCode MatchDocument(DocID doc_id, const char *doc_str){
 
+    //Process:
+    //Read every query's type and distance and apply search for every word in the document
+    //that matches those parameters and save the results
+    //Check to see if an exact same lookup has been done before by an earlier query
+    //and skip redoing it, link that query's results to the one's with the same search parameters
+
     return EC_SUCCESS;
 }
 
