@@ -33,6 +33,8 @@ int LL_DeleteHead(const LList );
 int LL_DeleteTail(const LList );
 int LL_DeleteNth(const LList , const unsigned int );
 
+LList LL_Join(const LList , LList );
+
 Pointer LL_GetValue(const LLNode );
 LLNode LL_GetHead(const LList );
 LLNode LL_GetTail(const LList );

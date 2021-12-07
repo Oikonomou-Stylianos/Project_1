@@ -313,6 +313,8 @@ LLNode LL_SearchRec(const LList ll, const LLNode lln, Pointer value){
 }
 int LL_Exists(const LList ll, Pointer value){
 
+    if(ll == NULL || value == NULL) return -1;
+
     return LL_Search(ll, value) != NULL ? 1 : 0;
 }
 int LL_DeleteHead(const LList ll){
@@ -395,6 +397,23 @@ int LL_DeleteNth(const LList ll, const unsigned int index){
     free(current);
 
     return 0;
+}
+LList LL_Join(const LList ll1, LList ll2){
+
+    if(ll1 == NULL || ll2 == NULL) return NULL;
+
+    LLNode temp;
+    if((temp = LL_GetHead(ll2)) == NULL) return NULL;
+    while(temp != NULL){
+
+        if(LL_Exists(ll1, temp->data) == 0)
+            LL_InsertTail(ll1, temp->data);
+
+        temp = temp->LL_Next(ll2, temp);
+    }
+    LL_Destroy(ll2);
+    
+    return ll1;
 }
 Pointer LL_GetValue(const LLNode lln){
 
