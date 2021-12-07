@@ -298,12 +298,12 @@ LLNode LL_SearchRec(const LList ll, const LLNode lln, Pointer value){
                 return lln;
             break;
         case QueryPtrType:
-            if(*(unsigned int *)value == ((*(Query *)(temp->data)))->query_id)
-                return temp;
+            if(*(unsigned int *)value == ((*(Query *)(lln->data)))->query_id)
+                return lln;
             break;
         case QueryResultType:
-            if(*(unsigned int *)value == ((Query )(lln->data))->doc_id)
-                return temp;
+            if(*(unsigned int *)value == ((QueryResult )(lln->data))->doc_id)
+                return lln;
             break;
         default:
             printf("Error: [LL_Search] : Unsupported data type\n");
@@ -409,7 +409,7 @@ LList LL_Join(const LList ll1, LList ll2){
         if(LL_Exists(ll1, temp->data) == 0)
             LL_InsertTail(ll1, temp->data);
 
-        temp = temp->LL_Next(ll2, temp);
+        temp = LL_Next(ll2, temp);
     }
     LL_Destroy(ll2);
     

@@ -150,11 +150,12 @@ int compareQuery(Pointer q1, Pointer q2){
 
     return ((Query )q1)->query_id == ((Query )q2)->query_id ? 0 : ((Query )q1)->query_id < ((Query )q2)->query_id ? -1 : 1;  
 }
+//////////////////////////////////////////////
 char toggle_query_active(Query q){
     return (q->active = !q->active);
 }
 void query_active_false(Query q){
-    q->active = 0; return
+    q->active = 0; return;
 }
 void query_active_true(Query q){
     q->active = 1; return;
@@ -164,7 +165,7 @@ int compareQueryPtr(Pointer q1, Pointer q2){
 
     if(q1 == NULL || q2 == NULL) return -2;
 
-    return ((*(Query )q1))->query_id == (*(Query )q2))->query_id ? 0 : (*(Query )q1))->query_id < (*(Query )q2))->query_id ? -1 : 1;  
+    return (*((Query *)q1))->query_id == (*((Query *)q2))->query_id ? 0 : (*((Query *)q1))->query_id < (*((Query *)q1))->query_id ? -1 : 1;  
 }
 //////////////////////////////////////////////
 int compareBKTNPtrString(Pointer w1, Pointer w2){
