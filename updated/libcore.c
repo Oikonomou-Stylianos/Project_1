@@ -149,16 +149,23 @@ ErrorCode MatchDocument(DocID doc_id, const char *doc_str){
     LLNode node = LL_GetHead(INDEX.query_list);
     if (!qcount || !node) return EC_FAIL;
 
+    //Make a struct to save searched types and distances to use below
+
     while (qcount--){
         Query q = (Query)(node->data);
-        MatchType mt = q->match_type;
-        unsigned int md = q->match_dist;
-        QueryID id = query_id;
-        LList qw = q->query_words;
-
         if (q->active){
+            MatchType mt = q->match_type;
+            unsigned int md = q->match_dist;
+            QueryID id = query_id;
+            LList qw = q->query_words;
+
+            //If already searched, skip researching and mimic post search functionality of previous clone query based on words
+
             //Make search for all document words and save results
         }
+        //If query was successful, save it to INDEX.result_list
+        
+
         node = LL_Next(INDEX.query_list, node);
     }
 
