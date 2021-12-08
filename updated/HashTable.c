@@ -165,6 +165,31 @@ HashTable HT_Rehash(const HashTable ht){
 
     return ht;
 }
+LList HT_ToList(const HashTable ht){
+
+    if(ht == NULL) return NULL;
+
+    LList newList = LL_Create(StringType, &destroyString, &compareString);
+    if(newList == NULL) return NULL;
+
+    LLNode temp;
+    int i;
+    for(i = 0; i < HT_GetCapacity(ht); i++){
+
+        if(ht->buckets[i] != NULL){
+
+            temp = LL_GetHead(ht->buckets[i]);
+            while(temp != NULL){
+
+                LL_Insert()
+
+                temp = LL_Next(ht->buckets[i], temp);
+            }
+        }
+    }
+
+    return newList;
+}
 // // Insert the words of a file in a Hash Table
 // HashTable HT_InsertFromFile(const HashTable ht, const char *file){
 

@@ -25,6 +25,7 @@ int HT_Hash(HashTable , Pointer );
 LLNode HT_Insert(const HashTable , Pointer );
 LLNode HT_Search(const HashTable , char *);
 HashTable HT_Rehash(const HashTable );
+LList HT_ToList(const HashTable );
 int HT_GetSize(const HashTable );
 int HT_GetCapacity(const HashTable );
 int HT_Print(const HashTable );
