@@ -342,10 +342,14 @@ ErrorCode MatchDocument(DocID doc_id, const char *doc_str){
 
 ErrorCode GetNextAvailRes(DocID *p_doc_id, unsigned int *p_num_res, QueryID **p_query_ids){
 
-    //Process is simple; Get the head of INDEX.result_list, get its contents,
-    //which are a query_result struct containing what needs to be returned
-    //Return everything and remove the head off the list, properly deallocating the memory
-    //Return EC_NO_AVAIL_RES if this is called and INDEX.result_list is empty
+    LLNode next_result = LL_GetHead(INDEX.result_list);
+    if(next_result == NULL) return EC_NO_AVAIL_RES;
+
+    *p_doc_id = ((QueryResult )(next_result->data))->doc_id;
+    *p_num_res = ((QueryResult )(next_result->data))->num_res;
+    *p_query_ids = ((QueryResult )(next_result->data))->query_ids;
+    
+    if(LL_DeleteHead(INDEX.result_list) == 1) return EC_FAIL;
 
     return EC_SUCCESS;
 }
