@@ -83,7 +83,7 @@ BKTreeNode BKT_Insert(const BKTree bkt, Pointer data){
 	}
 	else{
 
-		if(root_length != 0 && bkt->matchType == MT_HAMMING_DIST && root_length != word_length){
+		if(bkt->matchType == MT_HAMMING_DIST && root_length != word_length){
 			printf("Warning : [BKT_Insert] : Attempted to insert word of different length in a BKTree with MatchType set to HammingDistance\n");
 			return NULL;
 		}
