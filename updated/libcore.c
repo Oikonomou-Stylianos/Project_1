@@ -155,7 +155,7 @@ ErrorCode MatchDocument(DocID doc_id, const char *doc_str){
         if (*doc_str) doc_str++;    // If at end of string, stay as is to exit the loop
     }
 
-    LList doc_words = HT_ToList(doc_words_HT);
+    LList doc_words = HT_ToList(doc_words_HT, &destroyString);
     HT_Destroy(doc_words_HT);
 
     //Definitions and allocations of helper structures
