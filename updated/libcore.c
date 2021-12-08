@@ -127,6 +127,12 @@ ErrorCode MatchDocument(DocID doc_id, const char *doc_str){
     //Check to see if an exact same lookup has been done before by an earlier query
     //and skip redoing it, link that query's results to the one's with the same search parameters
     
+    //Will be used to iterate all queries, checked first because there is no
+    //point in continuing if this information is invalid
+    unsigned int qcount = LL_GetSize(INDEX.query_list);
+    LLNode node = LL_GetHead(INDEX.query_list);
+    if (!qcount || !node) return EC_FAIL;
+
     //Tokenize document
     LList doc_words = LL_Create(StringType, &destroyString, &compareString);
     if (!doc_words) return EC_FAIL;
@@ -180,11 +186,10 @@ ErrorCode MatchDocument(DocID doc_id, const char *doc_str){
     //yet executed. The alternative of an empty list cannot be trusted, as
     //a query can return an empty list of results after execution.
 
-    //Apply search for all queries
-    unsigned int qcount = LL_GetSize(INDEX.query_list);
-    LLNode node = LL_GetHead(INDEX.query_list);
-    if (!qcount || !node) return EC_FAIL;
+    //Another helper structure to save result query ids in
+    LList res_ids = LL_Create(UIntType, &destroyUInt, &compareUInt);
 
+    //Start of query iterations
     while (qcount--){
         Query q = (Query)(node->data);
         if (q->active){
@@ -222,6 +227,7 @@ ErrorCode MatchDocument(DocID doc_id, const char *doc_str){
                     free(res_hamm);
                     LL_Destroy(res_exact);
                     LL_Destroy(doc_words);
+                    LL_Destroy(res_ids);
                     return EC_FAIL;
             }
 
@@ -233,27 +239,24 @@ ErrorCode MatchDocument(DocID doc_id, const char *doc_str){
                 switch(mt){
                     case MT_EXACT_MATCH:
                         if (exact_flag){
-                            res_exact = LL_Create(EntryPtrType, NULL, &compareEntryPtr);
+                            if (!res_exact) res_exact = LL_Create(EntryPtrType, NULL, &compareEntryPtr);
                             //Start the search
-
-                        }   //check results
-
+                            LL_InsertTail(res_exact, (Pointer)(HT_Search(INDEX.exact_match_ht, word)->data))
+                        }
                         break;
                     case MT_HAMMING_DIST:
                         if (hamm_flag[md-1]){
                             if (!res_hamm[md-1][strlen(word)-MIN_WORD_LENGTH]) res_hamm[md-1][strlen(word)-MIN_WORD_LENGTH] = LL_Create(EntryPtrType, NULL, &compareEntryPtr);
-                            //Commence the investigation
-
-                        }   //check results
-
+                            //Commence the investigation and merge lists
+                            LL_Join(res_hamm[md-1][strlen(word)-MIN_WORD_LENGTH], BKT_Search(INDEX.hamming_distance_bkt[strlen(word)-MIN_WORD_LENGTH], word, md));
+                        }
                         break;
                     case MT_EDIT_DIST:
                         if (edit_flag[md-1]){
-                            res_edit[md-1] = LL_Create(EntryPtrType, NULL, &compareEntryPtr);
-                            //Let the query begin
-
-                        }   //check results
-
+                            if (!res_edit[md-1]) res_edit[md-1] = LL_Create(EntryPtrType, NULL, &compareEntryPtr);
+                            //Let the query begin and join lists
+                            LL_Join(res_edit[md-1], BKT_Search(INDEX.edit_distance_bkt, word, md));
+                        }
                         break;
                     default:
                         //Destroy all lists
@@ -268,22 +271,57 @@ ErrorCode MatchDocument(DocID doc_id, const char *doc_str){
                         free(res_hamm);
                         LL_Destroy(res_exact);
                         LL_Destroy(doc_words);
+                        LL_Destroy(res_ids);
                         return EC_FAIL;
                 }
 
                 doc_node = LL_Next(doc_words, doc_node);
             }
-            
-            
-            //Make search for all document words and save results
-        }
-        //If query was successful, save it to INDEX.result_list
-        
 
+            //Time to check if query belongs to the results of the document
+            //If query was successful, save it to res_ids
+
+            LLNode q_word_node = LL_GetHead(qw);
+            unsigned int hits = LL_GetSize(qw)
+            while(q_word_node){
+                word = LL_GetValue(q_word_node);
+
+                switch(mt){
+                    case MT_EXACT_MATCH:
+                        if (LL_Exists(res_exact, (Pointer) word)) hits--;
+                        break;
+                    case MT_HAMMING_DIST:
+                        if (LL_Exists(res_hamm[md-1][strlen(word)-MIN_WORD_LENGTH], (Pointer) word)) hits--;
+                        break;
+                    case MT_EDIT_DIST:
+                        if (LL_Exists(res_edit[md-1]), (Pointer) word) hits--;
+                        break;
+                    default:
+                        //Destroy all lists
+                        for (i = 0; i < MAX_DISTANCE; i++) {
+                            LL_Destroy(res_edit[i]);
+                            for(j = 0; j < MAX_WORD_LENGTH-MIN_WORD_LENGTH+1; j++){
+                                LL_Destroy(res_hamm[i][j]);
+                            }
+                            free(res_hamm[i]);
+                        }
+                        free(res_edit);
+                        free(res_hamm);
+                        LL_Destroy(res_exact);
+                        LL_Destroy(doc_words);
+                        LL_Destroy(res_ids);
+                        return EC_FAIL;
+                }
+                q_word_node = LL_Next(q_word_node);
+            }
+            if (!hits) LL_InsertSort(res_ids, createUInt(id));
+        }
         node = LL_Next(INDEX.query_list, node);
     }
 
-    //Save all query_id results in INDEX.result_list based on individual query results
+    //Save doc_id, res_ids->size and res_ids contents in INDEX.result_list
+
+    LL_InsertTail(INDEX.result_list, createQueryResult(doc_id, LL_GetSize(res_ids), (unsigned int *)LL_ToArray(res_ids)));
 
     //Free all allocated memory
     
@@ -298,7 +336,7 @@ ErrorCode MatchDocument(DocID doc_id, const char *doc_str){
     free(res_hamm);
     LL_Destroy(res_exact);
     LL_Destroy(doc_words);
-    //Destroy helper result list
+    LL_Destroy(res_ids);
     return EC_SUCCESS;
 }
 
