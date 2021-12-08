@@ -165,11 +165,19 @@ HashTable HT_Rehash(const HashTable ht){
 
     return ht;
 }
-LList HT_ToList(const HashTable ht){
+LList HT_ToList(const HashTable ht, DestroyFunction df){
 
     if(ht == NULL) return NULL;
 
-    LList newList = LL_Create(StringType, &destroyString, &compareString);
+    LList newList;
+    switch(ht->dataType){
+        case StringType:
+            newList = LL_Create(StringType, df, &compareString);
+            break;
+        default:
+            printf("Error: [HT_ToList] : Unsupported data type\n");
+            return NULL;
+    }
     if(newList == NULL) return NULL;
 
     LLNode temp;
@@ -181,7 +189,7 @@ LList HT_ToList(const HashTable ht){
             temp = LL_GetHead(ht->buckets[i]);
             while(temp != NULL){
 
-                LL_Insert()
+                LL_InsertTail(newList, (Pointer )temp->data)
 
                 temp = LL_Next(ht->buckets[i], temp);
             }
