@@ -39,7 +39,7 @@ ErrorCode InitializeIndex(){
 
     INDEX.entry_list = LL_Create(EntryType, &destroyEntry, &compareEntry);
     INDEX.query_list = LL_Create(QueryType, &destroyQuery, &compareQuery);
-    INDEX.result_list = LL_Create(QueryResultType, NULL, NULL);
+    INDEX.result_list = LL_Create(QueryResultType, &destroyQueryResult, &compareQueryResult);
 
     return EC_SUCCESS;
 }
@@ -341,6 +341,11 @@ ErrorCode MatchDocument(DocID doc_id, const char *doc_str){
 }
 
 ErrorCode GetNextAvailRes(DocID *p_doc_id, unsigned int *p_num_res, QueryID **p_query_ids){
+
+    //Process is simple; Get the head of INDEX.result_list, get its contents,
+    //which are a query_result struct containing what needs to be returned
+    //Return everything and remove the head off the list, properly deallocating the memory
+    //Return EC_NO_AVAIL_RES if this is called and INDEX.result_list is empty
 
     return EC_SUCCESS;
 }
