@@ -419,41 +419,44 @@ Pointer LL_ToArray(const LList ll){
 
     if(ll == NULL || LL_IsEmpty(ll) == 1) return NULL;
 
-    Pointer array;
     int index;
     LLNode temp;
+    Pointer array;
 
     switch(ll->dataType){
-        case StringType:
-            if((array = (char **)malloc(sizeof(char *) * LL_GetSize(ll))) == NULL) return NULL;
-            break;
-        case IntType:
-            if((array = (unsigned int *)malloc(sizeof(unsigned int ) * LL_GetSize(ll))) == NULL) return NULL;
-            break;
+        // case StringType:
+        //     if((array = (char **)malloc(sizeof(char *) * LL_GetSize(ll))) == NULL) return NULL;
+        //     break;
+        // case IntType:
+        //     if((array = (int *)malloc(sizeof(int ) * LL_GetSize(ll))) == NULL) return NULL;
+        //     break;
         case UIntType:
-            if((array = (unsigned int *)malloc(sizeof(unsigned int ) * LL_GetSize(ll))) == NULL) return NULL;
+            array = (unsigned int *)malloc(sizeof(unsigned int ) * LL_GetSize(ll));
             break;
         default:
             printf("Error : [LL_ToArray] : Unsupported data type\n");
+            return NULL;
     }
 
     temp = LL_GetHead(ll);
+    index = 0;
     while(temp != NULL){
 
-        index = 0;
         switch(ll->dataType){
-            case StringType:
-                ((char **)array)[index] = (char *)malloc(sizeof(char ) * MAX_WORD_LENGTH);
-                strcmp(((char **)array)[index], (char *)(temp->data));
-                break;
-            case IntType:
-                ((int *)array)[index] = *(int *)(temp->data);
-                break;
+            // case StringType:
+            //     ((char **)array)[index] = (char *)malloc(sizeof(char ) * MAX_WORD_LENGTH);
+            //     strcmp(((char **)array)[index], (char *)(temp->data));
+            //     break;
+            // case IntType:
+            //     ((int *)array)[index] = *(int *)(temp->data);
+            //     break;
             case UIntType:
                 ((unsigned int *)array)[index] = *(unsigned int *)(temp->data);
                 break;
             default:
                 printf("Error : [LL_ToArray] : Unsupported data type\n");
+                return NULL;
+            
         }
         temp = LL_Next(ll, temp);
         index++;
@@ -635,40 +638,38 @@ int main(void){
     // LL_Destroy(myLL);
 
     // Entry Example
-    LList myEntryLL = LL_Create(EntryType, &destroyEntry, &compareEntry);
-    LL_InsertTail(myEntryLL, (Pointer )createEntry("Anastasis"));
-    LL_InsertTail(myEntryLL, (Pointer )createEntry("Panagiwths"));
-    LL_InsertTail(myEntryLL, (Pointer )createEntry("Stelios"));
+    // LList myEntryLL = LL_Create(EntryType, &destroyEntry, &compareEntry);
+    // LL_InsertTail(myEntryLL, (Pointer )createEntry("Anastasis"));
+    // LL_InsertTail(myEntryLL, (Pointer )createEntry("Panagiwths"));
+    // LL_InsertTail(myEntryLL, (Pointer )createEntry("Stelios"));
 
+    // // LL_Print(myEntryLL);
+
+    // // LList myEntryPtrLL = LL_Create(EntryType, NULL, &compareEntry);
+    // HashTable myHT = HT_Create(EntryPtrType, &djb2, NULL, &compareEntryPtr);
+
+    // LLNode temp = LL_GetHead(myEntryLL), temp1;
+    // while(temp != NULL){
+
+    //     // LL_InsertTail(myEntryPtrLL, (Pointer )(temp->data));
+    //     HT_Insert(myHT, (Pointer )(&(temp->data)));
+    //     // printf("%s\n", ((Entry )(temp->data))->word);
+    //     temp = LL_Next(myEntryLL, temp);
+    // }
+    
+    // HT_Print(myHT);
+    
+    // // HT_Destroy(myHT);
+    // // LL_Destroy(myEntryPtrLL);
+    // LLNode res;
+    // if((res = HT_Search(myHT, "SS")) != NULL){
+
+    //     printf("Result: %s\n", (*(Entry *)res->data)->word);
+    // }
+    // else
+    //     printf("Nothing\n");
     // LL_Print(myEntryLL);
-
-    // LList myEntryPtrLL = LL_Create(EntryType, NULL, &compareEntry);
-    HashTable myHT = HT_Create(EntryPtrType, &djb2, NULL, &compareEntryPtr);
-
-    LLNode temp = LL_GetHead(myEntryLL), temp1;
-    while(temp != NULL){
-
-        // LL_InsertTail(myEntryPtrLL, (Pointer )(temp->data));
-        HT_Insert(myHT, (Pointer )(&(temp->data)));
-        // printf("%s\n", ((Entry )(temp->data))->word);
-        temp = LL_Next(myEntryLL, temp);
-    }
-    
-    HT_Print(myHT);
-    
-    // HT_Destroy(myHT);
-    // LL_Destroy(myEntryPtrLL);
-    LLNode res;
-    if((res = HT_Search(myHT, "SS")) != NULL){
-
-        printf("Result: %s\n", (*(Entry *)res->data)->word);
-    }
-    else
-        printf("Nothing\n");
-    
-    LL_Print(myEntryLL);
-    
-    LL_Destroy(myEntryLL);
+    // LL_Destroy(myEntryLL);
 
     // Int Example
     // time_t t;
@@ -681,14 +682,21 @@ int main(void){
     // LL_Destroy(myIntLL);
 
     // UInt Example
-    // time_t t;
-    // srand(time(NULL));
-    // LList myUIntLL = LL_Create(UIntType, &destroyUInt, &compareUInt);
-    // int i;
-    // for(i = 0; i < 10; i++)
-    //     // LL_InsertTail(myUIntLL, createUInt(rand()%100));
-    //     LL_InsertTail(myUIntLL, createUInt(i));
+    time_t t;
+    srand(time(NULL));
+    LList myUIntLL = LL_Create(UIntType, &destroyUInt, &compareUInt);
+    int i;
+    for(i = 0; i < 10; i++)
+        LL_InsertTail(myUIntLL, (Pointer )createUInt((unsigned int )i));
+        // LL_InsertTail(myUIntLL, createUInt(rand()%100));
+    
+    unsigned int *array = (unsigned int *)LL_ToArray(myUIntLL);
     // LL_Print(myUIntLL);
+    for(i = 0; i < 10; i++)
+        printf("%u\n", array[i]);
+
+    // LL_Print(myUIntLL);
+
     // LL_Destroy(myUIntLL);
 
     // Query Example
