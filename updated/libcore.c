@@ -136,34 +136,36 @@ ErrorCode MatchDocument(DocID doc_id, const char *doc_str){
     //Tokenize document
     LList doc_words = LL_Create(StringType, &destroyString, &compareString);
     if (!doc_words) return EC_FAIL;
+
     char token[MAX_WORD_LENGTH + 1], *word = NULL;
     int i = 0;
-    
     while(*doc_str){
-        if (*doc_str != ' ' && *doc_str) {
+        if (*doc_str != ' ' && *doc_str != '\n') {
             token[i++] = *doc_str++;
             continue;
         }
         token[i] = '\0';
-        word = (char *)malloc((i+1)*sizeof(char));
+
+        word = (char *)malloc((i + 1) * sizeof(char ));     // i = length of the word
         if (!word) { LL_Destroy(doc_words); return EC_FAIL; }
+        
         LL_InsertTail(doc_words, (char *)word);
 
-        i = 0;
-        if (*doc_str) doc_str++;
+        i = 0;  // Reset the word index
+        if (*doc_str) doc_str++;    // ? Add comment
     }
 
     //Definitions and allocations of helper structures
     LList res_exact = NULL;
-    LList *res_edit = (LList *)malloc((MAX_DISTANCE)*sizeof(LList));
-    if (!res_edit){ LL_Destroy(doc_words); return EC_FAIL; }
-    LList **res_hamm = (LList **)malloc((MAX_DISTANCE)*sizeof(LList *));
-    if (!res_hamm){ free(res_edit); LL_Destroy(doc_words); return EC_FAIL; }
+    LList *res_edit = (LList *)malloc((MAX_DISTANCE) * sizeof(LList));
+    if (!res_edit) { LL_Destroy(doc_words); return EC_FAIL; }
+    LList **res_hamm = (LList **)malloc((MAX_DISTANCE) * sizeof(LList *));
+    if (!res_hamm) { free(res_edit); LL_Destroy(doc_words); return EC_FAIL; }
 
     int j = 0;
     for (i = 0; i < MAX_DISTANCE; i++) {
         res_edit[i] = NULL;
-        res_hamm[i] = (LList *)malloc((MAX_WORD_LENGTH-MIN_WORD_LENGTH+1)*sizeof(LList));
+        res_hamm[i] = (LList *)malloc((MAX_WORD_LENGTH - MIN_WORD_LENGTH + 1) * sizeof(LList));
         if (!res_hamm[i]){
             for (j = i-1; j >= 0; j--){
                 free(res_hamm[j]);
@@ -173,7 +175,7 @@ ErrorCode MatchDocument(DocID doc_id, const char *doc_str){
             LL_Destroy(doc_words);
             return EC_FAIL;
         }
-        for (j = 0; j < MAX_WORD_LENGTH-MIN_WORD_LENGTH+1; j++) res_hamm[i][j] = NULL;
+        for (j = 0; j < MAX_WORD_LENGTH - MIN_WORD_LENGTH + 1; j++) res_hamm[i][j] = NULL; // <<<<<<<<<<<<<<<<<<<<<<<<<<<<<< N x N array initialization? Did you mean MAX_WORD_LENGTH? ie Word lengths x Distances ?
     }
     //The above code initializes 3 helper structures to save every query calculation
     //based on match_distance and match_type; res_exact is only used when match_distance
@@ -191,7 +193,8 @@ ErrorCode MatchDocument(DocID doc_id, const char *doc_str){
 
     //Start of query iterations
     while (qcount--){
-        Query q = (Query)(node->data);
+
+        Query q = (Query )(node->data);
         if (q->active){
             MatchType mt = q->match_type;
             unsigned int md = q->match_dist;
@@ -342,13 +345,14 @@ ErrorCode MatchDocument(DocID doc_id, const char *doc_str){
 
 ErrorCode GetNextAvailRes(DocID *p_doc_id, unsigned int *p_num_res, QueryID **p_query_ids){
 
+    // Get the first result from the Index's ResultList
     LLNode next_result = LL_GetHead(INDEX.result_list);
     if(next_result == NULL) return EC_NO_AVAIL_RES;
-
+    // Return the QueryResult values
     *p_doc_id = ((QueryResult )(next_result->data))->doc_id;
     *p_num_res = ((QueryResult )(next_result->data))->num_res;
     *p_query_ids = ((QueryResult )(next_result->data))->query_ids;
-    
+    // Delete the result from the ResultList
     if(LL_DeleteHead(INDEX.result_list) == 1) return EC_FAIL;
 
     return EC_SUCCESS;
