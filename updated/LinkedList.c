@@ -407,7 +407,7 @@ LList LL_Join(const LList ll1, LList ll2){
     while(temp != NULL){
 
         if(LL_Exists(ll1, temp->data) == 0)
-            LL_InsertTail(ll1, temp->data);
+            LL_InsertSortUnique(ll1, temp->data);
 
         temp = LL_Next(ll2, temp);
     }

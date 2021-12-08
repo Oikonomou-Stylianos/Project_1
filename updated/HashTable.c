@@ -189,7 +189,7 @@ LList HT_ToList(const HashTable ht, DestroyFunction df){
             temp = LL_GetHead(ht->buckets[i]);
             while(temp != NULL){
 
-                LL_InsertTail(newList, (Pointer )temp->data)
+                LL_InsertTail(newList, (Pointer )temp->data);
 
                 temp = LL_Next(ht->buckets[i], temp);
             }

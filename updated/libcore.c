@@ -46,10 +46,11 @@ ErrorCode InitializeIndex(){
 
 ErrorCode DestroyIndex(){
 
+    int i;
     if(HT_Destroy(INDEX.exact_match_ht) == 1) return EC_FAIL;
     for(i = 0; i < MAX_WORD_LENGTH - MIN_WORD_LENGTH + 1; i++)
-        if(BKT_Destroy(INDEX.hamming_distance_bkt[i] == 1) return EC_FAIL;
-    if(BKT_Destroy(INDEX.edit_distance_bkt == 1) return EC_FAIL;
+        if(BKT_Destroy(INDEX.hamming_distance_bkt[i]) == 1) return EC_FAIL;
+    if(BKT_Destroy(INDEX.edit_distance_bkt) == 1) return EC_FAIL;
 
     if(LL_Destroy(INDEX.entry_list) == 1) return EC_FAIL;
     if(LL_Destroy(INDEX.query_list) == 1) return EC_FAIL;
@@ -112,8 +113,8 @@ ErrorCode StartQuery(QueryID        query_id,
 ErrorCode EndQuery(QueryID query_id){
 
     //Toggle query active status
-    LLNode node = LL_Search(INDEX.query_list, query_id);
-    if (!q) return EC_FAIL;
+    LLNode node = LL_Search(INDEX.query_list, (Pointer )&query_id);
+    if (!node) return EC_FAIL;
     Query q = (Query)(node->data);
     query_active_false(q);
     return EC_SUCCESS;
@@ -149,14 +150,14 @@ ErrorCode MatchDocument(DocID doc_id, const char *doc_str){
         word = (char *)malloc((i + 1) * sizeof(char ));     // i = length of the word
         if (!word) { HT_Destroy(doc_words_ht); return EC_FAIL; }
         
-        HT_Insert(doc_words_ht, (char *)word);
+        HT_Insert(doc_words_ht, (Pointer )word);
 
         i = 0;  // Reset the word index
         if (*doc_str) doc_str++;    // If at end of string, stay as is to exit the loop
     }
 
-    LList doc_words = HT_ToList(doc_words_HT, &destroyString);
-    HT_Destroy(doc_words_HT);
+    LList doc_words = HT_ToList(doc_words_ht, &destroyString);
+    HT_Destroy(doc_words_ht);
 
     //Definitions and allocations of helper structures
     LList res_exact = NULL;
@@ -241,7 +242,7 @@ ErrorCode MatchDocument(DocID doc_id, const char *doc_str){
             LLNode doc_node = LL_GetHead(doc_words);
             while(doc_node){
                 word = (char *)(doc_node->data);
-            //If already searched, skip re-searching and mimic post search functionality of previous clone query based on words
+                //If already searched, skip re-searching and mimic post search functionality of previous clone query based on words
                 switch(mt){
                     case MT_EXACT_MATCH:
                         if (exact_flag){

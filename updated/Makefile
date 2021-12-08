@@ -1,7 +1,7 @@
 all: clean test
 
 test:
-	gcc -o test LinkedList.c BKTree.c HashTable.c constructors.c distance.c
+	gcc -o test LinkedList.c BKTree.c HashTable.c constructors.c distance.c libcore.c
 
 run:
 	./test
