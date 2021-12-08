@@ -133,7 +133,7 @@ ErrorCode MatchDocument(DocID doc_id, const char *doc_str){
     LLNode node = LL_GetHead(INDEX.query_list);
     if (!qcount || !node) return EC_FAIL;
 
-    //Tokenize document
+    //Tokenize and deduplicate document
     LList doc_words = LL_Create(StringType, &destroyString, &compareString);
     if (!doc_words) return EC_FAIL;
 
@@ -149,7 +149,7 @@ ErrorCode MatchDocument(DocID doc_id, const char *doc_str){
         word = (char *)malloc((i + 1) * sizeof(char ));     // i = length of the word
         if (!word) { LL_Destroy(doc_words); return EC_FAIL; }
         
-        LL_InsertTail(doc_words, (char *)word);
+        LL_InsertSortUnique(doc_words, (char *)word);
 
         i = 0;  // Reset the word index
         if (*doc_str) doc_str++;    // If at end of string, stay as is to exit the loop
