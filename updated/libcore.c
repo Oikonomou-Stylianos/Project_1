@@ -133,14 +133,14 @@ ErrorCode MatchDocument(DocID doc_id, const char *doc_str){
     LLNode node = LL_GetHead(INDEX.query_list);
     if (!qcount || !node) return EC_FAIL;
 
-    //Tokenize document
+    //Tokenize and deduplicate document
     LList doc_words = LL_Create(StringType, &destroyString, &compareString);
     if (!doc_words) return EC_FAIL;
 
     char token[MAX_WORD_LENGTH + 1], *word = NULL;
     int i = 0;
     while(*doc_str){
-        if (*doc_str != ' ' && *doc_str != '\n') {
+        if (*doc_str != ' ' && *doc_str) {
             token[i++] = *doc_str++;
             continue;
         }
@@ -149,10 +149,10 @@ ErrorCode MatchDocument(DocID doc_id, const char *doc_str){
         word = (char *)malloc((i + 1) * sizeof(char ));     // i = length of the word
         if (!word) { LL_Destroy(doc_words); return EC_FAIL; }
         
-        LL_InsertTail(doc_words, (char *)word);
+        LL_InsertSortUnique(doc_words, (char *)word);
 
         i = 0;  // Reset the word index
-        if (*doc_str) doc_str++;    // ? Add comment
+        if (*doc_str) doc_str++;    // If at end of string, stay as is to exit the loop
     }
 
     //Definitions and allocations of helper structures
@@ -175,7 +175,7 @@ ErrorCode MatchDocument(DocID doc_id, const char *doc_str){
             LL_Destroy(doc_words);
             return EC_FAIL;
         }
-        for (j = 0; j < MAX_WORD_LENGTH - MIN_WORD_LENGTH + 1; j++) res_hamm[i][j] = NULL; // <<<<<<<<<<<<<<<<<<<<<<<<<<<<<< N x N array initialization? Did you mean MAX_WORD_LENGTH? ie Word lengths x Distances ?
+        for (j = 0; j < MAX_WORD_LENGTH - MIN_WORD_LENGTH + 1; j++) res_hamm[i][j] = NULL;
     }
     //The above code initializes 3 helper structures to save every query calculation
     //based on match_distance and match_type; res_exact is only used when match_distance
