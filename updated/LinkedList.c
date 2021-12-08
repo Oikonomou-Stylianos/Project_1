@@ -415,6 +415,52 @@ LList LL_Join(const LList ll1, LList ll2){
     
     return ll1;
 }
+Pointer LL_ToArray(const LList ll){
+
+    if(ll == NULL || LL_IsEmpty(ll) == 1) return NULL;
+
+    Pointer array;
+    int index;
+    LLNode temp;
+
+    switch(ll->dataType){
+        case StringType:
+            if((array = (char **)malloc(sizeof(char *) * LL_GetSize(ll))) == NULL) return NULL;
+            break;
+        case IntType:
+            if((array = (unsigned int *)malloc(sizeof(unsigned int ) * LL_GetSize(ll))) == NULL) return NULL;
+            break;
+        case UIntType:
+            if((array = (unsigned int *)malloc(sizeof(unsigned int ) * LL_GetSize(ll))) == NULL) return NULL;
+            break;
+        default:
+            printf("Error : [LL_ToArray] : Unsupported data type\n");
+    }
+
+    temp = LL_GetHead(ll);
+    while(temp != NULL){
+
+        index = 0;
+        switch(ll->dataType){
+            case StringType:
+                ((char **)array)[index] = (char *)malloc(sizeof(char ) * MAX_WORD_LENGTH);
+                strcmp(((char **)array)[index], (char *)(temp->data));
+                break;
+            case IntType:
+                ((int *)array)[index] = *(int *)(temp->data);
+                break;
+            case UIntType:
+                ((unsigned int *)array)[index] = *(unsigned int *)(temp->data);
+                break;
+            default:
+                printf("Error : [LL_ToArray] : Unsupported data type\n");
+        }
+        temp = LL_Next(ll, temp);
+        index++;
+    }
+
+    return array;
+}
 Pointer LL_GetValue(const LLNode lln){
 
     if(lln == NULL) return NULL;
@@ -521,7 +567,7 @@ int LL_IsEmpty(const LList ll){
 
 	if(ll == NULL) return -1;
 	
-	return ll->head == NULL ? 0 : 1;
+	return ll->head == NULL ? 1 : 0;
 }
 unsigned int LL_GetSize(const LList ll){
 
@@ -589,30 +635,40 @@ int main(void){
     // LL_Destroy(myLL);
 
     // Entry Example
-    // LList myEntryLL = LL_Create(EntryType, &destroyEntry, &compareEntry);
-    // LL_InsertTail(myEntryLL, (Pointer )createEntry("Anastasis"));
-    // LL_InsertTail(myEntryLL, (Pointer )createEntry("Panagiwths"));
-    // LL_InsertTail(myEntryLL, (Pointer )createEntry("Stelios"));
+    LList myEntryLL = LL_Create(EntryType, &destroyEntry, &compareEntry);
+    LL_InsertTail(myEntryLL, (Pointer )createEntry("Anastasis"));
+    LL_InsertTail(myEntryLL, (Pointer )createEntry("Panagiwths"));
+    LL_InsertTail(myEntryLL, (Pointer )createEntry("Stelios"));
 
-    // // LL_Print(myEntryLL);
+    // LL_Print(myEntryLL);
 
-    // LList myEntryPtrLL = LL_Create(EntryPtrType, NULL, &compareEntryPtr);
-    // HashTable myHT = HT_Create(EntryPtrType, &djb2, NULL, &compareEntryPtr);
+    // LList myEntryPtrLL = LL_Create(EntryType, NULL, &compareEntry);
+    HashTable myHT = HT_Create(EntryPtrType, &djb2, NULL, &compareEntryPtr);
 
-    // LLNode temp = LL_GetHead(myEntryLL), temp1;
-    // while(temp != NULL){
+    LLNode temp = LL_GetHead(myEntryLL), temp1;
+    while(temp != NULL){
 
-    //     LL_InsertTail(myEntryPtrLL, (Pointer )(&(temp->data)));
-    //     HT_Insert(myHT, (Pointer )(&(temp->data)));
-    //     // printf("%s\n", ((Entry )(temp->data))->word);
-    //     temp = LL_Next(myEntryLL, temp);
-    // }
+        // LL_InsertTail(myEntryPtrLL, (Pointer )(temp->data));
+        HT_Insert(myHT, (Pointer )(&(temp->data)));
+        // printf("%s\n", ((Entry )(temp->data))->word);
+        temp = LL_Next(myEntryLL, temp);
+    }
     
-    // // LL_Print(myEntryPtrLL);
-    // HT_Print(myHT);
-
+    HT_Print(myHT);
+    
+    // HT_Destroy(myHT);
     // LL_Destroy(myEntryPtrLL);
-    // LL_Destroy(myEntryLL);
+    LLNode res;
+    if((res = HT_Search(myHT, "SS")) != NULL){
+
+        printf("Result: %s\n", (*(Entry *)res->data)->word);
+    }
+    else
+        printf("Nothing\n");
+    
+    LL_Print(myEntryLL);
+    
+    LL_Destroy(myEntryLL);
 
     // Int Example
     // time_t t;
@@ -648,31 +704,31 @@ int main(void){
     // LL_Print(myQueryList);
 
     // BKTree - EntryList test
-    LList myEntryLL = LL_Create(EntryType, &destroyEntry, &compareEntry);
-    LL_InsertTail(myEntryLL, (Pointer )createEntry("hell"));
-    LL_InsertTail(myEntryLL, (Pointer )createEntry("help"));
-    LL_InsertTail(myEntryLL, (Pointer )createEntry("fall"));
-    LL_InsertTail(myEntryLL, (Pointer )createEntry("felt"));
-    LL_InsertTail(myEntryLL, (Pointer )createEntry("fell"));
-    LL_InsertTail(myEntryLL, (Pointer )createEntry("small"));
-    LL_InsertTail(myEntryLL, (Pointer )createEntry("melt"));
-    LL_Print(myEntryLL);
+    // LList myEntryLL = LL_Create(EntryType, &destroyEntry, &compareEntry);
+    // LL_InsertTail(myEntryLL, (Pointer )createEntry("hell"));
+    // LL_InsertTail(myEntryLL, (Pointer )createEntry("help"));
+    // LL_InsertTail(myEntryLL, (Pointer )createEntry("fall"));
+    // LL_InsertTail(myEntryLL, (Pointer )createEntry("felt"));
+    // LL_InsertTail(myEntryLL, (Pointer )createEntry("fell"));
+    // LL_InsertTail(myEntryLL, (Pointer )createEntry("small"));
+    // LL_InsertTail(myEntryLL, (Pointer )createEntry("melt"));
+    // LL_Print(myEntryLL);
 
-    BKTree myBKT = BKT_Create(MT_EDIT_DIST, EntryPtrType, NULL);
+    // BKTree myBKT = BKT_Create(MT_EDIT_DIST, EntryPtrType, NULL);
 
-    LLNode temp = LL_GetHead(myEntryLL);
-    while(temp != NULL){
+    // LLNode temp = LL_GetHead(myEntryLL);
+    // while(temp != NULL){
 
-        BKT_Insert(myBKT, (Pointer )(&(temp->data)));
-        temp = LL_Next(myEntryLL, temp);
-    }
+    //     BKT_Insert(myBKT, (Pointer )(&(temp->data)));
+    //     temp = LL_Next(myEntryLL, temp);
+    // }
 
-    LList result = BKT_Search(myBKT, "henn", 2);
-    LL_Print(result);
+    // LList result = BKT_Search(myBKT, "henn", 2);
+    // LL_Print(result);
 
-    LL_Destroy(myEntryLL);
-    LL_Destroy(result);
-    BKT_Destroy(myBKT);
+    // LL_Destroy(myEntryLL);
+    // LL_Destroy(result);
+    // BKT_Destroy(myBKT);
 
     return 0;
 }

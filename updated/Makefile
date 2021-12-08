@@ -1,4 +1,4 @@
-all: test
+all: clean test
 
 test:
 	gcc -o test LinkedList.c BKTree.c HashTable.c constructors.c distance.c
@@ -8,3 +8,6 @@ run:
 
 clean:
 	rm -f test
+
+val:
+	valgrind ./test

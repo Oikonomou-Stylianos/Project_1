@@ -92,6 +92,35 @@ LLNode HT_Insert(const HashTable ht, Pointer data){
 
     return lln;
 }
+LLNode HT_Search(const HashTable ht, char *word){
+
+    if(ht == NULL || word == NULL) return NULL;
+
+    int hash, index;
+
+    Pointer temp = NULL;    // Used to 
+    switch(ht->dataType){
+        case EntryType:
+            temp = (Pointer )createEntry(word);
+            if((hash = HT_Hash(ht, temp)) == -1) return NULL;
+            index = hash % ht->capacity;
+            break;
+        case EntryPtrType:
+            temp = (Pointer )createEntry(word);
+            if((hash = HT_Hash(ht, &temp)) == -1) return NULL;
+            index = hash % ht->capacity;
+            break;
+        default:
+            printf("Error: [HT_Search] : Unsupported data type\n");
+            return NULL;
+    }
+
+    LLNode lln;
+    if((lln = LL_Search(ht->buckets[index], word)) == NULL) { destroyEntry(temp); return NULL; }
+
+    destroyEntry(temp);
+    return lln;
+}
 // Rehash a Hash Table
 HashTable HT_Rehash(const HashTable ht){
 

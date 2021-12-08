@@ -31,7 +31,7 @@ typedef enum{
     UIntType,
     QueryType,
     QueryPtrType,
-    BKTNodePtrType,      // Candidate List in BK-Tree
+    BKTNodeType,      // Candidate List in BK-Tree
     QueryResultType
 
 }DataType;

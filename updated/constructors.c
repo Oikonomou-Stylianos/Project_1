@@ -183,7 +183,7 @@ int compareBKTNPtrEntry(Pointer w1, Pointer w2){
 //////////////////////////////////////////////
 QueryResult createQueryResult(unsigned int doc_id, unsigned int num_res, unsigned int *query_ids){
 
-    QueryResult newQR = (QueryResult )malloc(sizeof(QueryResult ));
+    QueryResult newQR = (QueryResult )malloc(sizeof(query_result ));
     if(newQR == NULL) return NULL;
 
     newQR->doc_id = doc_id;

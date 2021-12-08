@@ -45,3 +45,7 @@ void query_active_true(Query );
 
 int compareBKTNPtrString(Pointer , Pointer );
 int compareBKTNPtrEntry(Pointer , Pointer );
+
+QueryResult createQueryResult(unsigned int , unsigned int , unsigned int *);
+void destroyQueryResult(Pointer );
+int compareQueryResult(Pointer , Pointer );
