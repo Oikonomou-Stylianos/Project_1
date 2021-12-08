@@ -25,6 +25,8 @@
 #include "common_types.h"
 #include "core.h"
 
+#define MAX_DISTANCE 3
+
 static Index INDEX;
 
 ErrorCode InitializeIndex(){
@@ -127,6 +129,7 @@ ErrorCode MatchDocument(DocID doc_id, const char *doc_str){
     
     //Tokenize document
     LList doc_words = LL_Create(StringType, &destroyString, &compareString);
+    if (!doc_words) return EC_FAIL;
     char token[MAX_WORD_LENGTH + 1], *word = NULL;
     int i = 0;
     
@@ -136,7 +139,7 @@ ErrorCode MatchDocument(DocID doc_id, const char *doc_str){
             continue;
         }
         token[i] = '\0';
-        word = malloc((i+1)*sizeof(char));
+        word = (char *)malloc((i+1)*sizeof(char));
         if (!word) { LL_Destroy(doc_words); return EC_FAIL; }
         LL_InsertTail(doc_words, (char *)word);
 
@@ -144,12 +147,43 @@ ErrorCode MatchDocument(DocID doc_id, const char *doc_str){
         if (*doc_str) doc_str++;
     }
 
+    //Definitions and allocations of helper structures
+    LList res_exact = NULL;
+    LList *res_edit = (LList *)malloc((MAX_DISTANCE)*sizeof(LList));
+    if (!res_edit){ LL_Destroy(doc_words); return EC_FAIL; }
+    LList **res_hamm = (LList **)malloc((MAX_DISTANCE)*sizeof(LList *));
+    if (!res_hamm){ free(res_edit); LL_Destroy(doc_words); return EC_FAIL; }
+
+    int j = 0;
+    for (i = 0; i < MAX_DISTANCE; i++) {
+        res_edit[i] = NULL;
+        res_hamm[i] = (LList *)malloc((MAX_WORD_LENGTH-MIN_WORD_LENGTH+1)*sizeof(LList));
+        if (!res_hamm[i]){
+            for (j = i-1; j >= 0; j--){
+                free(res_hamm[j]);
+            }
+            free(res_edit);
+            free(res_hamm);
+            LL_Destroy(doc_words);
+            return EC_FAIL;
+        }
+        for (j = 0; j < MAX_WORD_LENGTH-MIN_WORD_LENGTH+1; j++) res_hamm[i][j] = NULL;
+    }
+    //The above code initializes 3 helper structures to save every query calculation
+    //based on match_distance and match_type; res_exact is only used when match_distance
+    //is 0. The above allocations are as follows: A single list for exact match results,
+    //One list for each different distance value for edit distance queries
+    //And one list for every distance value for every word length for hamming distance queries.
+
+    //They are initlalized as NULL and created mid-search if needed, reason being
+    //the NULL value denotes a calculation of the corresponding cell has not been
+    //yet executed. The alternative of an empty list cannot be trusted, as
+    //a query can return an empty list of results after execution.
+
     //Apply search for all queries
     unsigned int qcount = LL_GetSize(INDEX.query_list);
     LLNode node = LL_GetHead(INDEX.query_list);
     if (!qcount || !node) return EC_FAIL;
-
-    //Make a struct to save searched types and distances to use below
 
     while (qcount--){
         Query q = (Query)(node->data);
@@ -159,8 +193,88 @@ ErrorCode MatchDocument(DocID doc_id, const char *doc_str){
             QueryID id = query_id;
             LList qw = q->query_words;
 
-            //If already searched, skip researching and mimic post search functionality of previous clone query based on words
+            //Flagging which structures are to be initialized and searched and which are not
+            //Flags can be implemented way more efficiently than this
+            char exact_flag; edit_flag[MAX_DISTANCE]; hamm_flag[MAX_DISTANCE];
+            switch(mt){
+                case MT_EXACT_MATCH:
+                    exact_flag = (!res_exact) ? 1 : 0;
+                    break;
+                case MT_HAMMING_DIST:
+                    for (i = 0; i < MAX_WORD_LENGTH-MIN_WORD_LENGTH+1; i++){
+                        if (res_hamm[md-1][i]) break;
+                    }
+                    hamm_flag[md-1] = (i == MAX_WORD_LENGTH-MIN_WORD_LENGTH+1) ? 1 : 0;
+                    break;
+                case MT_EDIT_DIST:
+                    edit_flag[md-1] = (!res_edit[md-1]) ? 1 : 0;
+                    break;
+                default:
+                    //Destroy all lists
+                    for (i = 0; i < MAX_DISTANCE; i++) {
+                        LL_Destroy(res_edit[i]);
+                        for(j = 0; j < MAX_WORD_LENGTH-MIN_WORD_LENGTH+1; j++){
+                            LL_Destroy(res_hamm[i][j]);
+                        }
+                        free(res_hamm[i]);
+                    }
+                    free(res_edit);
+                    free(res_hamm);
+                    LL_Destroy(res_exact);
+                    LL_Destroy(doc_words);
+                    return EC_FAIL;
+            }
 
+
+            LLNode doc_node = LL_GetHead(doc_words);
+            while(doc_node){
+                word = (char *)(doc_node->data);
+            //If already searched, skip re-searching and mimic post search functionality of previous clone query based on words
+                switch(mt){
+                    case MT_EXACT_MATCH:
+                        if (exact_flag){
+                            res_exact = LL_Create(EntryPtrType, NULL, &compareEntryPtr);
+                            //Start the search
+
+                        }   //check results
+
+                        break;
+                    case MT_HAMMING_DIST:
+                        if (hamm_flag[md-1]){
+                            if (!res_hamm[md-1][strlen(word)-MIN_WORD_LENGTH]) res_hamm[md-1][strlen(word)-MIN_WORD_LENGTH] = LL_Create(EntryPtrType, NULL, &compareEntryPtr);
+                            //Commence the investigation
+
+                        }   //check results
+
+                        break;
+                    case MT_EDIT_DIST:
+                        if (edit_flag[md-1]){
+                            res_edit[md-1] = LL_Create(EntryPtrType, NULL, &compareEntryPtr);
+                            //Let the query begin
+
+                        }   //check results
+
+                        break;
+                    default:
+                        //Destroy all lists
+                        for (i = 0; i < MAX_DISTANCE; i++) {
+                            LL_Destroy(res_edit[i]);
+                            for(j = 0; j < MAX_WORD_LENGTH-MIN_WORD_LENGTH+1; j++){
+                                LL_Destroy(res_hamm[i][j]);
+                            }
+                            free(res_hamm[i]);
+                        }
+                        free(res_edit);
+                        free(res_hamm);
+                        LL_Destroy(res_exact);
+                        LL_Destroy(doc_words);
+                        return EC_FAIL;
+                }
+
+                doc_node = LL_Next(doc_words, doc_node);
+            }
+            
+            
             //Make search for all document words and save results
         }
         //If query was successful, save it to INDEX.result_list
@@ -171,6 +285,20 @@ ErrorCode MatchDocument(DocID doc_id, const char *doc_str){
 
     //Save all query_id results in INDEX.result_list based on individual query results
 
+    //Free all allocated memory
+    
+    for (i = 0; i < MAX_DISTANCE; i++) {
+        LL_Destroy(res_edit[i]);
+        for(j = 0; j < MAX_WORD_LENGTH-MIN_WORD_LENGTH+1; j++){
+            LL_Destroy(res_hamm[i][j]);
+        }
+        free(res_hamm[i]);
+    }
+    free(res_edit);
+    free(res_hamm);
+    LL_Destroy(res_exact);
+    LL_Destroy(doc_words);
+    //Destroy helper result list
     return EC_SUCCESS;
 }
 
