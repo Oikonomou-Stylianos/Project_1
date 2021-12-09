@@ -404,7 +404,7 @@ LList LL_Join(const LList ll1, LList ll2){
     if(ll1 == NULL || ll2 == NULL || ll1->dataType != ll2->dataType) return NULL;
 
     LLNode temp;
-    if((temp = LL_GetHead(ll2)) == NULL) return NULL;
+    if((temp = LL_GetHead(ll2)) == NULL) { LL_Destroy(ll2); return NULL; }
     while(temp != NULL){
 
         if(LL_Exists(ll1, (Pointer )temp->data) == 0){
