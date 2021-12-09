@@ -145,7 +145,7 @@ LLNode LL_InsertSortUnique(const LList ll , Pointer data){
         ll->head = lln;
         ll->tail = lln;
     }
-    else if(ll->compareFunction(data, ll->head->data) <= 0){
+    else if(ll->compareFunction(data, ll->head->data) < 0){
 
         lln->next = ll->head;
         ll->head = lln;
@@ -236,7 +236,7 @@ LLNode LL_Search(const LList ll, Pointer value){
                     return temp;
                 break;
             case EntryPtrType:
-                if(strcmp((char *)value, (*(Entry *)temp->data)->word) == 0)
+                if(strcmp((char *)value, (*(Entry *)(temp->data))->word) == 0)
                     return temp;
                 break;
             case IntType:
@@ -403,11 +403,20 @@ LList LL_Join(const LList ll1, LList ll2){
 
     if(ll1 == NULL || ll2 == NULL || ll1->dataType != ll2->dataType) return NULL;
 
+    int exists;
     LLNode temp;
     if((temp = LL_GetHead(ll2)) == NULL) { LL_Destroy(ll2); return NULL; }
     while(temp != NULL){
 
-        if(LL_Exists(ll1, (Pointer )temp->data) == 0){
+        switch(ll1->dataType){
+            case EntryPtrType:
+                exists = LL_Exists(ll1, (Pointer )(*(Entry *)(temp->data))->word);
+                break;
+            default:
+                exists = LL_Exists(ll1, (Pointer )(temp->data));
+        }
+
+        if(exists == 0){
             if(ll2->destroyFunction == NULL)
                 LL_InsertTail(ll1, (Pointer )temp->data);
             else{
@@ -422,7 +431,7 @@ LList LL_Join(const LList ll1, LList ll2){
                     case UIntType:
                         LL_InsertTail(ll1, (Pointer )createUInt(*(unsigned int *)(temp->data)));
                         break;
-                    case EntryType:
+                    case EntryPtrType:
                         LL_InsertTail(ll1, (Pointer )createEntry(((Entry )(temp->data))->word));
                         break;
                     default:

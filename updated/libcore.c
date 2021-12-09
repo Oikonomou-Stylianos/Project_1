@@ -73,6 +73,8 @@ ErrorCode StartQuery(QueryID        query_id,
     
     //Create entries or update existing entries based on the query string tokens and update query's entry list pointers/contents
 
+    LLNode lln_temp;
+
     char token[MAX_WORD_LENGTH+1];
     int i = 0;
     while(*query_str){
@@ -89,19 +91,27 @@ ErrorCode StartQuery(QueryID        query_id,
             //Create new entry and add it to list
             
             e = createEntry(token);
-            LL_InsertTail(INDEX.entry_list, (Pointer)e);
+            // LL_InsertTail(INDEX.entry_list, (Pointer)e);
+            // LL_Print(INDEX.entry_list);
+            // //Update Index pointers on any new entries | (done below) and update all entries' payloads to contain new query
+
+            // HT_Insert(INDEX.exact_match_ht, (Pointer)&e);
+            // BKT_Insert(INDEX.hamming_distance_bkt[i-MIN_WORD_LENGTH], (Pointer)&e);   //i holds the current token length
+            // BKT_Insert(INDEX.edit_distance_bkt, (Pointer)&e);
             
+            lln_temp = LL_InsertTail(INDEX.entry_list, (Pointer )e);
             //Update Index pointers on any new entries | (done below) and update all entries' payloads to contain new query
 
-            HT_Insert(INDEX.exact_match_ht, (Pointer)&e);
-            BKT_Insert(INDEX.hamming_distance_bkt[i-MIN_WORD_LENGTH], (Pointer)&e);   //i holds the current token length
-            BKT_Insert(INDEX.edit_distance_bkt, (Pointer)&e);
+            HT_Insert(INDEX.exact_match_ht, &(lln_temp->data));
+            BKT_Insert(INDEX.hamming_distance_bkt[i-MIN_WORD_LENGTH], &(lln_temp->data));   //i holds the current token length
+            BKT_Insert(INDEX.edit_distance_bkt, &(lln_temp->data));
+
 
         } else e = (Entry)(node->data);
 
         LL_InsertTail(e->payload, (Pointer)q);  // Add Query to Payload
-        LL_InsertTail(q->query_words, (Pointer)e);  // Add Entry to Query_word entry list
-    
+        LL_InsertTail(q->query_words, &(lln_temp->data));  // Add Entry to Query_word entry list
+        
         //Prepare for next iteration if not at end of query_string
         i = 0;
         if (*query_str) query_str++;
@@ -250,7 +260,7 @@ ErrorCode MatchDocument(DocID doc_id, const char *doc_str){
                             if (!res_exact) res_exact = LL_Create(EntryPtrType, NULL, &compareEntryPtr);
                             //Start the search
                             LLNode temp = HT_Search(INDEX.exact_match_ht, word);
-                            if (!temp) LL_InsertTail(res_exact, temp->data));
+                            if (temp) LL_InsertTail(res_exact, (Pointer )(temp->data));
                         }
                         break;
                     case MT_HAMMING_DIST:
@@ -264,7 +274,13 @@ ErrorCode MatchDocument(DocID doc_id, const char *doc_str){
                         if (edit_flag[md-1]){
                             if (!res_edit[md-1]) res_edit[md-1] = LL_Create(EntryPtrType, NULL, &compareEntryPtr);
                             //Let the query begin and join lists
+                            printf("\n %u>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> %d\n\n", doc_id, md-1);
+                            LL_Print(res_edit[md-1]);
+                            LL_Print(BKT_Search(INDEX.edit_distance_bkt, word, md));
+                            
                             LL_Join(res_edit[md-1], BKT_Search(INDEX.edit_distance_bkt, word, md));
+
+                            LL_Print(res_edit[md-1]);
                         }
                         break;
                     default:
@@ -290,20 +306,26 @@ ErrorCode MatchDocument(DocID doc_id, const char *doc_str){
             //Time to check if query belongs to the results of the document
             //If query was successful, save it to res_ids
 
+            Entry *temp_entry = NULL;
             LLNode q_word_node = LL_GetHead(qw);
             unsigned int hits = LL_GetSize(qw);
+            printf("%u PPPPPPPPPPP\n", hits);
+            LL_Print(qw);
             while(q_word_node){
-                word = LL_GetValue(q_word_node);
-
+                temp_entry = LL_GetValue(q_word_node);
+                if (!temp_entry) break;
+                word = (*temp_entry)->word;
+                printf("%s 8888888888888888888888 \n", word);
                 switch(mt){
                     case MT_EXACT_MATCH:
-                        if (LL_Exists(res_exact, (Pointer) word)) hits--;
+                        if (LL_Exists(res_exact, (Pointer) word) > 0 ) hits--;
                         break;
                     case MT_HAMMING_DIST:
-                        if (LL_Exists(res_hamm[md-1][strlen(word)-MIN_WORD_LENGTH], (Pointer) word)) hits--;
+                        printf("~~~~~~~~~~~~~~~~ %ld %s\n", strlen(word), word);
+                        if (LL_Exists(res_hamm[md-1][strlen(word)-MIN_WORD_LENGTH], (Pointer) word) > 0) hits--;
                         break;
                     case MT_EDIT_DIST:
-                        if (LL_Exists(res_edit[md-1], (Pointer) word)) hits--;
+                        if (LL_Exists(res_edit[md-1], (Pointer) word) > 0) hits--;
                         break;
                     default:
                         //Destroy all lists
