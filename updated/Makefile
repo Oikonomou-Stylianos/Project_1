@@ -35,10 +35,10 @@ test:
 # gcc -c BKTree.c
 # g++ -O3 -fPIC -Wall -g -I -c -o testdriver test.so libcore.so LinkedList.so BKTree.so HashTable.so constructors.so distance.so
 run:
-	./test
+	./testdriver
 
 clean:
-	rm -f test
+	rm -f testdriver *.o *.so
 
 val:
-	valgrind ./test
+	valgrind ./testdriver
