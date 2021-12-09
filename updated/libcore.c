@@ -249,7 +249,8 @@ ErrorCode MatchDocument(DocID doc_id, const char *doc_str){
                         if (exact_flag){
                             if (!res_exact) res_exact = LL_Create(EntryPtrType, NULL, &compareEntryPtr);
                             //Start the search
-                            LL_InsertTail(res_exact, (Pointer )(HT_Search(INDEX.exact_match_ht, word)->data));
+                            LLNode temp = HT_Search(INDEX.exact_match_ht, word);
+                            if (!temp) LL_InsertTail(res_exact, temp->data));
                         }
                         break;
                     case MT_HAMMING_DIST:
