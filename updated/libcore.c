@@ -149,6 +149,7 @@ ErrorCode MatchDocument(DocID doc_id, const char *doc_str){
 
         word = (char *)malloc((i + 1) * sizeof(char ));     // i = length of the word
         if (!word) { HT_Destroy(doc_words_ht); return EC_FAIL; }
+        strcpy(word, token);
         
         HT_Insert(doc_words_ht, (Pointer )word);
 
@@ -202,12 +203,12 @@ ErrorCode MatchDocument(DocID doc_id, const char *doc_str){
         if (q->active){
             MatchType mt = q->match_type;
             unsigned int md = q->match_dist;
-            QueryID id = query_id;
+            QueryID id = q->query_id;
             LList qw = q->query_words;
 
             //Flagging which structures are to be initialized and searched and which are not
             //Flags can be implemented way more efficiently than this
-            char exact_flag; edit_flag[MAX_DISTANCE]; hamm_flag[MAX_DISTANCE];
+            char exact_flag, edit_flag[MAX_DISTANCE], hamm_flag[MAX_DISTANCE];
             switch(mt){
                 case MT_EXACT_MATCH:
                     exact_flag = (!res_exact) ? 1 : 0;
@@ -248,7 +249,7 @@ ErrorCode MatchDocument(DocID doc_id, const char *doc_str){
                         if (exact_flag){
                             if (!res_exact) res_exact = LL_Create(EntryPtrType, NULL, &compareEntryPtr);
                             //Start the search
-                            LL_InsertTail(res_exact, (Pointer)(HT_Search(INDEX.exact_match_ht, word)->data))
+                            LL_InsertTail(res_exact, (Pointer )(HT_Search(INDEX.exact_match_ht, word)->data));
                         }
                         break;
                     case MT_HAMMING_DIST:
@@ -289,7 +290,7 @@ ErrorCode MatchDocument(DocID doc_id, const char *doc_str){
             //If query was successful, save it to res_ids
 
             LLNode q_word_node = LL_GetHead(qw);
-            unsigned int hits = LL_GetSize(qw)
+            unsigned int hits = LL_GetSize(qw);
             while(q_word_node){
                 word = LL_GetValue(q_word_node);
 
@@ -301,7 +302,7 @@ ErrorCode MatchDocument(DocID doc_id, const char *doc_str){
                         if (LL_Exists(res_hamm[md-1][strlen(word)-MIN_WORD_LENGTH], (Pointer) word)) hits--;
                         break;
                     case MT_EDIT_DIST:
-                        if (LL_Exists(res_edit[md-1]), (Pointer) word) hits--;
+                        if (LL_Exists(res_edit[md-1], (Pointer) word)) hits--;
                         break;
                     default:
                         //Destroy all lists
@@ -319,7 +320,7 @@ ErrorCode MatchDocument(DocID doc_id, const char *doc_str){
                         LL_Destroy(res_ids);
                         return EC_FAIL;
                 }
-                q_word_node = LL_Next(q_word_node);
+                q_word_node = LL_Next(qw, q_word_node);
             }
             if (!hits) LL_InsertSort(res_ids, createUInt(id));
         }

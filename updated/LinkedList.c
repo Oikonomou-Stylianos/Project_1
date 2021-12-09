@@ -16,6 +16,7 @@
 #include <string.h>
 #include <time.h>
 #include <limits.h>
+#include <unistd.h>
 
 #include "LinkedList.h"
 #include "constructors.h"
@@ -400,14 +401,36 @@ int LL_DeleteNth(const LList ll, const unsigned int index){
 }
 LList LL_Join(const LList ll1, LList ll2){
 
-    if(ll1 == NULL || ll2 == NULL) return NULL;
+    if(ll1 == NULL || ll2 == NULL || ll1->dataType != ll2->dataType) return NULL;
 
     LLNode temp;
     if((temp = LL_GetHead(ll2)) == NULL) return NULL;
     while(temp != NULL){
 
-        if(LL_Exists(ll1, temp->data) == 0)
-            LL_InsertSortUnique(ll1, temp->data);
+        if(LL_Exists(ll1, (Pointer )temp->data) == 0){
+            if(ll2->destroyFunction == NULL)
+                LL_InsertTail(ll1, (Pointer )temp->data);
+            else{
+
+                switch(ll1->dataType){
+                    case StringType:
+                        LL_InsertTail(ll1, (Pointer )createString((char *)(temp->data)));
+                        break;
+                    case IntType:
+                        LL_InsertTail(ll1, (Pointer )createInt(*(int *)(temp->data)));
+                        break;
+                    case UIntType:
+                        LL_InsertTail(ll1, (Pointer )createUInt(*(unsigned int *)(temp->data)));
+                        break;
+                    case EntryType:
+                        LL_InsertTail(ll1, (Pointer )createEntry(((Entry )(temp->data))->word));
+                        break;
+                    default:
+                        printf("Error : [LL_Join] : Unsupported data type\n");
+                        return NULL;
+                }
+            }
+        }
 
         temp = LL_Next(ll2, temp);
     }
@@ -618,7 +641,7 @@ int LL_Destroy(LList ll){
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 
-int main(void){
+// int main(void){
 
     // String Example
     // LList myLL = LL_Create(StringType, &destroyString, &compareString);
@@ -682,22 +705,33 @@ int main(void){
     // LL_Destroy(myIntLL);
 
     // UInt Example
-    time_t t;
-    srand(time(NULL));
-    LList myUIntLL = LL_Create(UIntType, &destroyUInt, &compareUInt);
-    int i;
-    for(i = 0; i < 10; i++)
-        LL_InsertTail(myUIntLL, (Pointer )createUInt((unsigned int )i));
-        // LL_InsertTail(myUIntLL, createUInt(rand()%100));
+    // time_t t;
+    // srand(time(NULL));
+    // LList myUIntLL = LL_Create(UIntType, &destroyUInt, &compareUInt);
+    // LList myUIntLL1 = LL_Create(UIntType, &destroyUInt, &compareUInt);
+    // int i;
+    // for(i = 0; i < 2; i++){
+    //     LL_InsertTail(myUIntLL, (Pointer )createUInt((unsigned int )(rand()%100)));
+    //     sleep(1);
+    //     LL_InsertTail(myUIntLL1, (Pointer )createUInt((unsigned int )(rand()%100)));
+    // }
+    //     // LL_InsertTail(myUIntLL, createUInt(rand()%100));
     
-    unsigned int *array = (unsigned int *)LL_ToArray(myUIntLL);
+    // unsigned int *array = (unsigned int *)LL_ToArray(myUIntLL);
     // LL_Print(myUIntLL);
-    for(i = 0; i < 10; i++)
-        printf("%u\n", array[i]);
+    // LL_Print(myUIntLL1);
+    
+    // // for(i = 0; i < 10; i++)
+    // //     printf("%u\n", array[i]);
+
+    // LL_Join(myUIntLL, myUIntLL1);
+    // LL_Print(myUIntLL);
+
 
     // LL_Print(myUIntLL);
 
     // LL_Destroy(myUIntLL);
+    // LL_Destroy(myUIntLL1);
 
     // Query Example
     // time_t t;
@@ -738,5 +772,5 @@ int main(void){
     // LL_Destroy(result);
     // BKT_Destroy(myBKT);
 
-    return 0;
-}
+//     return 0;
+// }

@@ -59,6 +59,9 @@ int HT_Hash(HashTable ht, Pointer data){
 
     unsigned int hash;
     switch(ht->dataType){
+        case StringType:
+            hash = ht->hashFunction((Pointer )data);
+            break;
         case EntryPtrType:
             hash = ht->hashFunction((Pointer )(*(Entry *)data)->word);
             break;
