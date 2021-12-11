@@ -3,3 +3,4 @@ Executables/
 updated/test
 updated/*.o
 updated/*.so
+updated/libcore1.c

@@ -26,11 +26,9 @@ typedef enum{
 
     StringType,
     EntryType,
-    EntryPtrType,
     IntType,
     UIntType,
     QueryType,
-    QueryPtrType,
     BKTNodeType,      // Candidate List in BK-Tree
     QueryResultType
 
@@ -130,11 +128,12 @@ typedef query_result *QueryResult;
 //////////////////////////////////////////////
 typedef struct{
 	
-    HashTable exact_match_ht;
-    BKTree hamming_distance_bkt[MAX_WORD_LENGTH - MIN_WORD_LENGTH + 1];
-    BKTree edit_distance_bkt;
-
     LList entry_list;
+
+    HashTable exact_match_ht;
+    BKTree edit_distance_bkt;
+    BKTree hamming_distance_bkt[MAX_WORD_LENGTH - MIN_WORD_LENGTH + 1];
+
     LList query_list;
     LList result_list;
 

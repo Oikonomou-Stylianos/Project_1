@@ -32,13 +32,9 @@ Entry createEntry(char *);
 void destroyEntry(Pointer );
 int compareEntry(Pointer , Pointer );
 
-void destroyEntryPtr(Pointer );
-int compareEntryPtr(Pointer , Pointer );
-
 Query createQuery(unsigned int, MatchType , unsigned int );
 void destroyQuery(Pointer );
 int compareQuery(Pointer , Pointer );
-int compareQueryPtr(Pointer , Pointer );
 char toggle_query_active(Query );
 void query_active_false(Query );
 void query_active_true(Query );

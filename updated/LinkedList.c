@@ -232,11 +232,7 @@ LLNode LL_Search(const LList ll, Pointer value){
                     return temp;
                 break;
             case EntryType:
-                if(strcmp((char *)value, ((Entry )temp->data)->word) == 0)
-                    return temp;
-                break;
-            case EntryPtrType:
-                if(strcmp((char *)value, (*(Entry *)(temp->data))->word) == 0)
+                if(strcmp((char *)value, ((Entry )(temp->data))->word) == 0)
                     return temp;
                 break;
             case IntType:
@@ -249,10 +245,6 @@ LLNode LL_Search(const LList ll, Pointer value){
                 break;
             case QueryType:
                 if(*(unsigned int *)value == ((Query )(temp->data))->query_id)
-                    return temp;
-                break;
-            case QueryPtrType:
-                if(*(unsigned int *)value == ((*(Query *)(temp->data)))->query_id)
                     return temp;
                 break;
             case QueryResultType:
@@ -279,11 +271,7 @@ LLNode LL_SearchRec(const LList ll, const LLNode lln, Pointer value){
                 return lln;
             break;
         case EntryType:
-            if(strcmp((char *)value, ((Entry )lln->data)->word) == 0)
-                return lln;
-            break;
-        case EntryPtrType:
-            if(strcmp((char *)value, (*(Entry *)lln->data)->word) == 0)
+            if(strcmp((char *)value, ((Entry )(lln->data))->word) == 0)
                 return lln;
             break;
         case IntType:
@@ -296,10 +284,6 @@ LLNode LL_SearchRec(const LList ll, const LLNode lln, Pointer value){
             break;
         case QueryType:
             if(*(unsigned int *)value == ((Query )(lln->data))->query_id)
-                return lln;
-            break;
-        case QueryPtrType:
-            if(*(unsigned int *)value == ((*(Query *)(lln->data)))->query_id)
                 return lln;
             break;
         case QueryResultType:
@@ -401,42 +385,47 @@ int LL_DeleteNth(const LList ll, const unsigned int index){
 }
 LList LL_Join(const LList ll1, LList ll2){
 
-    if(ll1 == NULL || ll2 == NULL || ll1->dataType != ll2->dataType) return NULL;
+    if(ll1 == NULL || ll2 == NULL || ll1->dataType != ll2->dataType || LL_GetHead(ll2) == NULL) { LL_Destroy(ll2); return NULL; }
 
     int exists;
-    LLNode temp;
-    if((temp = LL_GetHead(ll2)) == NULL) { LL_Destroy(ll2); return NULL; }
+    LLNode temp = LL_GetHead(ll2);
     while(temp != NULL){
 
         switch(ll1->dataType){
-            case EntryPtrType:
-                exists = LL_Exists(ll1, (Pointer )(*(Entry *)(temp->data))->word);
+            case EntryType:
+                exists = LL_Exists(ll1, (Pointer )((Entry )(temp->data))->word);
                 break;
             default:
                 exists = LL_Exists(ll1, (Pointer )(temp->data));
         }
 
         if(exists == 0){
+
             if(ll2->destroyFunction == NULL)
                 LL_InsertTail(ll1, (Pointer )temp->data);
             else{
 
-                switch(ll1->dataType){
-                    case StringType:
-                        LL_InsertTail(ll1, (Pointer )createString((char *)(temp->data)));
-                        break;
-                    case IntType:
-                        LL_InsertTail(ll1, (Pointer )createInt(*(int *)(temp->data)));
-                        break;
-                    case UIntType:
-                        LL_InsertTail(ll1, (Pointer )createUInt(*(unsigned int *)(temp->data)));
-                        break;
-                    case EntryPtrType:
-                        LL_InsertTail(ll1, (Pointer )createEntry(((Entry )(temp->data))->word));
-                        break;
-                    default:
-                        printf("Error : [LL_Join] : Unsupported data type\n");
-                        return NULL;
+                if(ll2->destroyFunction == NULL)
+                    LL_InsertTail(ll1, (Pointer )(temp->data));
+                else{
+
+                    switch(ll1->dataType){
+                        case StringType:
+                            LL_InsertTail(ll1, (Pointer )createString((char *)(temp->data)));
+                            break;
+                        case IntType:
+                            LL_InsertTail(ll1, (Pointer )createInt(*(int *)(temp->data)));
+                            break;
+                        case UIntType:
+                            LL_InsertTail(ll1, (Pointer )createUInt(*(unsigned int *)(temp->data)));
+                            break;
+                        case EntryType:
+                            LL_InsertTail(ll1, (Pointer )createEntry(((Entry )(temp->data))->word));
+                            break;
+                        default:
+                            printf("Error : [LL_Join] : Unsupported data type\n");
+                            return NULL;
+                    }
                 }
             }
         }
@@ -560,10 +549,7 @@ int LL_Print(const LList ll){
 		        printf("%s ", (char *)(temp->data));
                 break;
             case EntryType:
-		        printf("%s ", ((Entry )temp->data)->word);
-                break;
-            case EntryPtrType:
-		        printf("%s ", (*(Entry *)temp->data)->word);
+		        printf("%s ", ((Entry )(temp->data))->word);
                 break;
             case IntType:
                 printf("%d ", *(int *)(temp->data));
@@ -575,11 +561,6 @@ int LL_Print(const LList ll){
                 printf("\n {\n query_id = %u\n query_words = ", ((Query )(temp->data))->query_id);
                 LL_Print(((Query )(temp->data))->query_words);
                 printf(" match_type = %d\n match_dist = %u\n active = %d\n }", ((Query )(temp->data))->match_type, ((Query )(temp->data))->match_dist, ((Query )(temp->data))->active);
-                break;
-            case QueryPtrType:
-                printf("\n {\n query_id = %u\n query_words = ", (*(Query *)(temp->data))->query_id);
-                LL_Print(((Query )(temp->data))->query_words);
-                printf(" match_type = %d\n match_dist = %u\n active = %d\n }", (*(Query *)(temp->data))->match_type, (*(Query *)(temp->data))->match_dist, (*(Query *)(temp->data))->active);
                 break;
             case QueryResultType:
                 printf("\n {\n doc_id = %u\n num_res = %u\n query_ids = [ ", ((QueryResult )(temp->data))->doc_id, ((QueryResult )(temp->data))->num_res);
@@ -678,7 +659,7 @@ int LL_Destroy(LList ll){
     // // LL_Print(myEntryLL);
 
     // // LList myEntryPtrLL = LL_Create(EntryType, NULL, &compareEntry);
-    // HashTable myHT = HT_Create(EntryPtrType, &djb2, NULL, &compareEntryPtr);
+    // HashTable myHT = HT_Create(EntryType, &djb2, NULL, &compareEntry);
 
     // LLNode temp = LL_GetHead(myEntryLL), temp1;
     // while(temp != NULL){
@@ -765,7 +746,7 @@ int LL_Destroy(LList ll){
     // LL_InsertTail(myEntryLL, (Pointer )createEntry("melt"));
     // LL_Print(myEntryLL);
 
-    // BKTree myBKT = BKT_Create(MT_EDIT_DIST, EntryPtrType, NULL);
+    // BKTree myBKT = BKT_Create(MT_EDIT_DIST, EntryType, NULL);
 
     // LLNode temp = LL_GetHead(myEntryLL);
     // while(temp != NULL){

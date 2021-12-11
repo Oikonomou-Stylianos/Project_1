@@ -62,8 +62,8 @@ int HT_Hash(HashTable ht, Pointer data){
         case StringType:
             hash = ht->hashFunction((Pointer )data);
             break;
-        case EntryPtrType:
-            hash = ht->hashFunction((Pointer )(*(Entry *)data)->word);
+        case EntryType:
+            hash = ht->hashFunction((Pointer )((Entry )data)->word);
             break;
         default:
             printf("Error: [HT_Hash] : Unsupported data type\n");
@@ -106,11 +106,6 @@ LLNode HT_Search(const HashTable ht, char *word){
         case EntryType:
             temp = (Pointer )createEntry(word);
             if((hash = HT_Hash(ht, temp)) == -1) return NULL;
-            index = hash % ht->capacity;
-            break;
-        case EntryPtrType:
-            temp = (Pointer )createEntry(word);
-            if((hash = HT_Hash(ht, &temp)) == -1) return NULL;
             index = hash % ht->capacity;
             break;
         default:

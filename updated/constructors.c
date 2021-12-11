@@ -86,7 +86,7 @@ Entry createEntry(char *w){
     e->word = (char *)malloc(sizeof(char ) * (strlen(w) + 1));
     if(e->word == NULL) { free(e); return NULL; }
     strcpy(e->word, w);
-    if((e->payload = LL_Create(QueryPtrType, NULL, &compareQueryPtr)) == NULL) { free(e->word); free(e); return NULL; }
+    if((e->payload = LL_Create(QueryType, NULL, &compareQuery)) == NULL) { free(e->word); free(e); return NULL; }
     
     return e; 
 }
@@ -105,27 +105,12 @@ int compareEntry(Pointer e1, Pointer e2){
     return strcmp(((Entry )e1)->word, ((Entry )e2)->word);
 }
 //////////////////////////////////////////////
-void destroyEntryPtr(Pointer e){
-
-    if(e == NULL) return;
-
-    free((*(Entry *)e)->word);
-    if(LL_Destroy((*(Entry *)e)->payload) == 1) return;
-    free(*(Entry *)e);
-}
-int compareEntryPtr(Pointer e1, Pointer e2){
-
-    if(e1 == NULL || e2 == NULL) return -2;
-
-    return strcmp((*(Entry *)e1)->word, (*(Entry *)e2)->word);
-}
-//////////////////////////////////////////////
 Query createQuery(unsigned int id, MatchType mt, unsigned int md){
 
     Query newQuery = (Query )malloc(sizeof(query ));
     if(newQuery == NULL) return NULL;
 
-    if((newQuery->query_words = LL_Create(EntryPtrType, NULL, &compareEntryPtr)) == NULL){
+    if((newQuery->query_words = LL_Create(EntryType, NULL, &compareEntry)) == NULL){
         free(newQuery);
         return NULL;
     }
@@ -159,13 +144,6 @@ void query_active_false(Query q){
 }
 void query_active_true(Query q){
     q->active = 1; return;
-}
-//////////////////////////////////////////////
-int compareQueryPtr(Pointer q1, Pointer q2){
-
-    if(q1 == NULL || q2 == NULL) return -2;
-
-    return (*((Query *)q1))->query_id == (*((Query *)q2))->query_id ? 0 : (*((Query *)q1))->query_id < (*((Query *)q1))->query_id ? -1 : 1;  
 }
 //////////////////////////////////////////////
 int compareBKTNPtrString(Pointer w1, Pointer w2){

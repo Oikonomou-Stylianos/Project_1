@@ -63,16 +63,17 @@ BKTreeNode BKT_Insert(const BKTree bkt, Pointer data){
             word_length = strlen((char *)data);
             if(bkt->root != NULL) root_length = strlen((char *)(bkt->root->data));
             break;
-        case EntryPtrType:
-            word_length = strlen((char *)((*(Entry *)data)->word));
-            if(bkt->root != NULL) root_length = strlen((char *)((*(Entry *)(bkt->root->data))->word));
+        case EntryType:
+            word_length = strlen((char *)(((Entry )data)->word));
+            if(bkt->root != NULL) root_length = strlen((char *)(((Entry )(bkt->root->data))->word));
             break;
         default:
             printf("Error : [BKT_Insert] : Unsupported data type\n");
     }
 
 	if(word_length < MIN_WORD_LENGTH || word_length > MAX_WORD_LENGTH){
-        printf("Error : [BKT_Insert] : Word exceeded length limits\n");   
+        // printf("%s, %d\n", (char *)(((Entry )data)->word), word_length);
+        printf("Error : [BKT_Insert] : Word exceeded length limits\n");
         return NULL;
     }
 
@@ -100,8 +101,8 @@ BKTreeNode BKT_InsertNode(const BKTree bkt, const BKTreeNode parent, Pointer dat
         case StringType:
             dist = distance((char *)(parent->data), (char *)data, bkt->matchType);
             break;
-        case EntryPtrType:
-            dist = distance((char *)((*(Entry *)(parent->data))->word), (*(Entry *)data)->word, bkt->matchType);
+        case EntryType:
+            dist = distance((char *)(((Entry )(parent->data))->word), ((Entry )data)->word, bkt->matchType);
             break;
         default:
             printf("Error : [BKT_InsertNode] : Unsupported data type\n");
@@ -130,9 +131,9 @@ LList BKT_Search(const BKTree bkt, const char *word, const unsigned int threshol
             candidateList = LL_Create(BKTNodeType, NULL, &compareBKTNPtrString);
             wordList = LL_Create(StringType, &destroyString, &compareString);
             break;
-        case EntryPtrType:
+        case EntryType:
             candidateList = LL_Create(BKTNodeType, NULL, &compareBKTNPtrEntry);
-            wordList = LL_Create(EntryPtrType, NULL, &compareEntryPtr);
+            wordList = LL_Create(EntryType, NULL, &compareEntry);
             break;
         default:
             printf("Error : [BKT_Search] : Unsupported data type\n");
@@ -152,8 +153,8 @@ LList BKT_Search(const BKTree bkt, const char *word, const unsigned int threshol
             case StringType:
                 dist = distance(word, (char *)((*bktn_temp)->data), bkt->matchType);
                 break;
-            case EntryPtrType:
-                dist = distance(word, (char *)((*(Entry *)((*bktn_temp)->data))->word), bkt->matchType);
+            case EntryType:
+                dist = distance(word, (char *)(((Entry )((*bktn_temp)->data))->word), bkt->matchType);
                 break;
             default:
                 printf("Error : [BKT_Search] : Unsupported data type\n");
@@ -165,7 +166,7 @@ LList BKT_Search(const BKTree bkt, const char *word, const unsigned int threshol
                 case StringType:
                     LL_InsertTail(wordList, createString((char *)((*bktn_temp)->data)));
                     break;
-                case EntryPtrType:
+                case EntryType:
                     LL_InsertTail(wordList, (*bktn_temp)->data);
                     break;
                 default:

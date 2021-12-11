@@ -30,14 +30,16 @@
 static Index INDEX;
 
 ErrorCode InitializeIndex(){
-
-    INDEX.exact_match_ht = HT_Create(EntryPtrType, &djb2, NULL, &compareEntryPtr);
+    
     int i;
-    for(i = 0; i < MAX_WORD_LENGTH - MIN_WORD_LENGTH + 1; i++)
-        INDEX.hamming_distance_bkt[i] = BKT_Create(MT_HAMMING_DIST, EntryPtrType, NULL);
-    INDEX.edit_distance_bkt = BKT_Create(MT_EDIT_DIST, EntryPtrType, NULL);
 
     INDEX.entry_list = LL_Create(EntryType, &destroyEntry, &compareEntry);
+
+    INDEX.exact_match_ht = HT_Create(EntryType, &djb2, NULL, &compareEntry);
+    for(i = 0; i < MAX_WORD_LENGTH - MIN_WORD_LENGTH + 1; i++)
+        INDEX.hamming_distance_bkt[i] = BKT_Create(MT_HAMMING_DIST, EntryType, NULL);
+    INDEX.edit_distance_bkt = BKT_Create(MT_EDIT_DIST, EntryType, NULL);
+
     INDEX.query_list = LL_Create(QueryType, &destroyQuery, &compareQuery);
     INDEX.result_list = LL_Create(QueryResultType, &destroyQueryResult, &compareQueryResult);
 
@@ -47,19 +49,21 @@ ErrorCode InitializeIndex(){
 ErrorCode DestroyIndex(){
 
     int i;
+
+    if(LL_Destroy(INDEX.entry_list) == 1) return EC_FAIL;
+    
     if(HT_Destroy(INDEX.exact_match_ht) == 1) return EC_FAIL;
     for(i = 0; i < MAX_WORD_LENGTH - MIN_WORD_LENGTH + 1; i++)
         if(BKT_Destroy(INDEX.hamming_distance_bkt[i]) == 1) return EC_FAIL;
     if(BKT_Destroy(INDEX.edit_distance_bkt) == 1) return EC_FAIL;
 
-    if(LL_Destroy(INDEX.entry_list) == 1) return EC_FAIL;
     if(LL_Destroy(INDEX.query_list) == 1) return EC_FAIL;
     if(LL_Destroy(INDEX.result_list) == 1) return EC_FAIL;
 
     return EC_SUCCESS;
 }
 
-ErrorCode StartQuery(QueryID        query_id,   
+ErrorCode StartQuery(QueryID        query_id,
                      const char*    query_str,
                      MatchType      match_type,
                      unsigned int   match_dist)
@@ -102,20 +106,22 @@ ErrorCode StartQuery(QueryID        query_id,
             lln_temp = LL_InsertTail(INDEX.entry_list, (Pointer )e);
             //Update Index pointers on any new entries | (done below) and update all entries' payloads to contain new query
 
-            HT_Insert(INDEX.exact_match_ht, &(lln_temp->data));
-            BKT_Insert(INDEX.hamming_distance_bkt[i-MIN_WORD_LENGTH], &(lln_temp->data));   //i holds the current token length
-            BKT_Insert(INDEX.edit_distance_bkt, &(lln_temp->data));
+            HT_Insert(INDEX.exact_match_ht, lln_temp->data);
+            BKT_Insert(INDEX.hamming_distance_bkt[i-MIN_WORD_LENGTH], lln_temp->data);   //i holds the current token length
+            BKT_Insert(INDEX.edit_distance_bkt, lln_temp->data);
 
 
         } else e = (Entry)(node->data);
 
         LL_InsertTail(e->payload, (Pointer)q);  // Add Query to Payload
-        LL_InsertTail(q->query_words, &(lln_temp->data));  // Add Entry to Query_word entry list
+        LL_InsertTail(q->query_words, lln_temp->data);  // Add Entry to Query_word entry list
         
         //Prepare for next iteration if not at end of query_string
         i = 0;
         if (*query_str) query_str++;
     }
+
+    LL_Print((Pointer )INDEX.query_list);
 
     return EC_SUCCESS;
 }
@@ -257,7 +263,8 @@ ErrorCode MatchDocument(DocID doc_id, const char *doc_str){
                 switch(mt){
                     case MT_EXACT_MATCH:
                         if (exact_flag){
-                            if (!res_exact) res_exact = LL_Create(EntryPtrType, NULL, &compareEntryPtr);
+                            if (!res_exact) res_exact = LL_Create(EntryType, NULL, &compareEntry);
+                            //Start the search
                             //Start the search
                             LLNode temp = HT_Search(INDEX.exact_match_ht, word);
                             if (temp) LL_InsertTail(res_exact, (Pointer )(temp->data));
@@ -265,14 +272,14 @@ ErrorCode MatchDocument(DocID doc_id, const char *doc_str){
                         break;
                     case MT_HAMMING_DIST:
                         if (hamm_flag[md-1]){
-                            if (!res_hamm[md-1][strlen(word)-MIN_WORD_LENGTH]) res_hamm[md-1][strlen(word)-MIN_WORD_LENGTH] = LL_Create(EntryPtrType, NULL, &compareEntryPtr);
+                            if (!res_hamm[md-1][strlen(word)-MIN_WORD_LENGTH]) res_hamm[md-1][strlen(word)-MIN_WORD_LENGTH] = LL_Create(EntryType, NULL, &compareEntry);
                             //Commence the investigation and merge lists
                             LL_Join(res_hamm[md-1][strlen(word)-MIN_WORD_LENGTH], BKT_Search(INDEX.hamming_distance_bkt[strlen(word)-MIN_WORD_LENGTH], word, md));
                         }
                         break;
                     case MT_EDIT_DIST:
                         if (edit_flag[md-1]){
-                            if (!res_edit[md-1]) res_edit[md-1] = LL_Create(EntryPtrType, NULL, &compareEntryPtr);
+                            if (!res_edit[md-1]) res_edit[md-1] = LL_Create(EntryType, NULL, &compareEntry);
                             //Let the query begin and join lists
                             printf("\n %u>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> %d\n\n", doc_id, md-1);
                             LL_Print(res_edit[md-1]);
