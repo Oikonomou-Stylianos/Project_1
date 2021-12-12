@@ -128,10 +128,12 @@ LList BKT_Search(const BKTree bkt, const char *word, const unsigned int threshol
 	LList candidateList, wordList; 
     switch(bkt->dataType){
         case StringType:
+            if(bkt->matchType == MT_HAMMING_DIST && strlen(word) != strlen((char *)(bkt->root->data))) return NULL;
             candidateList = LL_Create(BKTNodeType, NULL, &compareBKTNPtrString);
             wordList = LL_Create(StringType, &destroyString, &compareString);
             break;
         case EntryType:
+            if(bkt->matchType == MT_HAMMING_DIST && strlen(word) != strlen((char *)(((Entry )(bkt->root->data))->word))) return NULL;
             candidateList = LL_Create(BKTNodeType, NULL, &compareBKTNPtrEntry);
             wordList = LL_Create(EntryType, NULL, &compareEntry);
             break;

@@ -32,7 +32,7 @@ test:
 # gcc -c LinkedList.c
 # gcc -c BKTree.c
 # g++ -O3 -fPIC -Wall -g -I -c -o testdriver test.so libcore.so LinkedList.so BKTree.so HashTable.so constructors.so distance.so
-test:
+test1:
 	gcc -O3 -fPIC -g -I. -c -o libcore1.o libcore1.c
 	gcc -O3 -fPIC -g -I. -shared -o libcore1.so libcore1.o
 	gcc -O3 -fPIC -g -I. -c -o BKTree.o BKTree.c

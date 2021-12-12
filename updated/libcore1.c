@@ -119,6 +119,8 @@ ErrorCode StartQuery(QueryID        query_id,
     }
     LL_Destroy(tokenList);
 
+
+
     return EC_SUCCESS;
 }
 
@@ -172,23 +174,23 @@ ErrorCode MatchDocument(DocID doc_id, const char *doc_str){
     while(query_lln != NULL){
         
         current_query = (Query )LL_GetValue(query_lln);
-        if(current_query->active == 1){         // If the Query is active continue
+        if(current_query->active == 1){         // If the Query is not active continue
         
             if(current_query->match_type == MT_EXACT_MATCH){
 
                 if(res_exact == NULL){
 
                     res_exact = LL_Create(EntryType, NULL, &compareEntry);
+                }
 
-                    docword_lln = LL_GetHead(tokenList);
-                    while(docword_lln != NULL){
+                docword_lln = LL_GetHead(tokenList);
+                while(docword_lln != NULL){
 
-                        temp_lln = HT_Search(INDEX.exact_match_ht, (char *)LL_GetValue(docword_lln));
-                        if(temp_lln != NULL)
-                            LL_InsertTail(res_exact, temp_lln->data);
+                    temp_lln = HT_Search(INDEX.exact_match_ht, (char *)LL_GetValue(docword_lln));
+                    if(temp_lln != NULL)
+                        LL_InsertTail(res_exact, temp_lln->data);
 
-                        docword_lln = LL_Next(tokenList, docword_lln);
-                    }
+                    docword_lln = LL_Next(tokenList, docword_lln);
                 }
             }
             else if(current_query->match_type == MT_EDIT_DIST){
@@ -196,37 +198,32 @@ ErrorCode MatchDocument(DocID doc_id, const char *doc_str){
                 if(res_edit[current_query->match_dist - 1] == NULL){
 
                     res_edit[current_query->match_dist - 1] = LL_Create(EntryType, NULL, &compareEntry);
+                }
 
-                    docword_lln = LL_GetHead(tokenList);
-                    while(docword_lln != NULL){
+                docword_lln = LL_GetHead(tokenList);
+                while(docword_lln != NULL){
 
-                        temp_list = BKT_Search(INDEX.edit_distance_bkt, (char *)LL_GetValue(docword_lln), current_query->match_dist);
-                        LL_Join(res_edit[current_query->match_dist - 1], temp_list);
+                    temp_list = BKT_Search(INDEX.edit_distance_bkt, (char *)LL_GetValue(docword_lln), current_query->match_dist);
+                    LL_Join(res_edit[current_query->match_dist - 1], temp_list);
 
-                        docword_lln = LL_Next(tokenList, docword_lln);
-                    }
+                    docword_lln = LL_Next(tokenList, docword_lln);
                 }
             }
             else if(current_query->match_type == MT_HAMMING_DIST){
 
-                temp_lln = LL_GetHead(current_query->query_words);
-                while(temp_lln != NULL){
-
-                    word_length = strlen((char *)LL_GetValue(temp_lln));
+                docword_lln = LL_GetHead(tokenList);
+                while(docword_lln != NULL){
+                    
+                    word_length = strlen((char *)LL_GetValue(docword_lln));
                     if(res_hamm[current_query->match_dist - 1][word_length - MIN_WORD_LENGTH] == NULL){
 
                         res_hamm[current_query->match_dist - 1][word_length - MIN_WORD_LENGTH] = LL_Create(EntryType, NULL, &compareEntry);
-                        
-                        docword_lln = LL_GetHead(tokenList);
-                        while(docword_lln != NULL){
-
-                            temp_list = BKT_Search(INDEX.hamming_distance_bkt[word_length - MIN_WORD_LENGTH], (char *)LL_GetValue(docword_lln), current_query->match_dist);
-                            LL_Join(res_hamm[current_query->match_dist - 1][word_length - MIN_WORD_LENGTH], temp_list);
-
-                            docword_lln = LL_Next(tokenList, docword_lln);
-                        }
                     }
-                    temp_lln = LL_Next(current_query->query_words, temp_lln);
+
+                    temp_list = BKT_Search(INDEX.hamming_distance_bkt[word_length - MIN_WORD_LENGTH], (char *)LL_GetValue(docword_lln), current_query->match_dist);
+                    LL_Join(res_hamm[current_query->match_dist - 1][word_length - MIN_WORD_LENGTH], temp_list); // Dont check for return value
+
+                    docword_lln = LL_Next(tokenList, docword_lln);
                 }
             }
             else{
@@ -245,41 +242,42 @@ ErrorCode MatchDocument(DocID doc_id, const char *doc_str){
     query_lln = LL_GetHead(INDEX.query_list);
     while(query_lln != NULL){
 
-        hits = 0;
         current_query = (Query )LL_GetValue(query_lln);
-        temp_lln = LL_GetHead(current_query->query_words);
-        while(temp_lln != NULL){
+        if(current_query->active == 1){
+            
+            hits = 0;
+            temp_lln = LL_GetHead(current_query->query_words);
+            while(temp_lln != NULL){
 
-            if(current_query->active == 1){
+                word_length = strlen((char *)((Entry )(temp_lln->data))->word);
+                if(current_query->active == 1){
 
-                if(current_query->match_type == MT_EXACT_MATCH){
-                    if(LL_Exists(res_exact, (Pointer )((Entry )temp_lln->data)->word) == 1)
-                        hits++;
+                    if(current_query->match_type == MT_EXACT_MATCH){
+                        if(LL_Exists(res_exact, (Pointer )((Entry )(temp_lln->data))->word) == 1)
+                            hits++;
+                    }
+                    else if(current_query->match_type == MT_EDIT_DIST){
+                        if(LL_Exists(res_edit[current_query->match_dist - 1], (Pointer )((Entry )(temp_lln->data))->word) == 1)
+                            hits++;
+                    }
+                    else if(current_query->match_type == MT_HAMMING_DIST){
+                        if(LL_Exists(res_hamm[current_query->match_dist - 1][word_length - MIN_WORD_LENGTH], (Pointer )((Entry )(temp_lln->data))->word) == 1)
+                            hits++;
+                    }
+                    else{
+                        printf("Error : [MatchDocument] : Unsupported MatchType\n");
+                        return EC_FAIL;                
+                    }
                 }
-                else if(current_query->match_type == MT_EDIT_DIST){
-                    if(LL_Exists(res_edit[current_query->match_dist - 1], (Pointer )((Entry )temp_lln->data)->word) == 1)
-                        hits++;
-                }
-                else if(current_query->match_type == MT_HAMMING_DIST){
-                    if(LL_Exists(res_hamm[current_query->match_dist - 1][word_length - MIN_WORD_LENGTH], (Pointer )((Entry )temp_lln->data)->word) == 1)
-                        hits++;
-                }
-                else{
-                    printf("Error : [MatchDocument] : Unsupported MatchType\n");
-                    return EC_FAIL;                
-                }
+                temp_lln = LL_Next(current_query->query_words, temp_lln);
             }
-        
-            temp_lln = LL_Next(current_query->query_words, temp_lln);
+            if(hits == LL_GetSize(current_query->query_words))
+                LL_InsertSortUnique(succesful_queries, (Pointer )createUInt(current_query->query_id));
         }
-
-        if(hits == LL_GetSize(current_query->query_words))
-            LL_InsertSortUnique(succesful_queries, (Pointer )createUInt(current_query->query_id));
 
         query_lln = LL_Next(INDEX.query_list, query_lln);
     }
 
-    // LL_Print(tokenList);
     printf("Doc_id = %u, ", doc_id);
     LL_Print(succesful_queries);
 
@@ -287,12 +285,18 @@ ErrorCode MatchDocument(DocID doc_id, const char *doc_str){
     LL_InsertTail(INDEX.result_list, (Pointer )createQueryResult(doc_id, LL_GetSize(succesful_queries), (unsigned int *)LL_ToArray(succesful_queries)));
 
     // Free structures
+    LL_Destroy(tokenList);
+    LL_Destroy(succesful_queries);
     LL_Destroy(res_exact);
     for(i = 0; i < MAX_DISTANCE; i++)
         LL_Destroy(res_edit[i]);
-    for(i = 0; i < MAX_DISTANCE; i++)
+    for(i = 0; i < MAX_DISTANCE; i++){
         for(j = 0; j < MAX_WORD_LENGTH - MIN_WORD_LENGTH + 1; j++)
             LL_Destroy(res_hamm[i][j]);
+        free(res_hamm[i]);
+    }
+    free(res_edit);
+    free(res_hamm);
 
     return EC_SUCCESS;
 }
