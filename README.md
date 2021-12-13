@@ -12,20 +12,26 @@ File : README.md
 ---------------------------------
 
 ### *Commands*
-- $ make
-> Compile all modules, testDriver and test files
-- $ make run
-> Execute testDriver
-- $ make run-tests
-> Execute unit tests
-- $ make val
-> Execute testDriver with Valgrind
-- $ make val-tests
-> Execute unit tests with Valgrind
-- $ make clean 
-> Remove .o .so and executables
-- $ make count
-> Print the lines, word count and character count of all files
+$ make
+>     Compile all modules, testDriver and test files
+
+$ make run
+>     Execute testDriver
+
+$ make run-tests
+>     Execute unit tests
+
+$ make val
+>     Execute testDriver with Valgrind
+
+$ make val-tests
+>     Execute unit tests with Valgrind
+
+$ make clean
+>     Remove .o .so and executables
+
+$ make count
+>     Print the lines, word count and character count of all files
 
 ### *Execution Time*
 - The testdriver using our implementation runs in less than 10 seconds on Anastasis' machine. Use of valgrind on the same executable takes ~3 minutes to finalize.
