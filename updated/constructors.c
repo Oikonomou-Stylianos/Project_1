@@ -174,7 +174,7 @@ void destroyQueryResult(Pointer qr){
 
     if(qr == NULL) return;
 
-    free(((QueryResult )qr)->query_ids);
+    //free(((QueryResult )qr)->query_ids);
     free(qr);
 }
 int compareQueryResult(Pointer qr1, Pointer qr2){

@@ -75,14 +75,13 @@ ErrorCode StartQuery(QueryID        query_id,
 
     char token[MAX_WORD_LENGTH+1];
     int i = 0;
-    while(*query_str){
+    while(!0){
 
         if (*query_str != ' ' && *query_str) {
             token[i++] = *query_str++;
             continue;
         }
         token[i] = '\0';
-
         LLNode node = LL_Search(INDEX.entry_list, (Pointer)token);
         Entry e = NULL;
         if (!node){
@@ -104,7 +103,7 @@ ErrorCode StartQuery(QueryID        query_id,
     
         //Prepare for next iteration if not at end of query_string
         i = 0;
-        if (*query_str) query_str++;
+        if (*query_str) query_str++; else break;
     }
 
     return EC_SUCCESS;
@@ -140,7 +139,7 @@ ErrorCode MatchDocument(DocID doc_id, const char *doc_str){
 
     char token[MAX_WORD_LENGTH + 1], *word = NULL;
     int i = 0;
-    while(*doc_str){
+    while(!0){
         if (*doc_str != ' ' && *doc_str) {
             token[i++] = *doc_str++;
             continue;
@@ -151,15 +150,14 @@ ErrorCode MatchDocument(DocID doc_id, const char *doc_str){
         if (!word) { HT_Destroy(doc_words_ht); return EC_FAIL; }
         strcpy(word, token);
         
-        HT_Insert(doc_words_ht, (Pointer )word);
+        if (!HT_Insert(doc_words_ht, (Pointer )word)) free(word);
 
         i = 0;  // Reset the word index
-        if (*doc_str) doc_str++;    // If at end of string, stay as is to exit the loop
+        if (*doc_str) doc_str++; else break;
     }
 
     LList doc_words = HT_ToList(doc_words_ht, &destroyString);
     HT_Destroy(doc_words_ht);
-
     //Definitions and allocations of helper structures
     LList res_exact = NULL;
     LList *res_edit = (LList *)malloc((MAX_DISTANCE) * sizeof(LList));
@@ -331,7 +329,7 @@ ErrorCode MatchDocument(DocID doc_id, const char *doc_str){
 
     //Save doc_id, res_ids->size and res_ids contents in INDEX.result_list
 
-    LL_InsertTail(INDEX.result_list, createQueryResult(doc_id, LL_GetSize(res_ids), (unsigned int *)LL_ToArray(res_ids)));
+    LL_InsertTail(INDEX.result_list, (Pointer)createQueryResult(doc_id, LL_GetSize(res_ids), (unsigned int *)LL_ToArray(res_ids)));
 
     //Free all allocated memory
     
@@ -351,16 +349,18 @@ ErrorCode MatchDocument(DocID doc_id, const char *doc_str){
 }
 
 ErrorCode GetNextAvailRes(DocID *p_doc_id, unsigned int *p_num_res, QueryID **p_query_ids){
-
-    // Get the first result from the Index's ResultList
-    LLNode next_result = LL_GetHead(INDEX.result_list);
+    static unsigned int N = 0;
+    // Get the Nth result from the Index's ResultList
+    LLNode next_result = LL_GetNth(INDEX.result_list, N++);
     if(next_result == NULL) return EC_NO_AVAIL_RES;
     // Return the QueryResult values
     *p_doc_id = ((QueryResult )(next_result->data))->doc_id;
     *p_num_res = ((QueryResult )(next_result->data))->num_res;
     *p_query_ids = ((QueryResult )(next_result->data))->query_ids;
+    
     // Delete the result from the ResultList
-    if(LL_DeleteHead(INDEX.result_list) == 1) return EC_FAIL;
+    //if(LL_DeleteHead(INDEX.result_list) == 1) return EC_FAIL;
+    //(INDEX.result_list)->head = LL_Next(INDEX.result_list, (INDEX.result_list)->head); 
 
     return EC_SUCCESS;
 }
