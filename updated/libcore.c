@@ -172,8 +172,8 @@ ErrorCode MatchDocument(DocID doc_id, const char *doc_str){
         res_edit[i] = NULL;
         res_hamm[i] = (LList *)malloc((MAX_WORD_LENGTH - MIN_WORD_LENGTH + 1) * sizeof(LList));
         if (!res_hamm[i]){
-            for (j = i-1; j >= 0; j--){
-                free(res_hamm[j]);
+            for (j = i; j > 0; j--){
+                free(res_hamm[j-1]);
             }
             free(res_edit);
             free(res_hamm);
