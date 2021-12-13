@@ -1,31 +1,31 @@
-University: UoA DIT
- Course : [K23a] Software Development for Computer Systems
- Semester : Fall 2021-2022
- Professor : Yannis Ioannidis 
- Assistant : Sarantis Paskalis
- --------------------------------
- Students: Stylianos Oikonomou , Anastasios Triantafyllou
- ID : 1115201500243 , 1115201600173 
- --------------------------------
- Project : Assignment_2
- File : README.md
- --------------------------------
+### University: UoA DIT
+### Course : [K23a] Software Development for Computer Systems
+### Semester : Fall 2021-2022
+### Professor : Yannis Ioannidis 
+### Assistant : Sarantis Paskalis
+---------------------------------
+### Students: Stylianos Oikonomou , Anastasios Triantafyllou
+### ID : 1115201500243 , 1115201600173 
+---------------------------------
+### Project : Assignment_2
+### File : README.md
+---------------------------------
 
 Execution:
 - $ make 
-> Compile all modules, testDriver and test files
+>    Compile all modules, testDriver and test files
 - $ make run
-> Execute testDriver
+>    Execute testDriver
 - $ make run-tests
-> Execute unit tests
+>    Execute unit tests
 - $ make val
-> Execute testDriver with Valgrind
+>    Execute testDriver with Valgrind
 - $ make val-tests
-> Execute unit tests with Valgrind
+>    Execute unit tests with Valgrind
 - $ make clean 
-> Remove .o .so and executables
+>    Remove .o .so and executables
 - $ make count
-> Print the lines, word count and character count of all files
+>    Print the lines, word count and character count of all files
 
 Execution Time:
 - The testdriver using our implementation runs in less than 10 seconds on Anastasis' machine. Use of valgrind on the same executable takes ~3 minutes to finalize.
