@@ -12,11 +12,20 @@ University: UoA DIT
  --------------------------------
 
 Execution:
-- \> make - Compile all modules and test files
-- To compile the program, run "make". To compile the tests, run "make tests".
-- To run the program, run "make run". To run the tests, run "make run-tests".
-- To run valgrind on the executables, run "make val" and "make val-tests".
-- To remove all generated object and executable files, run "make clean".
+- $ make 
+> Compile all modules, testDriver and test files
+- $ make run
+> Execute testDriver
+- $ make run-tests
+> Execute unit tests
+- $ make val
+> Execute testDriver with Valgrind
+- $ make val-tests
+> Execute unit tests with Valgrind
+- $ make clean 
+> Remove .o .so and executables
+- $ make count
+> Print the lines, word count and character count of all files
 
 Execution Time:
 - The testdriver using our implementation runs in less than 10 seconds on Anastasis' machine. Use of valgrind on the same executable takes ~3 minutes to finalize.

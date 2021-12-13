@@ -27,7 +27,7 @@ CC    = gcc
 CXX   = g++
 FLAGS = -O3 -fPIC -Wall -Werror -g -I $(HF)
 
-all: clean testdriver tests
+all: testdriver tests
 
 testdriver: test.o core.o LinkedList.o BKTree.o HashTable.o constructors.o distance.o 
 	$(CXX) $(FLAGS) -o $(OUT) $(OF)/test.o $(OF)/core.so ./$(OF)/LinkedList.so ./$(OF)/BKTree.so ./$(OF)/HashTable.so ./$(OF)/constructors.so ./$(OF)/distance.so 
