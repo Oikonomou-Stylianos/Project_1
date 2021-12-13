@@ -58,8 +58,8 @@ LLNode LL_InsertHead(const LList ll, Pointer data){
 	}
 	else{
 
-		ll->tail->next = lln;
-		ll->tail = lln;
+        lln->next = ll->head;
+		ll->head = lln;
 	}
     ll->size++;
 
@@ -154,7 +154,7 @@ LLNode LL_InsertSortUnique(const LList ll , Pointer data){
 
         if(ll->destroyFunction != NULL) ll->destroyFunction(data);
         free(lln);
-        lln = NULL;
+        return NULL;
     }
     else{
 
@@ -176,7 +176,7 @@ LLNode LL_InsertSortUnique(const LList ll , Pointer data){
 
             if(ll->destroyFunction != NULL) ll->destroyFunction(data);
             free(lln);
-            lln = NULL;
+            return NULL;
         }
     }
     ll->size++;
@@ -211,7 +211,7 @@ LLNode LL_InsertAt(const LList ll, Pointer data, const unsigned int index){
 
         LLNode previous = ll->head;
         int i;
-        for(i = 0; i < index; i++)
+        for(i = 1; i < index; i++)
             previous = previous->next;
         
         lln = LL_InsertAfter(ll, previous, data);
@@ -370,22 +370,30 @@ int LL_DeleteNth(const LList ll, const unsigned int index){
     if(ll == NULL) return -1;
     if(index > LL_GetSize(ll) - 1) return 1;
 
-    LLNode previous = ll->head, current;
-    int i;
-    for(i = 0; i < index; i++)
-        previous = previous->next; 
-    
-    current = previous->next;
-    previous->next = current->next;
+    if(index == 0)
+        return LL_DeleteHead(ll);
+    else if(index == LL_GetSize(ll) - 1)
+        return LL_DeleteTail(ll);
+    else{
 
-    if(ll->destroyFunction != NULL) ll->destroyFunction(current->data);
-    free(current);
+        LLNode previous = ll->head, current;
+        int i;
+        for(i = 0; i < index; i++)
+            previous = previous->next; 
+        
+        current = previous->next;
+        previous->next = current->next;
+
+        if(ll->destroyFunction != NULL) ll->destroyFunction(current->data);
+        free(current);
+        ll->size--;
+    }
 
     return 0;
 }
 LList LL_Join(const LList ll1, LList ll2){
 
-    if(ll1 == NULL || ll2 == NULL || ll1->dataType != ll2->dataType || LL_GetHead(ll2) == NULL) { LL_Destroy(ll2); return NULL; }
+    if(ll1 == NULL || ll2 == NULL || ll1->dataType != ll2->dataType) return NULL;
 
     int exists;
     LLNode temp = LL_GetHead(ll2);
@@ -448,9 +456,9 @@ Pointer LL_ToArray(const LList ll){
         // case StringType:
         //     if((array = (char **)malloc(sizeof(char *) * LL_GetSize(ll))) == NULL) return NULL;
         //     break;
-        // case IntType:
-        //     if((array = (int *)malloc(sizeof(int ) * LL_GetSize(ll))) == NULL) return NULL;
-        //     break;
+        case IntType:
+            array = (int *)malloc(sizeof(int ) * LL_GetSize(ll));
+            break;
         case UIntType:
             array = (unsigned int *)malloc(sizeof(unsigned int ) * LL_GetSize(ll));
             break;
@@ -468,9 +476,9 @@ Pointer LL_ToArray(const LList ll){
             //     ((char **)array)[index] = (char *)malloc(sizeof(char ) * MAX_WORD_LENGTH);
             //     strcmp(((char **)array)[index], (char *)(temp->data));
             //     break;
-            // case IntType:
-            //     ((int *)array)[index] = *(int *)(temp->data);
-            //     break;
+            case IntType:
+                ((int *)array)[index] = *(int *)(temp->data);
+                break;
             case UIntType:
                 ((unsigned int *)array)[index] = *(unsigned int *)(temp->data);
                 break;
@@ -591,9 +599,9 @@ unsigned int LL_GetSize(const LList ll){
 
     return ll->size;
 }
-int LL_Clean(const LList ll){
+LList LL_Clean(const LList ll){
 
-	if(ll == NULL) return 1;
+	if(ll == NULL) return NULL;
 
     LLNode current, next;
     current = ll->head;
@@ -609,7 +617,7 @@ int LL_Clean(const LList ll){
     ll->tail = NULL;
     ll->size = 0;
 
-	return 0;
+	return ll;
 }
 int LL_Destroy(LList ll){
 
@@ -624,143 +632,7 @@ int LL_Destroy(LList ll){
         free(current);
         current = next;
     }
-
 	free(ll);
+
 	return 0;
 }
-
-////////////////////////////////////////////////////////////////////////////////////////////
-
-// int main(void){
-
-    // String Example
-    // LList myLL = LL_Create(StringType, &destroyString, &compareString);
-    // LL_InsertTail(myLL, (Pointer )createString("Panagiwths"));
-    // LL_InsertTail(myLL, (Pointer )createString("Anastasis"));
-    // LL_InsertTail(myLL, (Pointer )createString("Stelios"));
-    // LL_Print(myLL);
-    // printf("Size: %d\n", LL_GetSize(myLL));
-    // char *value = "Stelios";
-    // printf("Search: %s\n", (char *)LL_Search(myLL, (Pointer )value)->data);
-    // LL_DeleteTail(myLL);
-    // LL_Print(myLL);
-    // LL_DeleteHead(myLL);
-    // LL_Print(myLL);
-    // printf("Count: %d\n", LL_GetSize(myLL)); 
-    // printf("Search: %s\n", (*(Entry *)(LL_SearchRec(myLL, myLL->head, "Stelios")->data))->word);
-    // LL_Destroy(myLL);
-
-    // Entry Example
-    // LList myEntryLL = LL_Create(EntryType, &destroyEntry, &compareEntry);
-    // LL_InsertTail(myEntryLL, (Pointer )createEntry("Anastasis"));
-    // LL_InsertTail(myEntryLL, (Pointer )createEntry("Panagiwths"));
-    // LL_InsertTail(myEntryLL, (Pointer )createEntry("Stelios"));
-
-    // // LL_Print(myEntryLL);
-
-    // // LList myEntryPtrLL = LL_Create(EntryType, NULL, &compareEntry);
-    // HashTable myHT = HT_Create(EntryType, &djb2, NULL, &compareEntry);
-
-    // LLNode temp = LL_GetHead(myEntryLL), temp1;
-    // while(temp != NULL){
-
-    //     // LL_InsertTail(myEntryPtrLL, (Pointer )(temp->data));
-    //     HT_Insert(myHT, (Pointer )(&(temp->data)));
-    //     // printf("%s\n", ((Entry )(temp->data))->word);
-    //     temp = LL_Next(myEntryLL, temp);
-    // }
-    
-    // HT_Print(myHT);
-    
-    // // HT_Destroy(myHT);
-    // // LL_Destroy(myEntryPtrLL);
-    // LLNode res;
-    // if((res = HT_Search(myHT, "SS")) != NULL){
-
-    //     printf("Result: %s\n", (*(Entry *)res->data)->word);
-    // }
-    // else
-    //     printf("Nothing\n");
-    // LL_Print(myEntryLL);
-    // LL_Destroy(myEntryLL);
-
-    // Int Example
-    // time_t t;
-    // srand(time(NULL));
-    // LList myIntLL = LL_Create(IntType, &destroyInt, &compareInt);
-    // int i;
-    // for(i = 0; i < 10; i++)
-    //     LL_InsertTail(myIntLL, createInt(rand()%100));
-    // LL_Print(myIntLL);
-    // LL_Destroy(myIntLL);
-
-    // UInt Example
-    // time_t t;
-    // srand(time(NULL));
-    // LList myUIntLL = LL_Create(UIntType, &destroyUInt, &compareUInt);
-    // LList myUIntLL1 = LL_Create(UIntType, &destroyUInt, &compareUInt);
-    // int i;
-    // for(i = 0; i < 2; i++){
-    //     LL_InsertTail(myUIntLL, (Pointer )createUInt((unsigned int )(rand()%100)));
-    //     sleep(1);
-    //     LL_InsertTail(myUIntLL1, (Pointer )createUInt((unsigned int )(rand()%100)));
-    // }
-    //     // LL_InsertTail(myUIntLL, createUInt(rand()%100));
-    
-    // unsigned int *array = (unsigned int *)LL_ToArray(myUIntLL);
-    // LL_Print(myUIntLL);
-    // LL_Print(myUIntLL1);
-    
-    // // for(i = 0; i < 10; i++)
-    // //     printf("%u\n", array[i]);
-
-    // LL_Join(myUIntLL, myUIntLL1);
-    // LL_Print(myUIntLL);
-
-
-    // LL_Print(myUIntLL);
-
-    // LL_Destroy(myUIntLL);
-    // LL_Destroy(myUIntLL1);
-
-    // Query Example
-    // time_t t;
-    // srand(time(NULL));
-    // LList myQueryList = LL_Create(QueryType, &destroyQuery, &compareQuery);
-    // int i;
-    // unsigned int *qid;
-    // for(i = 0; i < 10; i++){
-    //     qid = createUInt(i);
-    //     LL_InsertTail(myQueryList, (Pointer )createQuery(*qid, "one two three", i%3, rand()%5));
-    // }
-    // LL_Print(myQueryList);
-
-    // BKTree - EntryList test
-    // LList myEntryLL = LL_Create(EntryType, &destroyEntry, &compareEntry);
-    // LL_InsertTail(myEntryLL, (Pointer )createEntry("hell"));
-    // LL_InsertTail(myEntryLL, (Pointer )createEntry("help"));
-    // LL_InsertTail(myEntryLL, (Pointer )createEntry("fall"));
-    // LL_InsertTail(myEntryLL, (Pointer )createEntry("felt"));
-    // LL_InsertTail(myEntryLL, (Pointer )createEntry("fell"));
-    // LL_InsertTail(myEntryLL, (Pointer )createEntry("small"));
-    // LL_InsertTail(myEntryLL, (Pointer )createEntry("melt"));
-    // LL_Print(myEntryLL);
-
-    // BKTree myBKT = BKT_Create(MT_EDIT_DIST, EntryType, NULL);
-
-    // LLNode temp = LL_GetHead(myEntryLL);
-    // while(temp != NULL){
-
-    //     BKT_Insert(myBKT, (Pointer )(&(temp->data)));
-    //     temp = LL_Next(myEntryLL, temp);
-    // }
-
-    // LList result = BKT_Search(myBKT, "henn", 2);
-    // LL_Print(result);
-
-    // LL_Destroy(myEntryLL);
-    // LL_Destroy(result);
-    // BKT_Destroy(myBKT);
-
-//     return 0;
-// }

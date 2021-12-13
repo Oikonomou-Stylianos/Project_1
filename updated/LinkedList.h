@@ -47,5 +47,5 @@ int LL_Print(const LList );
 int LL_IsEmpty(const LList );
 unsigned int LL_GetSize(const LList );
 
-int LL_Clean(const LList );
+LList LL_Clean(const LList );
 int LL_Destroy(LList );
