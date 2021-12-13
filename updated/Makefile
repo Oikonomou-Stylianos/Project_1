@@ -53,6 +53,12 @@ test1:
 run:
 	./testdriver
 
+tests:
+	gcc -c LinkedList_test.c
+	gcc -o LinkedList_test LinkedList_test.o LinkedList.c constructors.o
+run-tests:
+	./LinkedList_test
+
 clean:
 	rm -f testdriver *.o *.so
 
