@@ -59,7 +59,7 @@ ErrorCode DestroyIndex(){
     return EC_SUCCESS;
 }
 
-ErrorCode StartQuery(QueryID        query_id,   
+ErrorCode StartQuery(QueryID        query_id,
                      const char*    query_str,
                      MatchType      match_type,
                      unsigned int   match_dist)
