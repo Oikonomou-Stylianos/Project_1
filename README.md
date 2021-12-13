@@ -16,6 +16,9 @@ Execution:
 - To run valgrind on the executables, run "make val" and "make val-tests".
 - To remove all generated object and executable files, run "make clean".
 
+Execution Time:
+- The testdriver using our implementation runs in less than 10 seconds on Anastasis' machine. Use of valgrind on the same executable takes ~3 minutes to finalize.
+
 Interface Implementation:
 - The implementation of core.h was written in C in the corresponding core.c source file.
 - In order to support compatibility with the given testdriver execcutable, a static structure named INDEX is used.
