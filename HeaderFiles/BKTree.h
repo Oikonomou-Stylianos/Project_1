@@ -13,14 +13,15 @@
 
 #pragma once
 
-#include "EntryList.h"
-#include "core.h"
-#include "DataStructs.h"
+#include "LinkedList.h"
 
-BKTree BKT_Create(MatchType );
-BKTreeNode BKT_CreateNode(Entry *);
-BKTreeNode BKT_Insert(const BKTree , Entry *);
-BKTreeNode BKT_InsertNode(const BKTree , const BKTreeNode , Entry *);
-List *BKT_Search(const BKTree , const char *, const int );
+#include "common_types.h"
+#include "core.h"
+
+BKTree BKT_Create(MatchType , DataType , DestroyFunction );
+BKTreeNode BKT_CreateNode(Pointer );
+BKTreeNode BKT_Insert(const BKTree , Pointer );
+BKTreeNode BKT_InsertNode(const BKTree , const BKTreeNode , Pointer );
+LList BKT_Search(const BKTree , const char *, const unsigned int );
 int BKT_Destroy(BKTree );
-int BKT_DestroyNode(BKTreeNode );
+int BKT_DestroyNode(BKTree , BKTreeNode );

@@ -15,106 +15,116 @@
 #include <stdlib.h>
 #include <limits.h>
 
-#include "DataStructs.h"
 #include "HashTable.h"
-#include "WordList.h"
+#include "LinkedList.h"
+
+#include "constructors.h"
+#include "common_types.h"
 
 int prime_sizes[] = {53, 97, 193, 389, 769, 1543, 3079, 6151, 12289, 24593, 49157, 98317, 196613, 393241, 786433, 1572869, 3145739, 6291469, 12582917, 25165843, 50331653, 100663319, 201326611, 402653189, 805306457, 1610612741};
 
 // djb2 Hash Function
-unsigned int hash_string(const char *s){
+unsigned int djb2(Pointer s){
     
-    if(s == NULL) return -1;
-
     unsigned int hash = 5381;
-    for(; *s != '\0'; s++) 
-        hash = hash * 33 + *s;
+    for(; *((char *)s) != '\0'; s++) 
+        hash = hash * 33 + *((char *)s);
 
     return hash;
 }
 // Create a Hash Table
-HashTable HT_Create(DataType dt){
+HashTable HT_Create(DataType dt, HashFunction hf, DestroyFunction df, CompareFunction cf){
 
-    HashTable ht = (HashTable )malloc(sizeof(hash_table));
-    ht->dataType = dt;
-    switch(ht->dataType){
-        case string:
-            (WList *)ht->buckets = (WList *)malloc(sizeof(WList ) * prime_sizes[0]);
-            break;
-        case other:
-            (List **)ht->buckets = (List **)malloc(sizeof(List *) * prime_sizes[0]);
-            break;
-        default:
-            printf("Error : [HT_Create] : Unsupported data type\n");
-            return NULL;
-    }
+    HashTable ht = (HashTable )malloc(sizeof(hash_table ));
+    ht->buckets = (LList *)malloc(sizeof(LList ) * prime_sizes[0]);
+
     if(ht == NULL || ht->buckets == NULL) return NULL;
+    
     int i;
     for(i = 0; i < prime_sizes[0]; i++)
         ht->buckets[i] = NULL;
     ht->size = 0;
     ht->capacity = prime_sizes[0];
 
+    ht->dataType = dt;
+    ht->hashFunction = hf;
+    ht->destroyFunction = df;   // Used by the bucket
+    ht->compareFunction = cf;   // ...
+
     return ht;
 }
-// Insert a word in a Hash Table
-int HT_Insert(const HashTable ht, const void *data){
+int HT_Hash(HashTable ht, Pointer data){
 
-    if(ht == NULL || data == NULL) return 1;
+    if(ht == NULL || data == NULL) return -1;
 
-    int hash, index; 
+    unsigned int hash;
     switch(ht->dataType){
-        case string:
-            if((hash = (int )(hash_string((char *)data) % INT_MAX)) == -1) return 1; 
+        case StringType:
+            hash = ht->hashFunction((Pointer )data);
             break;
-        case entry:
-            if(hash = (int )(hash_string((char *)((Entry *)data->word)) % INT_MAX) == -1) return 1; 
+        case EntryType:
+            hash = ht->hashFunction((Pointer )((Entry )data)->word);
             break;
         default:
-            print("Error : [HT_Insert] : Unsupported data type\n");
-            return 1;
+            printf("Error: [HT_Hash] : Unsupported data type\n");
+            return -1;
     }
+
+    return (int )(hash % INT_MAX);
+}
+// Insert a word in a Hash Table
+LLNode HT_Insert(const HashTable ht, Pointer data){
+
+    if(ht == NULL || data == NULL) return NULL;
+
+    int hash, index;
+    if((hash = HT_Hash(ht, data)) == -1) return NULL; 
     index = hash % ht->capacity;
     
     // printf("Size = %d Capacity = %d Hash = %d Index = %d\n", ht->size, ht->capacity, hash, index);
-    if(ht->buckets[index] == NULL){  // If the bucket is not initialized initialize it
-        switch(ht->dataType){
-            case string:
-                WLNode wln;
-                if(!(ht->buckets[index] = WL_Create())) return 1;
-                if(!WL_InsertSortUnique(ht->buckets[index], (char *)data)) return 1;
-                break;
-            case entry:
-                if(create_entry_list(&(ht->buckets[index])) == EC_FAIL) return 1;
-                if(add_entry(ht->buckets[index], (Entry *)data) == EC_FAIL) return 1;
-                break;
-            default:
-                print("Error : [HT_Insert] : Unsupported data type\n");
-                return 1;
-        }
-    }    
+    LLNode lln;
+    if(ht->buckets[index] == NULL)  // If the bucket is not initialized initialize it
+        if(!(ht->buckets[index] = LL_Create(ht->dataType, ht->destroyFunction, ht->compareFunction))) return NULL;
+
+    if(!(lln = LL_InsertSortUnique(ht->buckets[index], data))) return NULL;
     ht->size++;
 
     float load_factor = (float)ht->size / ht->capacity;
     if(load_factor > MAX_LOAD_FACTOR)
-        if(!(HT_Rehash(ht))) return 1;
+        if(!(HT_Rehash(ht))) return NULL;
 
-    return 0;
+    return lln;
+}
+LLNode HT_Search(const HashTable ht, char *word){
+
+    if(ht == NULL || word == NULL) return NULL;
+
+    int hash, index;
+
+    Pointer temp = NULL;    // Used to 
+    switch(ht->dataType){
+        case EntryType:
+            temp = (Pointer )createEntry(word);
+            if((hash = HT_Hash(ht, temp)) == -1) return NULL;
+            index = hash % ht->capacity;
+            break;
+        default:
+            printf("Error: [HT_Search] : Unsupported data type\n");
+            return NULL;
+    }
+
+    LLNode lln;
+    if((lln = LL_Search(ht->buckets[index], word)) == NULL) { destroyEntry(temp); return NULL; }
+
+    destroyEntry(temp);
+    return lln;
 }
 // Rehash a Hash Table
 HashTable HT_Rehash(const HashTable ht){
 
     if(ht == NULL) return NULL;
 
-    switch(ht->dataType){
-        case string:
-            WList *old_buckets = ht->buckets;
-            break;
-        case entry:
-            List **old_buckets = ht->buckets;
-            break;
-    }
-    
+    LList *old_buckets = ht->buckets;
     int i, old_capacity = ht->capacity, primes = sizeof(prime_sizes) / sizeof(int);   // Size of prime_sizes table
     
     for(i = 0; i < primes; i++){    // Calculate the new capacity 
@@ -126,94 +136,149 @@ HashTable HT_Rehash(const HashTable ht){
     if(old_capacity == ht->capacity)    // If all prime numbers have been used duplicate the previous capacity
         ht->capacity *= 2;
 
-    ht->size = 0;   // Reset the size of the HashTable as the words are going to be reinserted 
-    switch(ht->dataType){
-        case string:
-            
-            break;
-
-    }
-    if(!(ht->buckets = (WList *)malloc(sizeof(WList ) * ht->capacity))) return NULL;   // Allocate a new buckets array
+    ht->size = 0;   // Reset the size of the HashTable as the data are going to be reinserted 
+    if(!(ht->buckets = (LList *)malloc(sizeof(LList ) * ht->capacity))) return NULL;   // Allocate a new buckets array
     for(i = 0; i < ht->capacity; i++)
         ht->buckets[i] = NULL;   // Initialize every new bucket to NULL
 
-    WLNode wln_temp;
+    LLNode lln_temp;
     for(i = 0; i < old_capacity; i++){  // For every old bucket...
 
         if(old_buckets[i] != NULL){
-            wln_temp = old_buckets[i]->head;
-            while(wln_temp != NULL){        // ...insert its values in the new buckets array
+            lln_temp = LL_GetHead(old_buckets[i]);
+            while(lln_temp != NULL){        // ...insert its values in the new buckets array
 
-                if(!(HT_Insert(ht, wln_temp->word))) return NULL;
-                wln_temp = wln_temp->next;
+                if(!(HT_Insert(ht, lln_temp->data))) return NULL;
+                lln_temp = LL_Next(old_buckets[i], lln_temp);
             }
         }
     }
 
     for(i = 0; i < old_capacity; i++)   // Destroy the old buckets
         if(old_buckets[i] != NULL)
-            if(WL_Destroy(old_buckets[i]) != 0) return NULL;
+            if(LL_Destroy(old_buckets[i]) != 0) return NULL;
     free(old_buckets);  // Free the old buckets array
 
     // printf("%d -> %d\n", old_capacity, ht->capacity);
 
     return ht;
 }
-// Insert the words of a file in a Hash Table
-HashTable HT_InsertFromFile(const HashTable ht, const char *file){
-
-    if(ht == NULL || file == NULL) return NULL;
-
-    FILE *fp = fopen(file, "r");
-    if(fp == NULL) return NULL;
-
-    int c, index = 0;
-    char word[MAX_WORD_LENGTH + 1];
-    while(!feof(fp)){
-
-        c = fgetc(fp);
-        if(c == ' ' || c == '\n' || feof(fp)){
-
-            word[index] = '\0'; // Incert the null character at the end of the word
-            index = 0;  // Reset the index for the next word
-
-            HT_Insert(ht, word);
-        }
-        else{
-
-            if(index > MAX_WORD_LENGTH) // If the word has exceeded the MAX_WORD_LENGTH ignore the next characters
-                continue;
-
-            word[index] = c;
-            index++;
-        }
-    }
-    if(fclose(fp) != 0) return NULL;
-     
-    return ht;
-}
-// Insert the contents of a Hash Table in a Word List 
-WList HT_ToList(const HashTable ht){
+LList HT_ToList(const HashTable ht, DestroyFunction df){
 
     if(ht == NULL) return NULL;
 
-    WList wl;
-    if(!(wl = WL_Create())) return NULL;
+    LList newList;
+    switch(ht->dataType){
+        case StringType:
+            newList = LL_Create(StringType, df, &compareString);
+            break;
+        default:
+            printf("Error: [HT_ToList] : Unsupported data type\n");
+            return NULL;
+    }
+    if(newList == NULL) return NULL;
 
-    WLNode wln_temp;
+    LLNode temp;
     int i;
-    for(i = 0; i < ht->capacity; i++){
+    for(i = 0; i < HT_GetCapacity(ht); i++){
 
         if(ht->buckets[i] != NULL){
-            wln_temp = ht->buckets[i]->head;
-            while(wln_temp != NULL){        // ...insert its values in the new buckets array
 
-                if(!(WL_Insert(wl, wln_temp->word))) { WL_Destroy(wl); return NULL; } 
-                wln_temp = wln_temp->next;
+            temp = LL_GetHead(ht->buckets[i]);
+            while(temp != NULL){
+
+                LL_InsertTail(newList, (Pointer )temp->data);
+
+                temp = LL_Next(ht->buckets[i], temp);
             }
         }
     }
-    return wl;
+
+    return newList;
+}
+// // Insert the words of a file in a Hash Table
+// HashTable HT_InsertFromFile(const HashTable ht, const char *file){
+
+//     if(ht == NULL || file == NULL) return NULL;
+
+//     FILE *fp = fopen(file, "r");
+//     if(fp == NULL) return NULL;
+
+//     int c, index = 0;
+//     char word[MAX_WORD_LENGTH + 1];
+//     while(!feof(fp)){
+
+//         c = fgetc(fp);
+//         if(c == ' ' || c == '\n' || feof(fp)){
+
+//             word[index] = '\0'; // Incert the null character at the end of the word
+//             index = 0;  // Reset the index for the next word
+
+//             HT_Insert(ht, word);
+//         }
+//         else{
+
+//             if(index > MAX_WORD_LENGTH) // If the word has exceeded the MAX_WORD_LENGTH ignore the next characters
+//                 continue;
+
+//             word[index] = c;
+//             index++;
+//         }
+//     }
+//     if(fclose(fp) != 0) return NULL;
+     
+//     return ht;
+// }
+// // Insert the contents of a Hash Table in a Word List 
+// WList HT_ToList(const HashTable ht){
+
+//     if(ht == NULL) return NULL;
+
+//     WList wl;
+//     if(!(wl = WL_Create())) return NULL;
+
+//     WLNode wln_temp;
+//     int i;
+//     for(i = 0; i < ht->capacity; i++){
+
+//         if(ht->buckets[i] != NULL){
+//             wln_temp = ht->buckets[i]->head;
+//             while(wln_temp != NULL){        // ...insert its values in the new buckets array
+
+//                 if(!(WL_Insert(wl, wln_temp->word))) { WL_Destroy(wl); return NULL; } 
+//                 wln_temp = wln_temp->next;
+//             }
+//         }
+//     }
+//     return wl;
+// }
+int HT_GetSize(const HashTable ht){
+
+    if(ht == NULL) return -1;
+
+    return (int )ht->size;
+}
+int HT_GetCapacity(const HashTable ht){
+
+    if(ht == NULL) return -1;
+
+    return (int )ht->capacity;
+}
+int HT_Print(const HashTable ht){
+
+    if(ht == NULL) return 1;
+
+    int i, capacity;
+    if((capacity = HT_GetCapacity(ht)) == -1) return 1;
+    
+    for(i = 0; i < capacity; i++){
+
+        printf("bucket[%d] ", i);
+        if(LL_Print(ht->buckets[i]) == 1)   // If the bucket is not initialized it will return 1
+            printf("[ ]\n");
+    }
+
+    return 0;
 }
 // Destroy a Hash Table
 int HT_Destroy(HashTable ht){
@@ -223,23 +288,23 @@ int HT_Destroy(HashTable ht){
     int i;
     for(i = 0; i < ht->capacity; i++)
         if(ht->buckets[i] != NULL)
-            if(WL_Destroy(ht->buckets[i])) return 1;
+            if(LL_Destroy(ht->buckets[i])) return 1;
     free(ht->buckets);
     free(ht);
 
     return 0;
 }
-// Deduplicate the words of a given file and put them in a Word List
-WList deduplicate(const char *file){
+// // Deduplicate the words of a given file and put them in a Word List
+// WList deduplicate(const char *file){
 
-    if(file == NULL) return NULL;
+//     if(file == NULL) return NULL;
 
-    HashTable ht;
-    WList wl;
-    if(!(ht = HT_Create(string))) return NULL;
-    if(!(HT_InsertFromFile(ht, file))) { HT_Destroy(ht); return NULL; }
-    if(!(wl = HT_ToList(ht))) { HT_Destroy(ht); return NULL; }
-    if(HT_Destroy(ht)) return NULL;
+//     HashTable ht;
+//     WList wl;
+//     if(!(ht = HT_Create())) return NULL;
+//     if(!(HT_InsertFromFile(ht, file))) { HT_Destroy(ht); return NULL; }
+//     if(!(wl = HT_ToList(ht))) { HT_Destroy(ht); return NULL; }
+//     if(HT_Destroy(ht)) return NULL;
 
-    return wl;
-}
+//     return wl;
+// }

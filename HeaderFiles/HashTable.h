@@ -13,28 +13,25 @@
 
 #pragma once
 
-#include "WordList.h"
-#include "DataStructs.h"
+#include "LinkedList.h"
+#include "common_types.h"
 
 #define MAX_LOAD_FACTOR 0.9
 
-typedef struct{
-	void **buckets;
-    int size;       // Number of entries
-    int capacity;   // Number of buckets
+unsigned int djb2(Pointer );
 
-    DataType dataType;
-}hash_table;
-
-typedef hash_table *HashTable;
-
-unsigned int hash_string(const char *);
-
-HashTable HT_Create(DataType );
-int HT_Insert(const HashTable , const void *);
+HashTable HT_Create(DataType , HashFunction , DestroyFunction , CompareFunction );
+int HT_Hash(HashTable , Pointer );
+LLNode HT_Insert(const HashTable , Pointer );
+LLNode HT_Search(const HashTable , char *);
 HashTable HT_Rehash(const HashTable );
-HashTable HT_InsertFromFile(const HashTable , const char *);
-WList HT_ToList(const HashTable );
+LList HT_ToList(const HashTable , DestroyFunction );
+int HT_GetSize(const HashTable );
+int HT_GetCapacity(const HashTable );
+int HT_Print(const HashTable );
 int HT_Destroy(HashTable );
 
-WList deduplicate(const char *);
+
+// HashTable HT_InsertFromFile(const HashTable , const char *);
+// WList HT_ToList(const HashTable );
+// WList deduplicate(const char *);
