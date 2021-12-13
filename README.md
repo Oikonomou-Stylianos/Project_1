@@ -13,7 +13,7 @@ University: UoA DIT
 Execution:
 - To compile the program, run "make". To compile the tests, run "make tests".
 - To run the program, run "make run". To run the tests, run "make run-tests".
-- To run valgrind on the executables, run "make val" and make "val-tests".
+- To run valgrind on the executables, run "make val" and "make val-tests".
 - To remove all generated object and executable files, run "make clean".
 
 Interface Implementation:
