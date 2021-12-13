@@ -82,8 +82,9 @@ clean:
 val:
 	valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes $(EXE)/$(OUT)
 val-tests:
-	valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes $(EXE)/LinkedList_test
-	valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes $(EXE)/BKTree_test
+#--leak-check=full --show-leak-kinds=all --track-origins=yes 
+	valgrind $(EXE)/LinkedList_test
+	valgrind $(EXE)/BKTree_test
 
 count:
 	wc $(SF)/* $(HF)/* $(TEST)/*

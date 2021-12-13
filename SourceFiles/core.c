@@ -345,6 +345,7 @@ ErrorCode MatchDocument(DocID doc_id, const char *doc_str){
     LL_Destroy(res_exact);
     LL_Destroy(doc_words);
     LL_Destroy(res_ids);
+
     return EC_SUCCESS;
 }
 
