@@ -3,11 +3,12 @@
 # Course : [K23a] Software Development for Computer Systems
 # Semester : Fall 2021-2022
 # Professor : Yannis Ioannidis 
+# Assistant : Sarantis Paskalis
 # --------------------------------
 # Students: Stylianos Oikonomou , Anastasios Triantafyllou
 # ID : 1115201500243 , 1115201600173 
 # --------------------------------
-# Project : Assignment_1
+# Project : Assignment_2
 # File : Makefile
 ##################################
 
@@ -18,97 +19,63 @@ EXE  = ./Executables
 AD   = ./AppData
 TEST = ./Tests
 
-OBJECT = Main.o BKTree.o WordList.o CandidateList.o distance.o EntryList.o HashTable.o List.o ItemDestructs.o
-TESTS = BKTree_test.o CandidateList_test.o WordList_test.o distance_test.o EntryList_test.o HashTable_test.o
+OBJECT = test.o core.o LinkedList.o BKTree.o HashTable.o constructors.o distance.o 
+TESTS  = LinkedList_test.o
 
-OUT   = Main
+OUT   = testdriver
 CC    = gcc
-FLAGS = -Wall -Werror -g
+CXX   = g++
+FLAGS = -O3 -fPIC -Wall -Werror -g -I
 
-all: Main
+all: clean testdriver tests
 
-Main: $(OBJECT)
-	$(CC) $(FLAGS) -o $(OUT) $(OF)/Main.o $(OF)/BKTree.o $(OF)/WordList.o $(OF)/CandidateList.o $(OF)/distance.o $(OF)/EntryList.o $(OF)/HashTable.o $(OF)/List.o $(OF)/ItemDestructs.o
+testdriver: $(OBJECT)
+	$(CXX) $(FLAGS) -o $(OUT) $(OF)/test.o $(OF)/core.so $(OF)/LinkedList.so $(OF)/BKTree.so $(OF)/HashTable.so $(OF)/constructors.so $(OF)/distance.so 
 	mv $(OUT) $(EXE)
-
-Main.o: 
-	$(CC) -I $(HF) $(FLAGS) -c $(SF)/Main.c
-	mv Main.o $(OF) 
-BKTree.o: 
-	$(CC) -I $(HF) $(FLAGS) -c $(SF)/BKTree.c
-	mv BKTree.o $(OF) 
-WordList.o: 
-	$(CC) -I $(HF) $(FLAGS) -c $(SF)/WordList.c
-	mv WordList.o $(OF) 
-CandidateList.o: 
-	$(CC) -I $(HF) $(FLAGS) -c $(SF)/CandidateList.c
-	mv CandidateList.o $(OF) 
-distance.o:
-	$(CC) -I $(HF) $(FLAGS) -c $(SF)/distance.c
-	mv distance.o $(OF)
-EntryList.o:
-	$(CC) -I $(HF) $(FLAGS) -c $(SF)/EntryList.c
-	mv EntryList.o $(OF)
+test.o:
+	$(CXX) $(FLAGS) -c -o test.o test.cpp
+	mv test.o $(OF)
+core.o:
+	$(CC) $(FLAGS) -c -o $(SF)/core.c
+	$(CC) $(FLAGS) -shared -o core.so core.o
+	mv core.o core.so $(OF)
+LinkedList.o:
+	$(CC) $(FLAGS) -c -o $(SF)/LinkedList.c
+	$(CC) $(FLAGS) -shared -o LinkedList.so LinkedList.o
+	mv BKTree.o LinkedList.so $(OF)
+BKTree.o:
+	$(CC) $(FLAGS) -c -o $(SF)/BKTree.c
+	$(CC) $(FLAGS) -shared -o BKTree.so BKTree.o
+	mv BKTree.o BKTree.so $(OF)
 HashTable.o:
-	$(CC) -I $(HF) $(FLAGS) -c $(SF)/HashTable.c
-	mv HashTable.o $(OF)
-List.o:
-	$(CC) -I $(HF) $(FLAGS) -c $(SF)/List.c
-	mv List.o $(OF)
-ItemDestructs.o:
-	$(CC) -I $(HF) $(FLAGS) -c $(SF)/ItemDestructs.c
-	mv ItemDestructs.o $(OF)
-QueryList.o:
-	$(CC) -I $(HF) $(FLAGS) -c $(SF)/QueryList.c
-	mv QueryList.o $(OF)
-
+	$(CC) $(FLAGS) -c -o $(SF)/HashTable.c
+	$(CC) $(FLAGS) -shared -o HashTable.so HashTable.o
+	mv BKTree.o HashTable.so $(OF)
+constructors.o:
+	$(CC) $(FLAGS) -c -o $(SF)/constructors.c
+	$(CC) $(FLAGS) -shared -o constructors.so constructors.o
+	mv BKTree.o constructors.so $(OF)
+distance.o:
+	$(CC) $(FLAGS) -c -o $(SF)/distance.c
+	$(CC) $(FLAGS) -shared -o distance.so distance.o
+	mv BKTree.o distance.so $(OF)
 
 run:
-	$(EXE)/$(OUT)
+	./$(EXE)/testdriver
 
 tests: tests.o
-	$(CC) $(FLAGS) -o distance_test $(OF)/distance_test.o $(OF)/distance.o
-	mv distance_test $(EXE)
-	$(CC) $(FLAGS) -o WordList_test $(OF)/WordList_test.o $(OF)/WordList.o
-	mv WordList_test $(EXE)
-	$(CC) $(FLAGS) -o CandidateList_test $(OF)/CandidateList_test.o $(OF)/CandidateList.o
-	mv CandidateList_test $(EXE)
-	$(CC) $(FLAGS) -o BKTree_test $(OF)/BKTree_test.o $(OF)/BKTree.o $(OF)/EntryList.o $(OF)/CandidateList.o $(OF)/WordList.o $(OF)/distance.o
-	mv BKTree_test $(EXE)
-	$(CC) $(FLAGS) -o EntryList_test $(OF)/EntryList_test.o $(OF)/EntryList.o $(OF)/BKTree.o $(OF)/distance.o $(OF)/CandidateList.o 
-	mv EntryList_test $(EXE)
-	$(CC) $(FLAGS) -o HashTable_test $(OF)/HashTable_test.o $(OF)/HashTable.o $(OF)/WordList.o
-	mv HashTable_test $(EXE)
+	$(CC) $(FLAGS) -o LinkedList_test $(OF)/LinkedList_test.o $(OF)/LinkedList.c $(OF)/constructors.o
+	mv LinkedList_test $(EXE)
 tests.o:
-	$(CC) -I $(HF) $(FLAGS) -c $(TEST)/distance_test.c
-	$(CC) -I $(HF) $(FLAGS) -c $(TEST)/WordList_test.c
-	$(CC) -I $(HF) $(FLAGS) -c $(TEST)/CandidateList_test.c
-	$(CC) -I $(HF) $(FLAGS) -c $(TEST)/BKTree_test.c
-	$(CC) -I $(HF) $(FLAGS) -c $(TEST)/EntryList_test.c
-	$(CC) -I $(HF) $(FLAGS) -c $(TEST)/HashTable_test.c
+	$(CC) $(FLAGS) -c $(TEST)/LinkedList.c
 	mv $(TESTS) $(OF)
-
+	
 run-tests:
-	$(EXE)/distance_test
-	$(EXE)/WordList_test
-	$(EXE)/CandidateList_test
-	$(EXE)/HashTable_test
-	$(EXE)/EntryList_test
-	$(EXE)/BKTree_test
-
-val:
-	valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes $(EXE)/$(OUT)
-
-val-tests:
-	valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes $(EXE)/distance_test
-	valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes $(EXE)/WordList_test
-	valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes $(EXE)/CandidateList_test
-	valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes $(EXE)/BKTree_test
-	valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes $(EXE)/HashTable_test
-	valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes $(EXE)/EntryList_test
+	./$(EXE)/LinkedList_test
 
 clean:
-	rm -f $(OF)/*.o $(EXE)/$(OUT) $(EXE)/*_test
-
+	rm -f $(OF)/*.o $(OF)/*.so $(EXE)/$(OUT) $(EXE)/*_test
+val:
+	valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes $(EXE)/$(OUT)
 count:
 	wc $(SF)/* $(HF)/* $(TEST)/*
