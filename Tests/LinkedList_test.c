@@ -78,9 +78,12 @@ void test_LL_InsertSort(void){
     TEST_CHECK((lln = LL_InsertSort(ll, (Pointer )num11)) != NULL);
     TEST_CHECK(*(int *)(ll->head->next->data) == *num11);
     TEST_CHECK(ll->size == 3);
+    TEST_CHECK((lln = LL_InsertSort(ll, (Pointer )num3)) != NULL);
+    TEST_CHECK(*(int *)(ll->head->next->next->next->data) == *num3);
+    TEST_CHECK(ll->size == 4);
     TEST_CHECK((lln = LL_InsertSort(ll, (Pointer )num4)) != NULL);
     TEST_CHECK(*(int *)(ll->tail->data) == *num4);
-    TEST_CHECK(ll->size == 4);
+    TEST_CHECK(ll->size == 5);
     LL_Destroy(ll);
 }
 void test_LL_InsertSortUnique(void){
@@ -128,7 +131,6 @@ void test_LL_InsertAt(void){
 
     int *num1 = createInt(1), *num2 = createInt(2), *num3 = createInt(3);
     LList ll;
-    LLNode lln;
     ll = LL_Create(IntType, &destroyInt, &compareInt);
     TEST_CHECK(LL_InsertAt(NULL, NULL, 0) == NULL);
     TEST_CHECK(LL_InsertAt(ll, NULL, 0) == NULL);
@@ -182,7 +184,6 @@ void test_LL_Exists(void){
 
     int *num1 = createInt(1), *num2 = createInt(2);
     LList ll;
-    LLNode lln;
     ll = LL_Create(IntType, &destroyInt, &compareInt);
     LL_InsertHead(ll, num1);
     TEST_CHECK(LL_Exists(NULL, NULL) == -1);
@@ -231,11 +232,10 @@ void test_LL_Join(void){
 
     int *num1 = createInt(1), *num2 = createInt(2);
     LList ll1, ll2, ll3;
-    LLNode lln;
     ll1 = LL_Create(IntType, &destroyInt, &compareInt);
-    LL_InsertHead(ll1, num1);
     ll2 = LL_Create(IntType, NULL, &compareInt);
     ll3 = LL_Create(UIntType, &destroyUInt, &compareUInt);
+    LL_InsertHead(ll1, num1);
     TEST_CHECK(LL_Join(NULL, NULL) == NULL);
     TEST_CHECK(LL_Join(ll1, NULL) == NULL);
     TEST_CHECK(LL_Join(NULL, ll2) == NULL);
@@ -276,6 +276,7 @@ void test_LL_GetValue(void){
     TEST_CHECK(LL_GetValue(NULL) == NULL);
     LL_InsertTail(ll, num1);
     TEST_CHECK(*(int *)LL_GetValue(ll->head) == *num1);
+    LL_Destroy(ll);
 }
 void test_LL_GetHead(void){
 
@@ -401,7 +402,6 @@ void test_LL_Clean(void){
 }
 void test_LL_Destroy(void){
 
-    int *num1 = createInt(1);
     LList ll;
     ll = LL_Create(IntType, &destroyInt, &compareInt);
     TEST_CHECK(LL_Destroy(NULL) == 1);

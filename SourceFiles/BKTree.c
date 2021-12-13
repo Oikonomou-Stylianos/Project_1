@@ -69,6 +69,7 @@ BKTreeNode BKT_Insert(const BKTree bkt, Pointer data){
             break;
         default:
             printf("Error : [BKT_Insert] : Unsupported data type\n");
+            return NULL;
     }
 
 	if(word_length < MIN_WORD_LENGTH || word_length > MAX_WORD_LENGTH){
@@ -106,6 +107,7 @@ BKTreeNode BKT_InsertNode(const BKTree bkt, const BKTreeNode parent, Pointer dat
             break;
         default:
             printf("Error : [BKT_InsertNode] : Unsupported data type\n");
+            return NULL;
     }
 
 	if(dist == 0)
@@ -139,6 +141,7 @@ LList BKT_Search(const BKTree bkt, const char *word, const unsigned int threshol
             break;
         default:
             printf("Error : [BKT_Search] : Unsupported data type\n");
+            return NULL;
     }
     // Insert the root in the Candidate List
     LL_InsertTail(candidateList, &(bkt->root));
@@ -160,6 +163,7 @@ LList BKT_Search(const BKTree bkt, const char *word, const unsigned int threshol
                 break;
             default:
                 printf("Error : [BKT_Search] : Unsupported data type\n");
+                return NULL;
         }
 
 		if(dist <= threshold){
@@ -173,6 +177,7 @@ LList BKT_Search(const BKTree bkt, const char *word, const unsigned int threshol
                     break;
                 default:
                     printf("Error : [BKT_Search] : Unsupported data type\n");
+                    return NULL;
             }
 		}
 

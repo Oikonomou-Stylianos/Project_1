@@ -413,27 +413,22 @@ LList LL_Join(const LList ll1, LList ll2){
                 LL_InsertTail(ll1, (Pointer )temp->data);
             else{
 
-                if(ll2->destroyFunction == NULL)
-                    LL_InsertTail(ll1, (Pointer )(temp->data));
-                else{
-
-                    switch(ll1->dataType){
-                        case StringType:
-                            LL_InsertTail(ll1, (Pointer )createString((char *)(temp->data)));
-                            break;
-                        case IntType:
-                            LL_InsertTail(ll1, (Pointer )createInt(*(int *)(temp->data)));
-                            break;
-                        case UIntType:
-                            LL_InsertTail(ll1, (Pointer )createUInt(*(unsigned int *)(temp->data)));
-                            break;
-                        case EntryType:
-                            LL_InsertTail(ll1, (Pointer )createEntry(((Entry )(temp->data))->word));
-                            break;
-                        default:
-                            printf("Error : [LL_Join] : Unsupported data type\n");
-                            return NULL;
-                    }
+                switch(ll1->dataType){
+                    case StringType:
+                        LL_InsertTail(ll1, (Pointer )createString((char *)(temp->data)));
+                        break;
+                    case IntType:
+                        LL_InsertTail(ll1, (Pointer )createInt(*(int *)(temp->data)));
+                        break;
+                    case UIntType:
+                        LL_InsertTail(ll1, (Pointer )createUInt(*(unsigned int *)(temp->data)));
+                        break;
+                    case EntryType:
+                        LL_InsertTail(ll1, (Pointer )createEntry(((Entry )(temp->data))->word));
+                        break;
+                    default:
+                        printf("Error : [LL_Join] : Unsupported data type\n");
+                        return NULL;
                 }
             }
         }

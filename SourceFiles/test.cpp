@@ -25,7 +25,7 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#include "../include/core.h"
+#include "core.h"
 #include <cstdlib>
 #include <cstdio>
 using namespace std;
