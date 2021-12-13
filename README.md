@@ -12,19 +12,19 @@ University: UoA DIT
  --------------------------------
 
 Execution:
- $ make 
+- $ make 
 > Compile all modules, testDriver and test files
- $ make run
+- $ make run
 > Execute testDriver
- $ make run-tests
+- $ make run-tests
 > Execute unit tests
- $ make val
+- $ make val
 > Execute testDriver with Valgrind
- $ make val-tests
+- $ make val-tests
 > Execute unit tests with Valgrind
- $ make clean 
+- $ make clean 
 > Remove .o .so and executables
- $ make count
+- $ make count
 > Print the lines, word count and character count of all files
 
 Execution Time:
