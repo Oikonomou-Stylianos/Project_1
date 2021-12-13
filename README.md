@@ -2,6 +2,7 @@ University: UoA DIT
  Course : [K23a] Software Development for Computer Systems
  Semester : Fall 2021-2022
  Professor : Yannis Ioannidis 
+ Assistant : Sarantis Paskalis
  --------------------------------
  Students: Stylianos Oikonomou , Anastasios Triantafyllou
  ID : 1115201500243 , 1115201600173 
@@ -11,6 +12,7 @@ University: UoA DIT
  --------------------------------
 
 Execution:
+> make - Compile all modules and test files
 - To compile the program, run "make". To compile the tests, run "make tests".
 - To run the program, run "make run". To run the tests, run "make run-tests".
 - To run valgrind on the executables, run "make val" and "make val-tests".
