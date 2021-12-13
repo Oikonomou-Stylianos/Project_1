@@ -357,10 +357,6 @@ ErrorCode GetNextAvailRes(DocID *p_doc_id, unsigned int *p_num_res, QueryID **p_
     *p_doc_id = ((QueryResult )(next_result->data))->doc_id;
     *p_num_res = ((QueryResult )(next_result->data))->num_res;
     *p_query_ids = ((QueryResult )(next_result->data))->query_ids;
-    
-    // Delete the result from the ResultList
-    //if(LL_DeleteHead(INDEX.result_list) == 1) return EC_FAIL;
-    //(INDEX.result_list)->head = LL_Next(INDEX.result_list, (INDEX.result_list)->head); 
 
     return EC_SUCCESS;
 }

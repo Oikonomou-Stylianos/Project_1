@@ -174,7 +174,7 @@ void destroyQueryResult(Pointer qr){
 
     if(qr == NULL) return;
 
-    //free(((QueryResult )qr)->query_ids);
+    //free(((QueryResult )qr)->query_ids); //Is free'd by the testdriver executable, for some reason
     free(qr);
 }
 int compareQueryResult(Pointer qr1, Pointer qr2){
