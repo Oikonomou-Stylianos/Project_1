@@ -1,4 +1,4 @@
- University: UoA DIT
+University: UoA DIT
  Course : [K23a] Software Development for Computer Systems
  Semester : Fall 2021-2022
  Professor : Yannis Ioannidis 
@@ -6,51 +6,34 @@
  Students: Stylianos Oikonomou , Anastasios Triantafyllou
  ID : 1115201500243 , 1115201600173 
  --------------------------------
- Project : Assignment_1
+ Project : Assignment_2
  File : README.md
  --------------------------------
 
-Execution
+Execution:
 - To compile the program, run "make". To compile the tests, run "make tests".
 - To run the program, run "make run". To run the tests, run "make run-tests".
 - To run valgrind on the executables, run "make val" and make "val-tests".
 - To remove all generated object and executable files, run "make clean".
 
-CandidateList
-- The candidate list data structure is a simple linked list implementation and it is used during the search of an index BKTree. It is the list that houses all the "candidate" words of the tree, meaning all the words that meet the range criteria to be explored, according to the definition of the BKTree. The functions implemented are self explanatory, no need to expand upon them.
+Interface Implementation:
+- The implementation of core.h was written in C in the corresponding core.c source file.
+- In order to support compatibility with the given testdriver execcutable, a static structure named INDEX is used.
+- The INDEX structure contains a hashtable used in exact_match searching, 1 + (MAX_WORD_LENGTH - MIN_WORD_LENGTH + 1) BKTrees to support edit + hamming type searches, correspondingly and 3 lists, one to serve as the main storage structure of all entries, which all other structure reference, one for the same task for queries and one that holds the results to be returned by GetNextAvailRes() calls.
+- All the InitializeIndex() and DestroyIndex() functions do is initialize and destroy properly the structures mentioned above.
+- The StartQuery() function initializes a new Query structure and adds it to the main Query list located in INDEX. All the words of the query are created as entries if they do not already exist in the main Entry list in the INDEX structure.
+- The EndQuery() function sets the flag attribute of the query's structure to false for the given query. The flag is checked before attempting any search regarding the query, effectively rendering it invinsible to the MatchDocument() function.
+- The GetNextAvailRes() function reads and returns the contents of the result_list located in the INDEX structure. It utilizes a static N variable to return the Nth item in the list. N is incremented after every call of this function.
+- The MatchDocument() function follows the following process: It tokenizes and deduplicates the input document and then, for each active query, it applies a search set by the query's match_type for each word of the given document. The search is skipped if a search of the same exact type and distance has already been run by a previous query. After the search is finished, all of the result entries are saved in temporary structures, one for each different match_type and match_distance. The query is appended to the result_list only if all of its words are found in the temporary structure that matches its type and distance.
 
-BK-Tree
-- The children of each node are initialized, during the creation of the node, as an array of MAX_WORD_LENGTH size and set to NULL.
+Memory Leaks:
+- When running the testdriver on Valgrind, there is a memory leak of 28,536 bytes in 96 blocks. Half the bytes of this leak are lost due to inproper handling of the allocated memory of the testdriver itself and the other half is allocated by our core.c implementation, but the testdriver itself tries to deallocated that memory. In more detail, the unsigned int *array which is returned by GetNextAvailRes(), containing all the query_ids that match a given document, is allocated internally (int our implementation) before being returned. In the test.cpp source code (line 161 if I didn't mess up its structure), the allocated memory of the returned array is free'd as part of the testdriver's execution sequence. Initially, we tried freeing this memory, but we got a double free error. Since we didn't want to mess with the test.cpp source, we left the leaks as is and made this note explaining everything.
 
-EntryList
-
-- NOTE: The data structures used in this file are all defined in the "DataStructs.h" header, in order to avoid recursive inclusion, as they are also used by the BKTree source file.
-
-- The EntryList.c file contains implementation of functions that create and utilize a generic List data structure, which are built upon to create the Entry-List implementation. More specifically: 
-- - create/destroy_list() act as the generic list's constructor and destructor, respectively
-- - insert_list() pushes items of any form into the list by creating a listnode on which it attaches the given data and concatinating it to the list's tail
-- - destroy_node() is called by the list's destructor and it recursively destroys every listnode contained in the list, as well as calling any item destructor for the listnode's data, if specified (for the needs of this project, it just supports an entry's destructor)
-- The functions listed above would ideally have their own file, but this step was skipped.
-
-- The entry_list (including add_entry()) functions are implemented by calling all generic list functions. They use/return the List data structure's pointers, as there is no EntryList specific data type (which we skipped creating, it would add better abstraction but provide zero extra functionality).
-- The create_entry(), destroy_entry() and copy_entry() functions are simple constructor, destructor and copy-constructor for the entry data structure.
-- The get_number_entries() function returns the amount of listnodes in a given list, which is saved in the List structure. The amount of listnodes should always equal the amount of entries in an EntryList.
-- The get_first() and get_next() functions only work on EntryLists, as they typecast the (list's head) / (next of given listnode's) data to Entry* in order to return it.
-- The print_entry_list() was created to serve as a debugging and program validation utility.
-
-- The 3 entry_index related functions all use the BKTree implementation, which has been described.
-
-Distance
-
+Distance:
 - The distance.c file implements the hamming distance, edit distance and exact match functions, that are called by the generic function distance(), depending on its MatchType parameter. The file also includes a small min_int utility function that returns the smallest of 2 ints.
 
-Tests
-
+Tests:
 - Most test files were written post-implementation and are not structured in a quite readable manner. However, they do test their corresponding implementation to a good extend, checking most, if not all, edge cases and average cases, to an extent that makes us confident our implementation is fullproof as far as it is used to build this project.
-
-Main
-
-- The main.c file can also be viewed as a small testing unit, putting together everything implemented to support the project's demands.
 
 References:
 - For the edit distance algorithm, this video was consulted: https://www.youtube.com/watch?v=We3YDTzNXEk, which contains a variation of the algorithm found in some lecture slides by Professor Misyrlis. The original algorithm finds the longest common subsequence (ΜΚΥ - Μέγιστη Κοινή Υπακολουθία) between two sequences and I unfortunately cannot embed it here, but it's included in the repository.
