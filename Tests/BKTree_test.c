@@ -14,38 +14,102 @@
 #include "acutest.h"
 
 #include "BKTree.h"
+#include "LinkedList.h"
 #include "common_types.h"
 #include "constructors.h"
+#include "core.h"
 
-void BKT_Create
+void test_BKT_Create(void){
+    
+    BKTree bkt;
+    TEST_CHECK((bkt = BKT_Create(MT_EXACT_MATCH, StringType, &destroyString)) == NULL);
+    TEST_CHECK((bkt = BKT_Create(MT_EDIT_DIST, StringType, &destroyString)) != NULL);
+    BKT_Destroy(bkt);
+}
+void test_BKT_CreateNode(void){
+    
+    char *str = createString("a");
+    BKTreeNode bktn;
+    TEST_CHECK((bktn = BKT_CreateNode(NULL)) == NULL);
+    TEST_CHECK((bktn = BKT_CreateNode(str)) != NULL);
+    TEST_CHECK(strcmp((char *)(bktn->data), str) == 0);
+    destroyString(bktn->data);
+    free(bktn->children);
+    free(bktn);
+}
+void test_BKT_Insert(void){
+
+    char *str = createString("aaaa");
+    BKTree bkt = BKT_Create(MT_EDIT_DIST, StringType, &destroyString);
+    BKTreeNode bktn;
+    TEST_CHECK((bktn = BKT_Insert(NULL, NULL)) == NULL);
+    TEST_CHECK((bktn = BKT_Insert(bkt, NULL)) == NULL);
+    TEST_CHECK((bktn = BKT_Insert(NULL, str)) == NULL);
+    TEST_CHECK((bktn = BKT_Insert(bkt, str)) != NULL);
+    TEST_CHECK(bktn == bkt->root);
+    TEST_CHECK(strcmp((char *)(bktn->data), str) == 0);
+    BKT_Destroy(bkt);
+}
+void test_BKT_InsertNode(void){
+
+    char *str1 = createString("aaaa"), *str2 = createString("bbbb");
+    BKTree bkt = BKT_Create(MT_EDIT_DIST, StringType, &destroyString);
+    BKTreeNode bktn;
+    BKT_Insert(bkt, str1);
+    TEST_CHECK((bktn = BKT_InsertNode(NULL, NULL, NULL)) == NULL);
+    TEST_CHECK((bktn = BKT_InsertNode(bkt, NULL, NULL)) == NULL);
+    TEST_CHECK((bktn = BKT_InsertNode(NULL, bkt->root, NULL)) == NULL);
+    TEST_CHECK((bktn = BKT_InsertNode(NULL, NULL, str2)) == NULL);
+    TEST_CHECK((bktn = BKT_InsertNode(bkt, bkt->root, NULL)) == NULL);
+    TEST_CHECK((bktn = BKT_InsertNode(bkt, NULL, str2)) == NULL);
+    TEST_CHECK((bktn = BKT_InsertNode(NULL, bkt->root, str2)) == NULL);
+    TEST_CHECK((bktn = BKT_InsertNode(bkt, bkt->root, str2)) != NULL);
+    BKT_Destroy(bkt);
+}
+void test_BKT_Search(void){
+    
+    char *str = createString("aaaa");
+    BKTree bkt = BKT_Create(MT_EDIT_DIST, StringType, &destroyString);
+    BKT_Insert(bkt, str);
+    LList ll;
+    TEST_CHECK((ll = BKT_Search(NULL, NULL, 0)) == NULL);
+    TEST_CHECK((ll = BKT_Search(bkt, NULL, 0)) == NULL);
+    TEST_CHECK((ll = BKT_Search(NULL, "aaab", 0)) == NULL);
+    TEST_CHECK((ll = BKT_Search(NULL, NULL, 1)) == NULL);
+    TEST_CHECK((ll = BKT_Search(bkt, "aaab", 0)) == NULL);
+    TEST_CHECK((ll = BKT_Search(NULL, "aaab", 1)) == NULL);
+    TEST_CHECK((ll = BKT_Search(bkt, NULL, 1)) == NULL);
+    TEST_CHECK((ll = BKT_Search(bkt, "aaab", 1)) != NULL);
+    TEST_CHECK(LL_GetSize(ll) == 1);
+    LL_Destroy(ll);
+    BKT_Destroy(bkt);
+}
+void test_BKT_Destroy(void){
+    
+    BKTree bkt = BKT_Create(MT_EDIT_DIST, StringType, &destroyString);
+    TEST_CHECK(BKT_Destroy(NULL) == 1);
+    TEST_CHECK(BKT_Destroy(bkt) == 0);
+}
+void test_BKT_DestroyNode(void){
+
+    char *str = createString("aaaa");
+    BKTree bkt = BKT_Create(MT_EDIT_DIST, StringType, &destroyString);
+    BKT_Insert(bkt, str);
+    TEST_CHECK(BKT_DestroyNode(NULL, NULL) == 1);
+    TEST_CHECK(BKT_DestroyNode(bkt, NULL) == 1);
+    TEST_CHECK(BKT_DestroyNode(NULL, bkt->root) == 1);
+    TEST_CHECK(BKT_DestroyNode(bkt, bkt->root) == 0);
+    free(bkt);
+}
 
 TEST_LIST = {
 
-    { "LL_Create", test_LL_Create },
-    { "LL_InsertHead", test_LL_InsertHead },
-    { "LL_InsertTail", test_LL_InsertTail },
-    { "LL_InsertSort", test_LL_InsertSort },
-    { "LL_InsertSortUnique", test_LL_InsertSortUnique },
-    { "LL_InsertAfter", test_LL_InsertAfter },
-    { "LL_InsertAt", test_LL_InsertAt },
-    { "LL_Search", test_LL_Search },
-    { "LL_SearchRec", test_LL_SearchRec },
-    { "LL_Exists", test_LL_Exists },
-    { "LL_DeleteHead", test_LL_DeleteHead },
-    { "LL_DeleteTail", test_LL_DeleteTail },
-    { "LL_DeleteNth", test_LL_DeleteNth },
-    { "LL_Join", test_LL_Join },
-    { "LL_ToArray", test_LL_ToArray },
-    { "LL_GetValue", test_LL_GetValue },
-    { "LL_GetHead", test_LL_GetHead },
-    { "LL_GetTail", test_LL_GetTail },
-    { "LL_GetNth", test_LL_GetNth },
-    { "LL_Next", test_LL_Next },
-    { "LL_Next", test_LL_Previous },
-    { "LL_Print", test_LL_Print },
-    { "LL_IsEmpty", test_LL_IsEmpty },
-    { "LL_GetSize", test_LL_GetSize },
-    { "LL_Clean", test_LL_Clean },
-    { "LL_Destroy", test_LL_Destroy },
+    { "BKT_Create", test_BKT_Create },
+    { "BKT_CreateNode", test_BKT_CreateNode },
+    { "BKT_Insert", test_BKT_Insert },
+    { "BKT_InsertNode", test_BKT_InsertNode },
+    { "BKT_Search", test_BKT_Search },
+    { "BKT_Destroy", test_BKT_Destroy },
+    { "BKT_DestroyNode", test_BKT_DestroyNode },
     { NULL, NULL }
 };

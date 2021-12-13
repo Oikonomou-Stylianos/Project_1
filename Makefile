@@ -19,8 +19,9 @@ EXE  = ./Executables
 AD   = ./AppData
 TEST = ./Tests
 
-OBJECT = test.o core.o LinkedList.o BKTree.o HashTable.o constructors.o distance.o 
-TESTS  = LinkedList_test.o
+OBJECT  = test.o core.o LinkedList.o BKTree.o HashTable.o constructors.o distance.o 
+TESTS   = LinkedList_test BKTree_test
+TESTS_O = LinkedList_test.o BKTree_test.o
 
 OUT   = testdriver
 CC    = gcc
@@ -30,7 +31,7 @@ FLAGS = -O3 -fPIC -Wall -Werror -g -I $(HF)
 all: testdriver tests
 
 testdriver: test.o core.o LinkedList.o BKTree.o HashTable.o constructors.o distance.o 
-	$(CXX) $(FLAGS) -o $(OUT) $(OF)/test.o $(OF)/core.so ./$(OF)/LinkedList.so ./$(OF)/BKTree.so ./$(OF)/HashTable.so ./$(OF)/constructors.so ./$(OF)/distance.so 
+	$(CXX) $(FLAGS) -o $(OUT) $(OF)/test.o $(OF)/core.so $(OF)/LinkedList.so $(OF)/BKTree.so $(OF)/HashTable.so $(OF)/constructors.so $(OF)/distance.so 
 	mv $(OUT) $(EXE)
 test.o:
 	$(CXX) $(FLAGS) -c -o test.o $(SF)/test.cpp
@@ -61,25 +62,28 @@ distance.o:
 	mv distance.o distance.so $(OF)
 
 run:
-	./$(EXE)/testdriver
+	$(EXE)/testdriver
 
 tests: tests.o
 	$(CC) $(FLAGS) -o LinkedList_test $(OF)/LinkedList_test.o $(OF)/LinkedList.o $(OF)/constructors.o
-	mv LinkedList_test $(EXE)
+	$(CC) $(FLAGS) -o BKTree_test $(OF)/BKTree_test.o $(OF)/BKTree.o $(OF)/LinkedList.o $(OF)/constructors.o $(OF)/distance.o
+	mv $(TESTS) $(EXE)
 tests.o:
 	$(CC) $(FLAGS) -c $(TEST)/LinkedList_test.c
-	mv $(TESTS) $(OF)
+	$(CC) $(FLAGS) -c $(TEST)/BKTree_test.c
+	mv $(TESTS_O) $(OF)
 	
 run-tests:
-	./$(EXE)/LinkedList_test
-
+	$(EXE)/LinkedList_test
+	$(EXE)/BKTree_test
 
 clean:
 	rm -f $(OF)/*.o $(OF)/*.so $(EXE)/$(OUT) $(EXE)/*_test
 val:
 	valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes $(EXE)/$(OUT)
 val-tests:
-	valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes $(EXE)/*_test
+	valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes $(EXE)/LinkedList_test
+	valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes $(EXE)/BKTree_test
 
 count:
 	wc $(SF)/* $(HF)/* $(TEST)/*
