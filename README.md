@@ -38,19 +38,19 @@ $ make count
 
 ### *Interface Implementation*
 - The implementation of core.h was written in C in the corresponding core.c source file.
-- In order to support compatibility with the given testdriver execcutable, a static structure named INDEX is used.
-- The INDEX structure contains a hashtable used in exact_match searching, 1 + (MAX_WORD_LENGTH - MIN_WORD_LENGTH + 1) BKTrees to support edit + hamming type searches, correspondingly and 3 lists, one to serve as the main storage structure of all entries, which all other structure reference, one for the same task for queries and one that holds the results to be returned by GetNextAvailRes() calls.
+- In order to support compatibility with the given testdriver executable, a static structure named INDEX is used.
+- The INDEX structure contains a hashtable used in exact_match searching, 1 + (MAX_WORD_LENGTH - MIN_WORD_LENGTH + 1) BKTrees to support edit + hamming type searches, correspondingly, and 3 lists, one to serve as the main storage structure of all entries, which all other structure reference, one for the same task for queries and one that holds the results to be returned by GetNextAvailRes() calls.
 - All the InitializeIndex() and DestroyIndex() functions do is initialize and destroy properly the structures mentioned above.
-- The StartQuery() function initializes a new Query structure and adds it to the main Query list located in INDEX. All the words of the query are created as entries if they do not already exist in the main Entry list in the INDEX structure.
+- The StartQuery() function initializes a new Query structure and adds it to the main Query list located in INDEX. All the words of the query are created as entries, if they do not already exist in the main Entry list in the INDEX structure, and appended to it.
 - The EndQuery() function sets the flag attribute of the query's structure to false for the given query. The flag is checked before attempting any search regarding the query, effectively rendering it invinsible to the MatchDocument() function.
 - The GetNextAvailRes() function reads and returns the contents of the result_list located in the INDEX structure. It utilizes a static N variable to return the Nth item in the list. N is incremented after every call of this function.
-- The MatchDocument() function follows the following process: It tokenizes and deduplicates the input document and then, for each active query, it applies a search set by the query's match_type for each word of the given document. The search is skipped if a search of the same exact type and distance has already been run by a previous query. After the search is finished, all of the result entries are saved in temporary structures, one for each different match_type and match_distance. The query is appended to the result_list only if all of its words are found in the temporary structure that matches its type and distance.
+- The MatchDocument() function follows the following process: It tokenizes and deduplicates the input document and then, for each active query, it applies a search set by the query's match_type and distance for each word of the given document. The search is skipped if a search of the same exact type and distance has already been run by a previous query. After the search is finished, all of the result entries are saved in temporary structures, one for each different match_type and match_distance. The query is appended to the result_list only if all of its words are found in the temporary structure that matches its type and distance.
 
 ### *Data Structures*
 1. LinkedList
 2. BKTree
 3. HashTable
-- All Data Structures have been generalized in order to avoid duplicate implementations. To achieve that each Data Structures receives during its initialization the DataType that will be stored in it, a destroyFunction used to free the stored data and a compareFunction used to compare two data of the same dataType
+- All Data Structures have been generalized in order to avoid duplicate implementations. To achieve that, each Data Structure receives during its initialization the DataType that will be stored in it, a destroyFunction used to free the stored data and a compareFunction used to compare two data of the same dataType
 - The data are stored as void * type
 - If the destroyFunction argument is set to NULL the delete functions will not free the data but only the node instead
 
