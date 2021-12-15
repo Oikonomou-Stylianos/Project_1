@@ -8,7 +8,6 @@
 # Students: Stylianos Oikonomou , Anastasios Triantafyllou
 # ID : 1115201500243 , 1115201600173 
 # --------------------------------
-# Project : Assignment_2
 # File : Makefile
 ##################################
 
