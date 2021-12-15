@@ -20,8 +20,8 @@ AD   = ./AppData
 TEST = ./Tests
 
 OBJECT  = test.o core.o LinkedList.o BKTree.o HashTable.o constructors.o distance.o 
-TESTS   = LinkedList_test BKTree_test
-TESTS_O = LinkedList_test.o BKTree_test.o
+TESTS   = LinkedList_test BKTree_test HashTable_test
+TESTS_O = LinkedList_test.o BKTree_test.o HashTable_test.o
 
 OUT   = testdriver
 CC    = gcc
@@ -67,15 +67,18 @@ run:
 tests: tests.o
 	$(CC) $(FLAGS) -o LinkedList_test $(OF)/LinkedList_test.o $(OF)/LinkedList.o $(OF)/constructors.o
 	$(CC) $(FLAGS) -o BKTree_test $(OF)/BKTree_test.o $(OF)/BKTree.o $(OF)/LinkedList.o $(OF)/constructors.o $(OF)/distance.o
+	$(CC) $(FLAGS) -o HashTable_test $(OF)/HashTable_test.o $(OF)/HashTable.o $(OF)/LinkedList.o $(OF)/constructors.o
 	mv $(TESTS) $(EXE)
 tests.o:
 	$(CC) $(FLAGS) -c $(TEST)/LinkedList_test.c
 	$(CC) $(FLAGS) -c $(TEST)/BKTree_test.c
+	$(CC) $(FLAGS) -c $(TEST)/HashTable_test.c
 	mv $(TESTS_O) $(OF)
 	
 run-tests:
 	$(EXE)/LinkedList_test
 	$(EXE)/BKTree_test
+	$(EXE)/HashTable_test
 
 clean:
 	rm -f $(OF)/*.o $(OF)/*.so $(EXE)/$(OUT) $(EXE)/*_test
@@ -85,6 +88,7 @@ val-tests:
 #--leak-check=full --show-leak-kinds=all --track-origins=yes 
 	valgrind $(EXE)/LinkedList_test
 	valgrind $(EXE)/BKTree_test
+	valgrind $(EXE)/HashTable_test
 
 count:
 	wc $(SF)/* $(HF)/* $(TEST)/*

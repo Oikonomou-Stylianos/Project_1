@@ -30,8 +30,3 @@ int HT_GetSize(const HashTable );
 int HT_GetCapacity(const HashTable );
 int HT_Print(const HashTable );
 int HT_Destroy(HashTable );
-
-
-// HashTable HT_InsertFromFile(const HashTable , const char *);
-// WList HT_ToList(const HashTable );
-// WList deduplicate(const char *);
