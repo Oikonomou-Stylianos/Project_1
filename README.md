@@ -40,6 +40,7 @@ $ make count
 #####    Average Time
 - Our implementation : ~5.2 secs
 - Reference implementation : ~14.3 secs 
+- Speed increase : 2.75x
 ### *Interface Implementation*
 - The implementation of core.h was written in C in the corresponding core.c source file.
 - In order to support compatibility with the given testdriver executable, a static structure named INDEX is used.
