@@ -27,6 +27,9 @@ $ make val
 $ make val-tests
 >     Execute unit tests with Valgrind
 
+$ make ref
+>     Compile reference implementation ( will replace previous builds , run with "$ make run" )
+
 $ make clean
 >     Remove .o .so and executables
 
