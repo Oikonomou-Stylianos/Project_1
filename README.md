@@ -34,8 +34,12 @@ $ make count
 >     Print the lines, word count and character count of all files
 
 ### *Execution Time*
-- The testdriver using our implementation runs in less than 10 seconds on Anastasis' machine. Use of valgrind on the same executable takes ~3 minutes to finalize.
-
+#####    Machine
+- CPU : AMD Ryzen 5 5600X 6-core 3.7Ghz
+- RAM : 16.0 GB
+#####    Average Time
+- Our implementation : ~5.2 secs
+- Reference implementation : ~14.3 secs 
 ### *Interface Implementation*
 - The implementation of core.h was written in C in the corresponding core.c source file.
 - In order to support compatibility with the given testdriver executable, a static structure named INDEX is used.
