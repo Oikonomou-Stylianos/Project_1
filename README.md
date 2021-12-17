@@ -27,6 +27,9 @@ $ make val
 $ make val-tests
 >     Execute unit tests with Valgrind
 
+$ make ref
+>     Compile reference implementation ( will replace previous builds , run with "$ make run" )
+
 $ make clean
 >     Remove .o .so and executables
 
@@ -34,8 +37,13 @@ $ make count
 >     Print the lines, word count and character count of all files
 
 ### *Execution Time*
-- The testdriver using our implementation runs in less than 10 seconds on Anastasis' machine. Use of valgrind on the same executable takes ~3 minutes to finalize.
-
+#####    Machine
+- CPU : AMD Ryzen 5 5600X 6-core 3.7Ghz
+- RAM : 16.0 GB
+#####    Average Time
+- Our implementation : ~5.2 secs
+- Reference implementation : ~14.3 secs 
+- Speed increase : 2.75x
 ### *Interface Implementation*
 - The implementation of core.h was written in C in the corresponding core.c source file.
 - In order to support compatibility with the given testdriver executable, a static structure named INDEX is used.
@@ -64,6 +72,6 @@ $ make count
 - Most test files were written post-implementation and are not structured in a quite readable manner. However, they do test their corresponding implementation to a good extend, checking most, if not all, edge cases and average cases, to an extent that makes us confident our implementation is fullproof as far as it is used to build this project.
 
 ### *References*
-- For the edit distance algorithm, this video was consulted: https://www.youtube.com/watch?v=We3YDTzNXEk, which contains a variation of the algorithm found in some lecture slides by Professor Misyrlis. The original algorithm finds the longest common subsequence (ΜΚΥ - Μέγιστη Κοινή Υπακολουθία) between two sequences and I unfortunately cannot embed it here, but it's included in the repository.
-- int prime_sizes[] used in hashtables was taken from https://github.com/chatziko-k08/lecture-code
-- the djb2 algorithm: http://www.cse.yorku.ca/~oz/hash.html
+- For the edit distance algorithm, this video was consulted: [link](https://www.youtube.com/watch?v=We3YDTzNXEk), which contains a variation of the algorithm found in some lecture slides by Professor Misyrlis. The original algorithm finds the longest common subsequence (ΜΚΥ - Μέγιστη Κοινή Υπακολουθία) between two sequences and I unfortunately cannot embed it here, but it's included in the repository.
+- int prime_sizes[] used in the HashTable was taken from [here](https://github.com/chatziko-k08/lecture-code)
+- [djb2 algorithm](http://www.cse.yorku.ca/~oz/hash.html)
