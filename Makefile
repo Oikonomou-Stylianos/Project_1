@@ -118,8 +118,8 @@ testdriver-ref:
 	$(CC) $(FLAGS) -c $(SF)/constructors.c
 	$(CC) $(FLAGS) -shared -o constructors.so constructors.o
 	
-	$(CC) $(FLAGS) -c $(SF)/distance.c
-	$(CC) $(FLAGS) -shared -o distance.so distance.o
+# $(CC) $(FLAGS) -c $(SF)/distance.c
+# $(CC) $(FLAGS) -shared -o distance.so distance.o
 
 	$(CXX) $(FLAGS) -c -o core_ref.o $(SF)/core_ref.cpp
 	$(CXX) $(FLAGS) -shared -o core_ref.so core_ref.o
