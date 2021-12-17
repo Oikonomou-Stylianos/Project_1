@@ -14,7 +14,6 @@
 #pragma once
 
 #include "common_types.h"
-// #include "core.h"
 
 LList LL_Create(DataType , DestroyFunction , CompareFunction );
 

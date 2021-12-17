@@ -26,6 +26,8 @@
 
 char *createString(char *str){
 
+    if(str == NULL) return NULL;
+
     char *newStr = (char *)malloc(sizeof(char ) * (strlen(str) + 1));
     if(newStr == NULL) return NULL;
 
@@ -150,13 +152,24 @@ int compareQuery(Pointer q1, Pointer q2){
 }
 //////////////////////////////////////////////
 char toggle_query_active(Query q){
+
+    if(q == NULL) return -1;
+
     return (q->active = !q->active);
 }
 void query_active_false(Query q){
-    q->active = 0; return;
+
+    if(q == NULL) return;
+
+    q->active = 0; 
+    return;
 }
 void query_active_true(Query q){
-    q->active = 1; return;
+    
+    if(q == NULL) return;
+    
+    q->active = 1; 
+    return;
 }
 //////////////////////////////////////////////
 int compareBKTNPtrString(Pointer w1, Pointer w2){
