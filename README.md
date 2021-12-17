@@ -72,6 +72,6 @@ $ make count
 - Most test files were written post-implementation and are not structured in a quite readable manner. However, they do test their corresponding implementation to a good extend, checking most, if not all, edge cases and average cases, to an extent that makes us confident our implementation is fullproof as far as it is used to build this project.
 
 ### *References*
-- For the edit distance algorithm, this video was consulted: https://www.youtube.com/watch?v=We3YDTzNXEk, which contains a variation of the algorithm found in some lecture slides by Professor Misyrlis. The original algorithm finds the longest common subsequence (ΜΚΥ - Μέγιστη Κοινή Υπακολουθία) between two sequences and I unfortunately cannot embed it here, but it's included in the repository.
-- int prime_sizes[] used in hashtables was taken from https://github.com/chatziko-k08/lecture-code
-- the djb2 algorithm: http://www.cse.yorku.ca/~oz/hash.html
+- For the edit distance algorithm, this video was consulted: [link](https://www.youtube.com/watch?v=We3YDTzNXEk), which contains a variation of the algorithm found in some lecture slides by Professor Misyrlis. The original algorithm finds the longest common subsequence (ΜΚΥ - Μέγιστη Κοινή Υπακολουθία) between two sequences and I unfortunately cannot embed it here, but it's included in the repository.
+- int prime_sizes[] used in the HashTable was taken from [here](https://github.com/chatziko-k08/lecture-code)
+- [djb2 algorithm](http://www.cse.yorku.ca/~oz/hash.html)
