@@ -172,17 +172,17 @@ void query_active_true(Query q){
     return;
 }
 //////////////////////////////////////////////
-int compareBKTNPtrString(Pointer w1, Pointer w2){
+int compareBKTNString(Pointer w1, Pointer w2){
 
     if(w1 == NULL || w2 == NULL) return -2;
 
-    return strcmp((char *)((*(BKTreeNode *)w1)->data), (char *)((*(BKTreeNode *)w2)->data));
+    return strcmp((char *)(((BKTreeNode )w1)->data), (char *)(((BKTreeNode )w2)->data));
 }
-int compareBKTNPtrEntry(Pointer w1, Pointer w2){
+int compareBKTNEntry(Pointer w1, Pointer w2){
 
     if(w1 == NULL || w2 == NULL) return -2;
 
-    return strcmp((char *)((*(Entry *)((*(BKTreeNode *)w1)->data))->word), (char *)((*(Entry *)((*(BKTreeNode *)w2)->data))->word));
+    return strcmp((char *)(((Entry )((*(BKTreeNode *)w1)->data))->word), (char *)(((Entry )((*(BKTreeNode *)w2)->data))->word));
 }
 //////////////////////////////////////////////
 QueryResult createQueryResult(unsigned int doc_id, unsigned int num_res, unsigned int *query_ids){

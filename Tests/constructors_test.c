@@ -160,33 +160,33 @@ void test_query_active_true(void){
     TEST_CHECK(q->active == 1);
     destroyQuery(q);
 }
-void test_compareBKTNPtrString(void){
+void test_compareBKTNString(void){
 
     char *str1 = createString("a"), *str2 = createString("b"); 
     BKTreeNode bktn1 = (BKTreeNode )malloc(sizeof(bk_tree_node)), bktn2 = (BKTreeNode )malloc(sizeof(bk_tree_node));
     bktn1->data = (Pointer )str1;
     bktn2->data = (Pointer )str2;
-    TEST_CHECK(compareBKTNPtrString(NULL, NULL) == -2);
-    TEST_CHECK(compareBKTNPtrString(NULL, &bktn2) == -2);
-    TEST_CHECK(compareBKTNPtrString(&bktn1, NULL) == -2);
-    TEST_CHECK(compareBKTNPtrString(&bktn1, &bktn1) == 0);
-    TEST_CHECK(compareBKTNPtrString(&bktn1, &bktn2) == -1);
-    TEST_CHECK(compareBKTNPtrString(&bktn2, &bktn1) == 1);
+    TEST_CHECK(compareBKTNString(NULL, NULL) == -2);
+    TEST_CHECK(compareBKTNString(NULL, bktn2) == -2);
+    TEST_CHECK(compareBKTNString(bktn1, NULL) == -2);
+    TEST_CHECK(compareBKTNString(bktn1, bktn1) == 0);
+    TEST_CHECK(compareBKTNString(bktn1, bktn2) == -1);
+    TEST_CHECK(compareBKTNString(bktn2, bktn1) == 1);
     destroyString(str1); destroyString(str2);
     free(bktn1); free(bktn2);
 }
-void test_compareBKTNPtrEntry(void){
+void test_compareBKTNEntry(void){
 
     Entry e1 = createEntry("a"), e2 = createEntry("b");
     BKTreeNode bktn1 = (BKTreeNode )malloc(sizeof(bk_tree_node)), bktn2 = (BKTreeNode )malloc(sizeof(bk_tree_node));
     bktn1->data = (Pointer )&e1;
     bktn2->data = (Pointer )&e2;
-    TEST_CHECK(compareBKTNPtrEntry(NULL, NULL) == -2);
-    TEST_CHECK(compareBKTNPtrEntry(NULL, &bktn2) == -2);
-    TEST_CHECK(compareBKTNPtrEntry(&bktn1, NULL) == -2);
-    TEST_CHECK(compareBKTNPtrEntry(&bktn1, &bktn1) == 0);
-    TEST_CHECK(compareBKTNPtrEntry(&bktn1, &bktn2) == -1);
-    TEST_CHECK(compareBKTNPtrEntry(&bktn2, &bktn1) == 1);
+    TEST_CHECK(compareBKTNEntry(NULL, NULL) == -2);
+    TEST_CHECK(compareBKTNEntry(NULL, bktn2) == -2);
+    TEST_CHECK(compareBKTNEntry(bktn1, NULL) == -2);
+    TEST_CHECK(compareBKTNEntry(bktn1, bktn1) == 0);
+    TEST_CHECK(compareBKTNEntry(bktn1, bktn2) == -1);
+    TEST_CHECK(compareBKTNEntry(bktn2, bktn1) == 1);
     destroyEntry(e1); destroyEntry(e2);
     free(bktn1); free(bktn2);
 }
@@ -240,8 +240,8 @@ TEST_LIST = {
 	{ "toggle_query_active", test_toggle_query_active },
 	{ "query_active_false", test_query_active_false },
 	{ "query_active_true", test_query_active_true },
-	{ "compareBKTNPtrString", test_compareBKTNPtrString },
-	{ "compareBKTNPtrEntry", test_compareBKTNPtrEntry },
+	{ "compareBKTNString", test_compareBKTNString },
+	{ "compareBKTNEntry", test_compareBKTNEntry },
 	{ "createQueryResult", test_createQueryResult },
 	{ "destroyQueryResult", test_destroyQueryResult },
 	{ "compareQueryResult", test_compareQueryResult },

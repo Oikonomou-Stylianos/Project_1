@@ -131,12 +131,12 @@ LList BKT_Search(const BKTree bkt, const char *word, const unsigned int threshol
     switch(bkt->dataType){
         case StringType:
             if(bkt->matchType == MT_HAMMING_DIST && strlen(word) != strlen((char *)(bkt->root->data))) return NULL;
-            candidateList = LL_Create(BKTNodeType, NULL, &compareBKTNPtrString);
+            candidateList = LL_Create(BKTNodeType, NULL, &compareBKTNString);
             wordList = LL_Create(StringType, &destroyString, &compareString);
             break;
         case EntryType:
             if(bkt->matchType == MT_HAMMING_DIST && strlen(word) != strlen((char *)(((Entry )(bkt->root->data))->word))) return NULL;
-            candidateList = LL_Create(BKTNodeType, NULL, &compareBKTNPtrEntry);
+            candidateList = LL_Create(BKTNodeType, NULL, &compareBKTNEntry);
             wordList = LL_Create(EntryType, NULL, &compareEntry);
             break;
         default:
@@ -144,22 +144,22 @@ LList BKT_Search(const BKTree bkt, const char *word, const unsigned int threshol
             return NULL;
     }
     // Insert the root in the Candidate List
-    LL_InsertTail(candidateList, &(bkt->root));
+    LL_InsertTail(candidateList, bkt->root);
 
 	int i, leftBound, rightBound, dist;
 	LLNode lln_temp;
-	BKTreeNode *bktn_temp;
+	BKTreeNode bktn_temp;
 	while(!LL_IsEmpty(candidateList)){
 
 		lln_temp = LL_GetHead(candidateList);
-		bktn_temp = (BKTreeNode *)lln_temp->data;
+		bktn_temp = (BKTreeNode )lln_temp->data;
 		
         switch(bkt->dataType){
             case StringType:
-                dist = distance(word, (char *)((*bktn_temp)->data), bkt->matchType);
+                dist = distance(word, (char *)(bktn_temp->data), bkt->matchType);
                 break;
             case EntryType:
-                dist = distance(word, (char *)(((Entry )((*bktn_temp)->data))->word), bkt->matchType);
+                dist = distance(word, (char *)(((Entry )(bktn_temp->data))->word), bkt->matchType);
                 break;
             default:
                 printf("Error : [BKT_Search] : Unsupported data type\n");
@@ -170,10 +170,10 @@ LList BKT_Search(const BKTree bkt, const char *word, const unsigned int threshol
 
             switch(bkt->dataType){
                 case StringType:
-                    LL_InsertTail(wordList, createString((char *)((*bktn_temp)->data)));
+                    LL_InsertTail(wordList, createString((char *)(bktn_temp->data)));
                     break;
                 case EntryType:
-                    LL_InsertTail(wordList, (*bktn_temp)->data);
+                    LL_InsertTail(wordList, bktn_temp->data);
                     break;
                 default:
                     printf("Error : [BKT_Search] : Unsupported data type\n");
@@ -186,8 +186,8 @@ LList BKT_Search(const BKTree bkt, const char *word, const unsigned int threshol
 
 		for(i = 0; i < MAX_WORD_LENGTH; i++){
 
-			if(i >= leftBound - 1 && i <= rightBound - 1 && (*bktn_temp)->children[i] != NULL)
-                LL_InsertTail(candidateList, &((*bktn_temp)->children[i]));
+			if(i >= leftBound - 1 && i <= rightBound - 1 && bktn_temp->children[i] != NULL)
+                LL_InsertTail(candidateList, bktn_temp->children[i]);
 		}
         LL_DeleteHead(candidateList);
 	}

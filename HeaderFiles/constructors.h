@@ -39,8 +39,8 @@ char toggle_query_active(Query );
 void query_active_false(Query );
 void query_active_true(Query );
 
-int compareBKTNPtrString(Pointer , Pointer );
-int compareBKTNPtrEntry(Pointer , Pointer );
+int compareBKTNString(Pointer , Pointer );
+int compareBKTNEntry(Pointer , Pointer );
 
 QueryResult createQueryResult(unsigned int , unsigned int , unsigned int *);
 void destroyQueryResult(Pointer );
