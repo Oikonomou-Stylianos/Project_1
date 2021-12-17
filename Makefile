@@ -29,6 +29,8 @@ FLAGS = -O3 -fPIC -Wall -Werror -g -I $(HF)
 
 all: testdriver tests
 
+##################################
+
 testdriver: test.o core.o LinkedList.o BKTree.o HashTable.o constructors.o distance.o 
 	$(CXX) $(FLAGS) -o $(OUT) $(OF)/test.o $(OF)/core.so $(OF)/LinkedList.so $(OF)/BKTree.so $(OF)/HashTable.so $(OF)/constructors.so $(OF)/distance.so 
 	mv $(OUT) $(EXE)
@@ -60,8 +62,18 @@ distance.o:
 	$(CC) $(FLAGS) -shared -o distance.so distance.o
 	mv distance.o distance.so $(OF)
 
+##################################
+
 run:
 	$(EXE)/testdriver
+val:
+	valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes $(EXE)/$(OUT)
+
+##################################
+
+ref: testdriver-ref
+
+##################################
 
 tests: tests.o
 	$(CC) $(FLAGS) -o LinkedList_test $(OF)/LinkedList_test.o $(OF)/LinkedList.o $(OF)/constructors.o
@@ -73,21 +85,47 @@ tests.o:
 	$(CC) $(FLAGS) -c $(TEST)/BKTree_test.c
 	$(CC) $(FLAGS) -c $(TEST)/HashTable_test.c
 	mv $(TESTS_O) $(OF)
-	
 run-tests:
 	$(EXE)/LinkedList_test
 	$(EXE)/BKTree_test
 	$(EXE)/HashTable_test
-
-clean:
-	rm -f $(OF)/*.o $(OF)/*.so $(EXE)/$(OUT) $(EXE)/*_test
-val:
-	valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes $(EXE)/$(OUT)
 val-tests:
 #--leak-check=full --show-leak-kinds=all --track-origins=yes 
 	valgrind $(EXE)/LinkedList_test
 	valgrind $(EXE)/BKTree_test
 	valgrind $(EXE)/HashTable_test
 
+##################################
+
+clean:
+	rm -f $(OF)/*.o $(OF)/*.so $(EXE)/$(OUT) $(EXE)/*_test
 count:
 	wc $(SF)/* $(HF)/* $(TEST)/*
+
+##################################
+
+testdriver-ref:
+
+	$(CC) $(FLAGS) -c $(SF)/LinkedList.c
+	$(CC) $(FLAGS) -shared -o LinkedList.so LinkedList.o
+
+	$(CC) $(FLAGS) -c $(SF)/BKTree.c
+	$(CC) $(FLAGS) -shared -o BKTree.so BKTree.o
+
+	$(CC) $(FLAGS) -c $(SF)/HashTable.c
+	$(CC) $(FLAGS) -shared -o HashTable.so HashTable.o
+
+	$(CC) $(FLAGS) -c $(SF)/constructors.c
+	$(CC) $(FLAGS) -shared -o constructors.so constructors.o
+	
+	$(CC) $(FLAGS) -c $(SF)/distance.c
+	$(CC) $(FLAGS) -shared -o distance.so distance.o
+
+	$(CXX) $(FLAGS) -c -o core_ref.o $(SF)/core_ref.cpp
+	$(CXX) $(FLAGS) -shared -o core_ref.so core_ref.o
+	mv *.o *.so $(OF)
+	
+	$(CXX) $(FLAGS) -o $(OUT) $(OF)/test.o $(OF)/core_ref.so $(OF)/LinkedList.so $(OF)/BKTree.so $(OF)/HashTable.so $(OF)/constructors.so $(OF)/distance.so 
+	mv $(OUT) $(EXE)
+
+##################################
