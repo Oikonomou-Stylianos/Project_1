@@ -1,2 +1,7 @@
 ObjectFiles/
 Executables/
+
+# ignore everything
+_pthreads_practise_/*       
+# unignore all .c files
+!_pthreads_practise_/*.c
