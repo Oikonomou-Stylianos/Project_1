@@ -38,12 +38,18 @@ $ make count
 
 ### *Execution Time*
 #####    Machine
-- CPU : AMD Ryzen 5 5600X 6-core 3.7Ghz
-- RAM : 16.0 GB
+CPU : AMD Ryzen 5 5600X 6-core 3.7Ghz  
+RAM : 16.0 GB  
 #####    Average Time
-- Our implementation : ~5.2 secs
-- Reference implementation : ~14.3 secs 
-- Speed increase : 2.75x
+Our implementation : ~5.45 secs [ 5.13 5.6 5.5 5.12 5.88 ]  
+Reference implementation : ~14.34 secs [ 14.345 14.341 14.325 14.331 14.368 ]  
+Speed increase : 2.63x  
+#####    Machine
+University lab machine. Specs unknown.  
+#####    Average Time
+Our implementation : ~7.40 secs [ 7.332 7.449 7.418 7.335 7.470 ]  
+Reference implementation : ~24.75 secs [ 24.734 24.929 24.673 24.743 24s.665 ]  
+Speed increase : 3.34x  
 ### *Interface Implementation*
 - The implementation of core.h was written in C in the corresponding core.c source file.
 - In order to support compatibility with the given testdriver executable, a static structure named INDEX is used.
