@@ -31,30 +31,33 @@ static Index INDEX;
 
 ErrorCode InitializeIndex(){
 
+    INDEX.entry_list    = LL_Create(EntryType, &destroyEntry, &compareEntry);
+    INDEX.query_list    = LL_Create(QueryType, &destroyQuery, &compareQuery);
+    INDEX.query_ht      = HT_Create(QueryType, NULL, NULL, &compareQuery);
+    INDEX.result_list   = LL_Create(QueryResultType, &destroyQueryResult, &compareQueryResult);
+
     INDEX.exact_match_ht = HT_Create(EntryType, &djb2, NULL, &compareEntry);
     int i;
     for(i = 0; i < MAX_WORD_LENGTH - MIN_WORD_LENGTH + 1; i++)
         INDEX.hamming_distance_bkt[i] = BKT_Create(MT_HAMMING_DIST, EntryType, NULL);
     INDEX.edit_distance_bkt = BKT_Create(MT_EDIT_DIST, EntryType, NULL);
 
-    INDEX.entry_list = LL_Create(EntryType, &destroyEntry, &compareEntry);
-    INDEX.query_list = HT_Create(QueryType, NULL, &destroyQuery, &compareQuery);
-    INDEX.result_list = LL_Create(QueryResultType, &destroyQueryResult, &compareQueryResult);
-
     return EC_SUCCESS;
 }
 
 ErrorCode DestroyIndex(){
+
+
+    if(LL_Destroy(INDEX.entry_list) == 1)  return EC_FAIL;
+    if(LL_Destroy(INDEX.query_list) == 1)  return EC_FAIL;
+    if(HT_Destroy(INDEX.query_ht) == 1)    return EC_FAIL;
+    if(LL_Destroy(INDEX.result_list) == 1) return EC_FAIL;
 
     int i;
     if(HT_Destroy(INDEX.exact_match_ht) == 1) return EC_FAIL;
     for(i = 0; i < MAX_WORD_LENGTH - MIN_WORD_LENGTH + 1; i++)
         if(BKT_Destroy(INDEX.hamming_distance_bkt[i]) == 1) return EC_FAIL;
     if(BKT_Destroy(INDEX.edit_distance_bkt) == 1) return EC_FAIL;
-
-    if(LL_Destroy(INDEX.entry_list) == 1) return EC_FAIL;
-    if(HT_Destroy(INDEX.query_list) == 1) return EC_FAIL;
-    if(LL_Destroy(INDEX.result_list) == 1) return EC_FAIL;
 
     return EC_SUCCESS;
 }
@@ -69,7 +72,8 @@ ErrorCode StartQuery(QueryID        query_id,
     //Crete query and initialize entry list as empty
 
     Query q = createQuery(query_id, match_type, match_dist);
-    HT_Insert(INDEX.query_list, (Pointer )q);
+    LL_InsertTail(INDEX.query_list, (Pointer )q);
+    HT_Insert(INDEX.query_ht, (Pointer )q);
     //Create entries or update existing entries based on the query string tokens and update query's entry list pointers/contents
 
     char token[MAX_WORD_LENGTH + 1];
@@ -112,7 +116,7 @@ ErrorCode StartQuery(QueryID        query_id,
 
     printf("Exiting StartQuery | query_id = %d\n", query_id);
 
-    if(query_id == 47) HT_Print(INDEX.query_list);
+    // if(query_id == 47) HT_Print(INDEX.query_ht);
 
     return EC_SUCCESS;
 }
@@ -120,7 +124,7 @@ ErrorCode StartQuery(QueryID        query_id,
 ErrorCode EndQuery(QueryID query_id){
 
     //Toggle query active status
-    LLNode node = HT_Search(INDEX.query_list, (Pointer )&query_id);
+    LLNode node = HT_Search(INDEX.query_ht, (Pointer )&query_id);
     if (!node) return EC_FAIL;
     Query q = (Query )(node->data);
     query_active_false(q);
@@ -140,9 +144,9 @@ ErrorCode MatchDocument(DocID doc_id, const char *doc_str){
     
     //Will be used to iterate all queries, checked first because there is no
     //point in continuing if this information is invalid
-    unsigned int qcount = HT_GetSize(INDEX.query_list);
-    LLNode node = HT_GetFirst(INDEX.query_list);
-    if (!qcount || !node) return EC_FAIL;
+    unsigned int qcount = LL_GetSize(INDEX.query_list);
+    LLNode query_node = LL_GetHead(INDEX.query_list);
+    if (!qcount || !query_node) return EC_FAIL;
 
     //Tokenize and deduplicate document
     HashTable doc_words_ht = HT_Create(StringType, &djb2, NULL, &compareString);
@@ -170,10 +174,10 @@ ErrorCode MatchDocument(DocID doc_id, const char *doc_str){
     LList doc_words = HT_ToList(doc_words_ht, &destroyString);
     HT_Destroy(doc_words_ht);
     //Definitions and allocations of helper structures
-    LList res_exact = NULL;
+    HashTable res_exact = NULL;
     LList *res_edit = (LList *)malloc((MAX_DISTANCE) * sizeof(LList));
     if (!res_edit) { LL_Destroy(doc_words); return EC_FAIL; }
-    LList **res_hamm = (LList **)malloc((MAX_DISTANCE) * sizeof(LList *));
+    HashTable **res_hamm = (LList **)malloc((MAX_DISTANCE) * sizeof(LList *));
     if (!res_hamm) { free(res_edit); LL_Destroy(doc_words); return EC_FAIL; }
 
     int j = 0;
@@ -208,7 +212,7 @@ ErrorCode MatchDocument(DocID doc_id, const char *doc_str){
     //Start of query iterations
     while (qcount--){
 
-        Query q = (Query )(node->data);
+        Query q = (Query )(query_node->data);
         if (q->active){
             MatchType mt = q->match_type;
             unsigned int md = q->match_dist;
@@ -236,18 +240,17 @@ ErrorCode MatchDocument(DocID doc_id, const char *doc_str){
                     for (i = 0; i < MAX_DISTANCE; i++) {
                         LL_Destroy(res_edit[i]);
                         for(j = 0; j < MAX_WORD_LENGTH-MIN_WORD_LENGTH+1; j++){
-                            LL_Destroy(res_hamm[i][j]);
+                            HT_Destroy(res_hamm[i][j]);
                         }
                         free(res_hamm[i]);
                     }
                     free(res_edit);
                     free(res_hamm);
-                    LL_Destroy(res_exact);
+                    HT_Destroy(res_exact);
                     LL_Destroy(doc_words);
                     LL_Destroy(res_ids);
                     return EC_FAIL;
             }
-
 
             LLNode doc_node = LL_GetHead(doc_words);
             while(doc_node){
@@ -256,15 +259,15 @@ ErrorCode MatchDocument(DocID doc_id, const char *doc_str){
                 switch(mt){
                     case MT_EXACT_MATCH:
                         if (exact_flag){
-                            if (!res_exact) res_exact = LL_Create(EntryType, NULL, &compareEntry);
+                            if (!res_exact) res_exact = HT_Create(EntryType, &djb2, NULL, &compareEntry);
                             //Start the search
                             LLNode temp = HT_Search(INDEX.exact_match_ht, word);
-                            if (temp) LL_InsertTail(res_exact, (Pointer)(temp->data));
+                            if (temp) HT_Insert(res_exact, (Pointer)(temp->data));
                         }
                         break;
                     case MT_HAMMING_DIST:
                         if (hamm_flag[md-1]){
-                            if (!res_hamm[md-1][strlen(word)-MIN_WORD_LENGTH]) res_hamm[md-1][strlen(word)-MIN_WORD_LENGTH] = LL_Create(EntryType, NULL, &compareEntry);
+                            if (!res_hamm[md-1][strlen(word)-MIN_WORD_LENGTH]) res_hamm[md-1][strlen(word)-MIN_WORD_LENGTH] = HT_Create(EntryType, &djb2, NULL, &compareEntry);
                             //Commence the investigation and merge lists
                             LL_Join(res_hamm[md-1][strlen(word)-MIN_WORD_LENGTH], BKT_Search(INDEX.hamming_distance_bkt[strlen(word)-MIN_WORD_LENGTH], word, md));
                         }
@@ -287,7 +290,7 @@ ErrorCode MatchDocument(DocID doc_id, const char *doc_str){
                         }
                         free(res_edit);
                         free(res_hamm);
-                        LL_Destroy(res_exact);
+                        HT_Destroy(res_exact);
                         LL_Destroy(doc_words);
                         LL_Destroy(res_ids);
                         return EC_FAIL;
@@ -307,7 +310,7 @@ ErrorCode MatchDocument(DocID doc_id, const char *doc_str){
                 word = temp->word;
                 switch(mt){
                     case MT_EXACT_MATCH:
-                        if (LL_Exists(res_exact, (Pointer) word) > 0) hits--;
+                        if (HT_Search(res_exact, (Pointer) word) > 0) hits--;
                         break;
                     case MT_HAMMING_DIST:
                         if (LL_Exists(res_hamm[md-1][strlen(word)-MIN_WORD_LENGTH], (Pointer) word) > 0) hits--;
@@ -326,16 +329,17 @@ ErrorCode MatchDocument(DocID doc_id, const char *doc_str){
                         }
                         free(res_edit);
                         free(res_hamm);
-                        LL_Destroy(res_exact);
+                        HT_Destroy(res_exact);
                         LL_Destroy(doc_words);
                         LL_Destroy(res_ids);
                         return EC_FAIL;
                 }
                 q_word_node = LL_Next(qw, q_word_node);
             }
-            if (!hits) LL_InsertSort(res_ids, createUInt(id));
+            if (!hits) LL_InsertTail(res_ids, createUInt(id));
         }
-        node = HT_Next(INDEX.query_list, node);
+
+        query_node = LL_Next(INDEX.query_list, query_node);
     }
 
     //Save doc_id, res_ids->size and res_ids contents in INDEX.result_list
@@ -353,7 +357,7 @@ ErrorCode MatchDocument(DocID doc_id, const char *doc_str){
     }
     free(res_edit);
     free(res_hamm);
-    LL_Destroy(res_exact);
+    HT_Destroy(res_exact);
     LL_Destroy(doc_words);
     LL_Destroy(res_ids);
 
@@ -371,6 +375,8 @@ ErrorCode GetNextAvailRes(DocID *p_doc_id, unsigned int *p_num_res, QueryID **p_
     *p_doc_id = ((QueryResult )(next_result->data))->doc_id;
     *p_num_res = ((QueryResult )(next_result->data))->num_res;
     *p_query_ids = ((QueryResult )(next_result->data))->query_ids;
+
+    printf("Exiting GetNextAvailRes\n");
 
     return EC_SUCCESS;
 }

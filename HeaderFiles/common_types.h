@@ -128,12 +128,12 @@ typedef query_result *QueryResult;
 typedef struct{
 	
     LList entry_list;
+    LList query_list;
+    HashTable query_ht;
+    LList result_list;
 
     HashTable exact_match_ht;
     BKTree edit_distance_bkt;
     BKTree hamming_distance_bkt[MAX_WORD_LENGTH - MIN_WORD_LENGTH + 1];
-
-    HashTable query_list;
-    LList result_list;
 
 }Index;

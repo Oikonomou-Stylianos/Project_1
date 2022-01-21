@@ -98,6 +98,13 @@ LLNode HT_Insert(const HashTable ht, Pointer data){
 
     return lln;
 }
+// Insert all data of a Linked List to a given Hash Table
+HashTable HT_InsertFromList(const HashTable ht, LList l){
+
+    if(ht == NULL || l == NULL) return NULL;
+
+    
+}
 // Search the HashTable for a given data
 LLNode HT_Search(const HashTable ht, Pointer key){
 
@@ -235,48 +242,48 @@ int HT_GetCapacity(const HashTable ht){
 
     return (int )ht->capacity;
 }
-// Return the first node of the first bucket
-LLNode HT_GetFirst(const HashTable ht){
+// // Return the first node of the first bucket
+// LLNode HT_GetFirst(const HashTable ht){
 
-    if(ht == NULL) return NULL;
+//     if(ht == NULL) return NULL;
 
-    int i = 0, capacity = HT_GetCapacity(ht);
-    LLNode temp = NULL;
-    while(i != capacity){
+//     int i = 0, capacity = HT_GetCapacity(ht);
+//     LLNode temp = NULL;
+//     while(i != capacity){
 
-        if(ht->buckets[i] != NULL){
+//         if(ht->buckets[i] != NULL){
 
-            temp = LL_GetHead(ht->buckets[i]);
-            break;
-        }
-        i++;
-    }
-    return temp;
-}
-// Return the next non NULL value of a node. This function treats the buckets of the HT as a unified list 
-LLNode HT_Next(const HashTable ht, LLNode ln){
+//             temp = LL_GetHead(ht->buckets[i]);
+//             break;
+//         }
+//         i++;
+//     }
+//     return temp;
+// }
+// // Return the next non NULL value of a node. This function treats the buckets of the HT as a unified list 
+// LLNode HT_Next(const HashTable ht, LLNode ln){
 
-    if(ht == NULL) return NULL;
+//     if(ht == NULL) return NULL;
 
-    int bucket = HT_Hash(ht, (Pointer )ln->data) % ht->capacity;
-    LLNode temp;
-    if((temp = LL_Next(ht->buckets[bucket], ln)) != NULL) { } 
-    else{
+//     int bucket = HT_Hash(ht, (Pointer )ln->data) % ht->capacity;
+//     LLNode temp;
+//     if((temp = LL_Next(ht->buckets[bucket], ln)) != NULL) { } 
+//     else{
         
-        temp = NULL;
-        bucket++;
-        while(bucket != ht->capacity){
+//         temp = NULL;
+//         bucket++;
+//         while(bucket != ht->capacity){
 
-            if(ht->buckets[bucket] != NULL){
+//             if(ht->buckets[bucket] != NULL){
 
-                temp = LL_GetHead(ht->buckets[bucket]);
-                break;
-            }
-            bucket++;
-        }
-    }
-    return temp;
-}
+//                 temp = LL_GetHead(ht->buckets[bucket]);
+//                 break;
+//             }
+//             bucket++;
+//         }
+//     }
+//     return temp;
+// }
 // Print a Hash Table
 int HT_Print(const HashTable ht){
 
