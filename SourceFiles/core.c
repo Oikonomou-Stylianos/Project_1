@@ -171,6 +171,7 @@ ErrorCode MatchDocument(DocID doc_id, const char *doc_str){
         i = 0;  // Reset the word index
         if (*doc_str) doc_str++; else break;
     }
+
     LList doc_words = HT_ToList(doc_words_ht, &destroyString);
     HT_Destroy(doc_words_ht);
     

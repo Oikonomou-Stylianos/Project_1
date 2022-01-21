@@ -89,13 +89,15 @@ LLNode HT_Insert(const HashTable ht, Pointer data){
     if(ht->buckets[index] == NULL)  // If the bucket is not initialized initialize it
         if(!(ht->buckets[index] = LL_Create(ht->dataType, ht->destroyFunction, ht->compareFunction))) return NULL;
 
-    if(!(lln = LL_InsertTail(ht->buckets[index], data))) return NULL;
-    ht->size++;
+    if (!(lln = LL_Search(ht->buckets[index], data))){
+        if(!(lln = LL_InsertTail(ht->buckets[index], data))) return NULL;
+        ht->size++;
 
-    float load_factor = (float)ht->size / ht->capacity;
-    if(load_factor > MAX_LOAD_FACTOR)
-        if(!(HT_Rehash(ht))) return NULL;
+        float load_factor = (float)ht->size / ht->capacity;
+        if(load_factor > MAX_LOAD_FACTOR)
+            if(!(HT_Rehash(ht))) return NULL;
 
+    }
     return lln;
 }
 // Insert all data of a Linked List to a given Hash Table
@@ -107,7 +109,7 @@ HashTable HT_InsertFromList(const HashTable ht, LList l){
     while(temp){
         
 
-        if(HT_InsertUnique(ht, temp->data) == NULL) return NULL;
+        if(HT_Insert(ht, temp->data) == NULL) return NULL;
         temp = LL_Next(l, temp);
     }
 
