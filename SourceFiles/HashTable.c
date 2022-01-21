@@ -106,7 +106,8 @@ HashTable HT_InsertFromList(const HashTable ht, LList l){
     LLNode temp = LL_GetHead(l);
     while(temp){
         
-        if(HT_Insert(ht, temp->data) == NULL) return NULL;
+
+        if(HT_InsertUnique(ht, temp->data) == NULL) return NULL;
         temp = LL_Next(l, temp);
     }
 

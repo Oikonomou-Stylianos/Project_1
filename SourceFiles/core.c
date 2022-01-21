@@ -146,15 +146,16 @@ ErrorCode MatchDocument(DocID doc_id, const char *doc_str){
     //point in continuing if this information is invalid
     unsigned int qcount = LL_GetSize(INDEX.query_list);
     LLNode query_node = LL_GetHead(INDEX.query_list);
-    if (!qcount || !query_node) return EC_FAIL;
+    if(!query_node) return EC_FAIL;
 
-    //Tokenize and deduplicate document
+    //Tokenize and deduplicate document string
     HashTable doc_words_ht = HT_Create(StringType, &djb2, NULL, &compareString);
-    if (!doc_words_ht) return EC_FAIL;
+    if(!doc_words_ht) return EC_FAIL;
 
     char token[MAX_WORD_LENGTH + 1], *word = NULL;
     int i = 0;
     while(1){
+        // Create document word
         if (*doc_str != ' ' && *doc_str) {
             token[i++] = *doc_str++;
             continue;
@@ -165,14 +166,14 @@ ErrorCode MatchDocument(DocID doc_id, const char *doc_str){
         if (!word) { HT_Destroy(doc_words_ht); return EC_FAIL; }
         strcpy(word, token);
         
-        if (!HT_Insert(doc_words_ht, (Pointer )word)) free(word);
+        if (!HT_Insert(doc_words_ht, (Pointer )word)) { free(word); HT_Destroy(doc_words_ht); return EC_FAIL; }
 
         i = 0;  // Reset the word index
         if (*doc_str) doc_str++; else break;
     }
-
     LList doc_words = HT_ToList(doc_words_ht, &destroyString);
     HT_Destroy(doc_words_ht);
+    
     //Definitions and allocations of helper structures
     HashTable res_exact = NULL;
     HashTable *res_edit = (HashTable *)malloc((MAX_DISTANCE) * sizeof(LList));
