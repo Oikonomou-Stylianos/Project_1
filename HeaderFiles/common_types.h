@@ -133,7 +133,7 @@ typedef struct{
     BKTree edit_distance_bkt;
     BKTree hamming_distance_bkt[MAX_WORD_LENGTH - MIN_WORD_LENGTH + 1];
 
-    LList query_list;
+    HashTable query_list;
     LList result_list;
 
 }Index;

@@ -9,19 +9,21 @@
 
 int fuel = 0;
 pthread_mutex_t mutex_fuel;
-pthread_cond_t cond_fuel;
+pthread_cond_t cond_fuel, cond_wait_fuel;
 
 void *filling_fuel(void *arg){
 
     int i;
     for(i = 0; i < 100; i++){
 
+        sleep(1);
         pthread_mutex_lock(&mutex_fuel);
         fuel += 15;
-        pthread_mutex_unlock(&mutex_fuel);
         printf("Filling fuel... %d\n", fuel);
-        sleep(1);
+        fflush(stdout);
+        pthread_mutex_unlock(&mutex_fuel);
         pthread_cond_broadcast(&cond_fuel);
+        pthread_cond_wait(&cond_wait_fuel, )
     }
 }
 
@@ -30,6 +32,7 @@ void *car(void *arg){
     pthread_mutex_lock(&mutex_fuel);
     while(fuel < 40){
         printf("Not enough fuel. Waiting...\n");
+        fflush(stdout);
         pthread_cond_wait(&cond_fuel, &mutex_fuel);     // wait must be inside a while loop
         // unlock mutex
         // wait for signal
@@ -48,6 +51,7 @@ int main(void){
     threads = (pthread_t *)malloc(sizeof(pthread_t ) * THREAD_NUM);
     pthread_mutex_init(&mutex_fuel, NULL);
     pthread_cond_init(&cond_fuel, NULL);
+    pthread_cond_init(&cond_wait_fuel, NULL);
 
     int i;
     for(i = 0; i < THREAD_NUM-1; i++){

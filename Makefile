@@ -15,10 +15,8 @@ SF   = ./SourceFiles
 HF   = ./HeaderFiles
 OF   = ./ObjectFiles
 EXE  = ./Executables
-AD   = ./AppData
 TEST = ./Tests
 
-OBJECT  = test.o core.o LinkedList.o BKTree.o HashTable.o constructors.o distance.o 
 TESTS   = LinkedList_test BKTree_test HashTable_test constructors_test distance_test
 TESTS_O = LinkedList_test.o BKTree_test.o HashTable_test.o constructors_test.o distance_test.o
 
@@ -27,74 +25,56 @@ CC    = gcc
 CXX   = g++
 FLAGS = -O3 -fPIC -Wall -Werror -g -I $(HF)
 
-all: testdriver tests
-
 ##################################
 
-testdriver: test.o core.o LinkedList.o BKTree.o HashTable.o constructors.o distance.o 
-	$(CXX) $(FLAGS) -o $(OUT) $(OF)/test.o $(OF)/core.so $(OF)/LinkedList.so $(OF)/BKTree.so $(OF)/HashTable.so $(OF)/constructors.so $(OF)/distance.so 
-	mv $(OUT) $(EXE)
-test.o:
-	$(CXX) $(FLAGS) -c -o test.o $(SF)/test.cpp
-	mv test.o $(OF)
-core.o:
+testdriver:
+
+	$(CXX) $(FLAGS) -c $(SF)/test.cpp
 	$(CC) $(FLAGS) -c $(SF)/core.c
-	$(CC) $(FLAGS) -shared -o core.so core.o
-	mv core.o core.so $(OF)
-LinkedList.o:
-	$(CC) $(FLAGS) -c $(SF)/LinkedList.c
-	$(CC) $(FLAGS) -shared -o LinkedList.so LinkedList.o
-	mv LinkedList.o LinkedList.so $(OF)
-BKTree.o:
-	$(CC) $(FLAGS) -c $(SF)/BKTree.c
-	$(CC) $(FLAGS) -shared -o BKTree.so BKTree.o
-	mv BKTree.o BKTree.so $(OF)
-HashTable.o:
-	$(CC) $(FLAGS) -c $(SF)/HashTable.c
-	$(CC) $(FLAGS) -shared -o HashTable.so HashTable.o
-	mv HashTable.o HashTable.so $(OF)
-constructors.o:
-	$(CC) $(FLAGS) -c $(SF)/constructors.c
-	$(CC) $(FLAGS) -shared -o constructors.so constructors.o
-	mv constructors.o constructors.so $(OF)
-distance.o:
-	$(CC) $(FLAGS) -c $(SF)/distance.c
-	$(CC) $(FLAGS) -shared -o distance.so distance.o
-	mv distance.o distance.so $(OF)
 
-##################################
+	$(CC) $(FLAGS) -c $(SF)/LinkedList.c
+	$(CC) $(FLAGS) -c $(SF)/BKTree.c
+	$(CC) $(FLAGS) -c $(SF)/HashTable.c
+	$(CC) $(FLAGS) -c $(SF)/constructors.c
+	$(CC) $(FLAGS) -c $(SF)/distance.c
+	mv test.o core.o LinkedList.o BKTree.o HashTable.o constructors.o distance.o $(OF)
+
+	$(CC) $(FLAGS) -shared -o libcore.so $(OF)/core.o $(OF)/LinkedList.o $(OF)/BKTree.o $(OF)/HashTable.o $(OF)/constructors.o $(OF)/distance.o
+	mv libcore.so $(OF)
+	
+	$(CXX) $(FLAGS) -o $(OUT) $(OF)/test.o $(OF)/libcore.so
+	mv $(OUT) $(EXE)
 
 run:
-	$(EXE)/testdriver
+	$(EXE)/$(OUT)
 val:
-	valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes $(EXE)/$(OUT)
+	valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes --gen-suppressions=yes $(EXE)/$(OUT)
 
 ##################################
 
-ref: testdriver-ref
+tests:
 
-##################################
-
-tests: tests.o
-	$(CC) $(FLAGS) -o LinkedList_test $(OF)/LinkedList_test.o $(OF)/LinkedList.o $(OF)/constructors.o
-	$(CC) $(FLAGS) -o BKTree_test $(OF)/BKTree_test.o $(OF)/BKTree.o $(OF)/LinkedList.o $(OF)/constructors.o $(OF)/distance.o
-	$(CC) $(FLAGS) -o HashTable_test $(OF)/HashTable_test.o $(OF)/HashTable.o $(OF)/LinkedList.o $(OF)/constructors.o
-	$(CC) $(FLAGS) -o constructors_test $(OF)/constructors_test.o $(OF)/constructors.o $(OF)/LinkedList.o 
-	$(CC) $(FLAGS) -o distance_test $(OF)/distance_test.o $(OF)/distance.o
-	mv $(TESTS) $(EXE)
-tests.o:
 	$(CC) $(FLAGS) -c $(TEST)/LinkedList_test.c
 	$(CC) $(FLAGS) -c $(TEST)/BKTree_test.c
 	$(CC) $(FLAGS) -c $(TEST)/HashTable_test.c
 	$(CC) $(FLAGS) -c $(TEST)/constructors_test.c
 	$(CC) $(FLAGS) -c $(TEST)/distance_test.c
 	mv $(TESTS_O) $(OF)
+
+	$(CC) $(FLAGS) -o LinkedList_test $(OF)/LinkedList_test.o $(OF)/LinkedList.o $(OF)/constructors.o
+	$(CC) $(FLAGS) -o BKTree_test $(OF)/BKTree_test.o $(OF)/BKTree.o $(OF)/LinkedList.o $(OF)/constructors.o $(OF)/distance.o
+	$(CC) $(FLAGS) -o HashTable_test $(OF)/HashTable_test.o $(OF)/HashTable.o $(OF)/LinkedList.o $(OF)/constructors.o
+	$(CC) $(FLAGS) -o constructors_test $(OF)/constructors_test.o $(OF)/constructors.o $(OF)/LinkedList.o 
+	$(CC) $(FLAGS) -o distance_test $(OF)/distance_test.o $(OF)/distance.o
+	mv $(TESTS) $(EXE)
+
 run-tests:
 	$(EXE)/LinkedList_test
 	$(EXE)/BKTree_test
 	$(EXE)/HashTable_test
 	$(EXE)/constructors_test
 	$(EXE)/distance_test
+	
 val-tests:
 #--leak-check=full --show-leak-kinds=all --track-origins=yes 
 	valgrind $(EXE)/LinkedList_test
@@ -105,35 +85,33 @@ val-tests:
 
 ##################################
 
+testdriver-ref:
+
+	$(CXX) $(FLAGS) -c $(SF)/test.cpp
+	$(CXX) $(FLAGS) -c $(SF)/core_ref.cpp
+
+	$(CC) $(FLAGS) -c $(SF)/LinkedList.c
+	$(CC) $(FLAGS) -c $(SF)/BKTree.c
+	$(CC) $(FLAGS) -c $(SF)/HashTable.c
+	$(CC) $(FLAGS) -c $(SF)/constructors.c
+	$(CC) $(FLAGS) -c $(SF)/distance.c
+	mv test.o LinkedList.o BKTree.o HashTable.o constructors.o distance.o core_ref.o $(OF)
+
+	$(CC) $(FLAGS) -shared -o libcore_ref.so $(OF)/core_ref.o $(OF)/LinkedList.o $(OF)/BKTree.o $(OF)/HashTable.o $(OF)/constructors.o $(OF)/distance.o
+	mv libcore_ref.so $(OF)
+	
+	$(CXX) $(FLAGS) -o $(OUT) $(OF)/test.o $(OF)/libcore_ref.so
+	mv $(OUT) $(EXE)
+
+ref: testdriver-ref
+
+val-ref: valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes $(EXE)/$(OUT)
+
+##################################
+
 clean:
 	rm -f $(OF)/*.o $(OF)/*.so $(EXE)/$(OUT) $(EXE)/*_test
 count:
 	wc $(SF)/* $(HF)/* $(TEST)/*
-
-##################################
-
-testdriver-ref:
-
-	$(CC) $(FLAGS) -c $(SF)/LinkedList.c
-	$(CC) $(FLAGS) -shared -o LinkedList.so LinkedList.o
-
-	$(CC) $(FLAGS) -c $(SF)/BKTree.c
-	$(CC) $(FLAGS) -shared -o BKTree.so BKTree.o
-
-	$(CC) $(FLAGS) -c $(SF)/HashTable.c
-	$(CC) $(FLAGS) -shared -o HashTable.so HashTable.o
-
-	$(CC) $(FLAGS) -c $(SF)/constructors.c
-	$(CC) $(FLAGS) -shared -o constructors.so constructors.o
-	
-# $(CC) $(FLAGS) -c $(SF)/distance.c
-# $(CC) $(FLAGS) -shared -o distance.so distance.o
-
-	$(CXX) $(FLAGS) -c -o core_ref.o $(SF)/core_ref.cpp
-	$(CXX) $(FLAGS) -shared -o core_ref.so core_ref.o
-	mv *.o *.so $(OF)
-	
-	$(CXX) $(FLAGS) -o $(OUT) $(OF)/test.o $(OF)/core_ref.so $(OF)/LinkedList.so $(OF)/BKTree.so $(OF)/HashTable.so $(OF)/constructors.so $(OF)/distance.so 
-	mv $(OUT) $(EXE)
 
 ##################################

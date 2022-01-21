@@ -37,7 +37,6 @@ HashTable HT_Create(DataType dt, HashFunction hf, DestroyFunction df, CompareFun
 
     HashTable ht = (HashTable )malloc(sizeof(hash_table ));
     ht->buckets = (LList *)malloc(sizeof(LList ) * prime_sizes[0]);
-
     if(ht == NULL || ht->buckets == NULL) return NULL;
     
     int i;
@@ -66,6 +65,9 @@ int HT_Hash(HashTable ht, Pointer data){
         case EntryType:
             hash = ht->hashFunction((Pointer )((Entry )data)->word);
             break;
+        case QueryType:
+            hash = ((Query )data)->query_id;
+            break;
         default:
             printf("Error: [HT_Hash] : Unsupported data type\n");
             return -1;
@@ -87,7 +89,7 @@ LLNode HT_Insert(const HashTable ht, Pointer data){
     if(ht->buckets[index] == NULL)  // If the bucket is not initialized initialize it
         if(!(ht->buckets[index] = LL_Create(ht->dataType, ht->destroyFunction, ht->compareFunction))) return NULL;
 
-    if(!(lln = LL_InsertSortUnique(ht->buckets[index], data))) return NULL;
+    if(!(lln = LL_InsertTail(ht->buckets[index], data))) return NULL;
     ht->size++;
 
     float load_factor = (float)ht->size / ht->capacity;
@@ -97,19 +99,22 @@ LLNode HT_Insert(const HashTable ht, Pointer data){
     return lln;
 }
 // Search the HashTable for a given data
-LLNode HT_Search(const HashTable ht, char *word){
+LLNode HT_Search(const HashTable ht, Pointer key){
 
-    if(ht == NULL || word == NULL) return NULL;
+    if(ht == NULL || key == NULL) return NULL;
 
     int hash, index;
 
     Pointer temp = NULL;
     switch(ht->dataType){
         case StringType:
-            temp = (Pointer )createString(word);
+            temp = (Pointer )createString((char *)key);
             break;
         case EntryType:
-            temp = (Pointer )createEntry(word);
+            temp = (Pointer )createEntry((char *)key);
+            break;
+        case QueryType:
+            temp = (Pointer )createQuery(*(unsigned int *)key, 0, 0);
             break;
         default:
             printf("Error: [HT_Search] : Unsupported data type\n");
@@ -119,7 +124,7 @@ LLNode HT_Search(const HashTable ht, char *word){
     index = hash % ht->capacity;
 
     LLNode lln;
-    lln = LL_Search(ht->buckets[index], word);
+    lln = LL_Search(ht->buckets[index], key);
 
     switch(ht->dataType){
         case StringType:
@@ -127,6 +132,9 @@ LLNode HT_Search(const HashTable ht, char *word){
             break;
         case EntryType:
             destroyEntry(temp);
+            break;
+        case QueryType:
+            destroyQuery(temp);
             break;
         default:
             printf("Error: [HT_Search] : Unsupported data type\n");
@@ -226,6 +234,48 @@ int HT_GetCapacity(const HashTable ht){
     if(ht == NULL) return -1;
 
     return (int )ht->capacity;
+}
+// Return the first node of the first bucket
+LLNode HT_GetFirst(const HashTable ht){
+
+    if(ht == NULL) return NULL;
+
+    int i = 0, capacity = HT_GetCapacity(ht);
+    LLNode temp = NULL;
+    while(i != capacity){
+
+        if(ht->buckets[i] != NULL){
+
+            temp = LL_GetHead(ht->buckets[i]);
+            break;
+        }
+        i++;
+    }
+    return temp;
+}
+// Return the next non NULL value of a node. This function treats the buckets of the HT as a unified list 
+LLNode HT_Next(const HashTable ht, LLNode ln){
+
+    if(ht == NULL) return NULL;
+
+    int bucket = HT_Hash(ht, (Pointer )ln->data) % ht->capacity;
+    LLNode temp;
+    if((temp = LL_Next(ht->buckets[bucket], ln)) != NULL) { } 
+    else{
+        
+        temp = NULL;
+        bucket++;
+        while(bucket != ht->capacity){
+
+            if(ht->buckets[bucket] != NULL){
+
+                temp = LL_GetHead(ht->buckets[bucket]);
+                break;
+            }
+            bucket++;
+        }
+    }
+    return temp;
 }
 // Print a Hash Table
 int HT_Print(const HashTable ht){

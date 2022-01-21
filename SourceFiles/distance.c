@@ -79,7 +79,7 @@ int hamming_distance(const char *a, const char *b){
 	length_a = strlen(a);
 	length_b = strlen(b);
 
-	if(length_a != length_b || length_a < MIN_WORD_LENGTH || length_a > MAX_WORD_LENGTH || length_b < MIN_WORD_LENGTH || length_b > MAX_WORD_LENGTH)
+	if(length_a != length_b)
 		return -1;
 
 	dist = 0;

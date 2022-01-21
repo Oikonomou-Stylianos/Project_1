@@ -38,7 +38,7 @@ ErrorCode InitializeIndex(){
     INDEX.edit_distance_bkt = BKT_Create(MT_EDIT_DIST, EntryType, NULL);
 
     INDEX.entry_list = LL_Create(EntryType, &destroyEntry, &compareEntry);
-    INDEX.query_list = LL_Create(QueryType, &destroyQuery, &compareQuery);
+    INDEX.query_list = HT_Create(QueryType, NULL, &destroyQuery, &compareQuery);
     INDEX.result_list = LL_Create(QueryResultType, &destroyQueryResult, &compareQueryResult);
 
     return EC_SUCCESS;
@@ -53,7 +53,7 @@ ErrorCode DestroyIndex(){
     if(BKT_Destroy(INDEX.edit_distance_bkt) == 1) return EC_FAIL;
 
     if(LL_Destroy(INDEX.entry_list) == 1) return EC_FAIL;
-    if(LL_Destroy(INDEX.query_list) == 1) return EC_FAIL;
+    if(HT_Destroy(INDEX.query_list) == 1) return EC_FAIL;
     if(LL_Destroy(INDEX.result_list) == 1) return EC_FAIL;
 
     return EC_SUCCESS;
@@ -69,42 +69,50 @@ ErrorCode StartQuery(QueryID        query_id,
     //Crete query and initialize entry list as empty
 
     Query q = createQuery(query_id, match_type, match_dist);
-    LL_InsertTail(INDEX.query_list, (Pointer)q);
-    
+    HT_Insert(INDEX.query_list, (Pointer )q);
     //Create entries or update existing entries based on the query string tokens and update query's entry list pointers/contents
 
-    char token[MAX_WORD_LENGTH+1];
+    char token[MAX_WORD_LENGTH + 1];
     int i = 0;
-    while(!0){
+    while(1){
 
         if (*query_str != ' ' && *query_str) {
             token[i++] = *query_str++;
             continue;
         }
         token[i] = '\0';
-        LLNode node = LL_Search(INDEX.entry_list, (Pointer)token);
-        Entry e = NULL;
-        if (!node){
-            //Create new entry and add it to list
-            
-            e = createEntry(token);
-            LL_InsertTail(INDEX.entry_list, (Pointer)e);
-            
-            //Update Index pointers on any new entries | (done below) and update all entries' payloads to contain new query
+        
+        if(i >= MIN_WORD_LENGTH && i <= MAX_WORD_LENGTH){   //i = current token length
 
-            HT_Insert(INDEX.exact_match_ht, (Pointer)e);
-            BKT_Insert(INDEX.hamming_distance_bkt[i-MIN_WORD_LENGTH], (Pointer)e);   //i holds the current token length
-            BKT_Insert(INDEX.edit_distance_bkt, (Pointer)e);
+            LLNode node = HT_Search(INDEX.exact_match_ht, (Pointer )token);
+            Entry e;
+            if (!node){
+                //Create new entry and add it to list
+                
+                e = createEntry(token);
+                LL_InsertTail(INDEX.entry_list, (Pointer )e);
+                
+                //Update Index pointers on any new entries | (done below) and update all entries' payloads to contain new query
 
-        } else e = (Entry)(node->data);
+                HT_Insert(INDEX.exact_match_ht, (Pointer )e);
+                BKT_Insert(INDEX.hamming_distance_bkt[i - MIN_WORD_LENGTH], (Pointer )e);
+                BKT_Insert(INDEX.edit_distance_bkt, (Pointer )e);
+            } 
+            else 
+                e = (Entry )(node->data);
 
-        LL_InsertTail(e->payload, (Pointer)q);  // Add Query to Payload
-        LL_InsertTail(q->query_words, (Pointer)e);  // Add Entry to Query_word entry list
-    
+            LL_InsertTail(e->payload, (Pointer )q);      // Add Query to Payload
+            LL_InsertTail(q->query_words, (Pointer )e);  // Add Entry to Query_word entry list
+        }
+
         //Prepare for next iteration if not at end of query_string
         i = 0;
         if (*query_str) query_str++; else break;
     }
+
+    printf("Exiting StartQuery | query_id = %d\n", query_id);
+
+    if(query_id == 47) HT_Print(INDEX.query_list);
 
     return EC_SUCCESS;
 }
@@ -112,10 +120,13 @@ ErrorCode StartQuery(QueryID        query_id,
 ErrorCode EndQuery(QueryID query_id){
 
     //Toggle query active status
-    LLNode node = LL_Search(INDEX.query_list, (Pointer )&query_id);
+    LLNode node = HT_Search(INDEX.query_list, (Pointer )&query_id);
     if (!node) return EC_FAIL;
-    Query q = (Query)(node->data);
+    Query q = (Query )(node->data);
     query_active_false(q);
+    
+    printf("Exiting EndQuery | query_id = %d\n", query_id);
+
     return EC_SUCCESS;
 }
 
@@ -129,8 +140,8 @@ ErrorCode MatchDocument(DocID doc_id, const char *doc_str){
     
     //Will be used to iterate all queries, checked first because there is no
     //point in continuing if this information is invalid
-    unsigned int qcount = LL_GetSize(INDEX.query_list);
-    LLNode node = LL_GetHead(INDEX.query_list);
+    unsigned int qcount = HT_GetSize(INDEX.query_list);
+    LLNode node = HT_GetFirst(INDEX.query_list);
     if (!qcount || !node) return EC_FAIL;
 
     //Tokenize and deduplicate document
@@ -324,7 +335,7 @@ ErrorCode MatchDocument(DocID doc_id, const char *doc_str){
             }
             if (!hits) LL_InsertSort(res_ids, createUInt(id));
         }
-        node = LL_Next(INDEX.query_list, node);
+        node = HT_Next(INDEX.query_list, node);
     }
 
     //Save doc_id, res_ids->size and res_ids contents in INDEX.result_list
@@ -345,6 +356,8 @@ ErrorCode MatchDocument(DocID doc_id, const char *doc_str){
     LL_Destroy(res_exact);
     LL_Destroy(doc_words);
     LL_Destroy(res_ids);
+
+    printf("Exiting MatchDocument | doc_id = %d\n", doc_id);
 
     return EC_SUCCESS;
 }
