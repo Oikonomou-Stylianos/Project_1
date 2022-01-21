@@ -23,6 +23,7 @@ unsigned int djb2(Pointer );
 HashTable HT_Create(DataType , HashFunction , DestroyFunction , CompareFunction );
 int HT_Hash(HashTable , Pointer );
 LLNode HT_Insert(const HashTable , Pointer );
+HashTable HT_InsertFromList(const HashTable , LList );
 LLNode HT_Search(const HashTable , Pointer );
 HashTable HT_Rehash(const HashTable );
 LList HT_ToList(const HashTable , DestroyFunction );

@@ -101,9 +101,16 @@ LLNode HT_Insert(const HashTable ht, Pointer data){
 // Insert all data of a Linked List to a given Hash Table
 HashTable HT_InsertFromList(const HashTable ht, LList l){
 
-    if(ht == NULL || l == NULL) return NULL;
+    if(ht == NULL || l == NULL) return ht;
 
-    
+    LLNode data = LL_GetHead(l);
+    while (data){
+        HT_Insert(ht, data);
+        data = LL_Next(l, data);
+    }
+
+    LL_Destroy(l);
+    return ht;    
 }
 // Search the HashTable for a given data
 LLNode HT_Search(const HashTable ht, Pointer key){
