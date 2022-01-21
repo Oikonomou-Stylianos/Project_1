@@ -154,7 +154,7 @@ ErrorCode MatchDocument(DocID doc_id, const char *doc_str){
 
     char token[MAX_WORD_LENGTH + 1], *word = NULL;
     int i = 0;
-    while(!0){
+    while(1){
         if (*doc_str != ' ' && *doc_str) {
             token[i++] = *doc_str++;
             continue;
@@ -175,15 +175,15 @@ ErrorCode MatchDocument(DocID doc_id, const char *doc_str){
     HT_Destroy(doc_words_ht);
     //Definitions and allocations of helper structures
     HashTable res_exact = NULL;
-    LList *res_edit = (LList *)malloc((MAX_DISTANCE) * sizeof(LList));
+    HashTable *res_edit = (HashTable *)malloc((MAX_DISTANCE) * sizeof(LList));
     if (!res_edit) { LL_Destroy(doc_words); return EC_FAIL; }
-    HashTable **res_hamm = (LList **)malloc((MAX_DISTANCE) * sizeof(LList *));
+    HashTable **res_hamm = (HashTable **)malloc((MAX_DISTANCE) * sizeof(LList *));
     if (!res_hamm) { free(res_edit); LL_Destroy(doc_words); return EC_FAIL; }
 
     int j = 0;
     for (i = 0; i < MAX_DISTANCE; i++) {
         res_edit[i] = NULL;
-        res_hamm[i] = (LList *)malloc((MAX_WORD_LENGTH - MIN_WORD_LENGTH + 1) * sizeof(LList));
+        res_hamm[i] = (HashTable *)malloc((MAX_WORD_LENGTH - MIN_WORD_LENGTH + 1) * sizeof(LList));
         if (!res_hamm[i]){
             for (j = i; j > 0; j--){
                 free(res_hamm[j-1]);
@@ -221,24 +221,27 @@ ErrorCode MatchDocument(DocID doc_id, const char *doc_str){
 
             //Flagging which structures are to be initialized and searched and which are not
             //Flags can be implemented way more efficiently than this
-            char exact_flag, edit_flag[MAX_DISTANCE], hamm_flag[MAX_DISTANCE];
+            char exact_flag, edit_flag[MAX_DISTANCE], hamm_flag[MAX_DISTANCE], flag = 1;
             switch(mt){
                 case MT_EXACT_MATCH:
                     exact_flag = (!res_exact) ? 1 : 0;
+                    flag = exact_flag;
                     break;
                 case MT_HAMMING_DIST:
                     for (i = 0; i < MAX_WORD_LENGTH-MIN_WORD_LENGTH+1; i++){
                         if (res_hamm[md-1][i]) break;
                     }
-                    hamm_flag[md-1] = (i == MAX_WORD_LENGTH-MIN_WORD_LENGTH+1) ? 1 : 0;
+                    hamm_flag[md-1]= (i == MAX_WORD_LENGTH-MIN_WORD_LENGTH+1) ? 1 : 0;
+                    flag = hamm_flag[md-1];
                     break;
                 case MT_EDIT_DIST:
                     edit_flag[md-1] = (!res_edit[md-1]) ? 1 : 0;
+                    flag = edit_flag[md-1];
                     break;
                 default:
                     //Destroy all lists
                     for (i = 0; i < MAX_DISTANCE; i++) {
-                        LL_Destroy(res_edit[i]);
+                        HT_Destroy(res_edit[i]);
                         for(j = 0; j < MAX_WORD_LENGTH-MIN_WORD_LENGTH+1; j++){
                             HT_Destroy(res_hamm[i][j]);
                         }
@@ -253,7 +256,7 @@ ErrorCode MatchDocument(DocID doc_id, const char *doc_str){
             }
 
             LLNode doc_node = LL_GetHead(doc_words);
-            while(doc_node){
+            while(doc_node && flag){
                 word = (char *)(doc_node->data);
                 //If already searched, skip re-searching and mimic post search functionality of previous clone query based on words
                 switch(mt){
@@ -269,22 +272,22 @@ ErrorCode MatchDocument(DocID doc_id, const char *doc_str){
                         if (hamm_flag[md-1]){
                             if (!res_hamm[md-1][strlen(word)-MIN_WORD_LENGTH]) res_hamm[md-1][strlen(word)-MIN_WORD_LENGTH] = HT_Create(EntryType, &djb2, NULL, &compareEntry);
                             //Commence the investigation and merge lists
-                            LL_Join(res_hamm[md-1][strlen(word)-MIN_WORD_LENGTH], BKT_Search(INDEX.hamming_distance_bkt[strlen(word)-MIN_WORD_LENGTH], word, md));
+                            HT_InsertFromList(res_hamm[md-1][strlen(word)-MIN_WORD_LENGTH], BKT_Search(INDEX.hamming_distance_bkt[strlen(word)-MIN_WORD_LENGTH], word, md));
                         }
                         break;
                     case MT_EDIT_DIST:
                         if (edit_flag[md-1]){
-                            if (!res_edit[md-1]) res_edit[md-1] = LL_Create(EntryType, NULL, &compareEntry);
+                            if (!res_edit[md-1]) res_edit[md-1] = HT_Create(EntryType, &djb2, NULL, &compareEntry);
                             //Let the query begin and join lists
-                            LL_Join(res_edit[md-1], BKT_Search(INDEX.edit_distance_bkt, word, md));
+                            HT_InsertFromList(res_edit[md-1], BKT_Search(INDEX.edit_distance_bkt, word, md));
                         }
                         break;
                     default:
                         //Destroy all lists
                         for (i = 0; i < MAX_DISTANCE; i++) {
-                            LL_Destroy(res_edit[i]);
+                            HT_Destroy(res_edit[i]);
                             for(j = 0; j < MAX_WORD_LENGTH-MIN_WORD_LENGTH+1; j++){
-                                LL_Destroy(res_hamm[i][j]);
+                                HT_Destroy(res_hamm[i][j]);
                             }
                             free(res_hamm[i]);
                         }
@@ -310,20 +313,20 @@ ErrorCode MatchDocument(DocID doc_id, const char *doc_str){
                 word = temp->word;
                 switch(mt){
                     case MT_EXACT_MATCH:
-                        if (HT_Search(res_exact, (Pointer) word) > 0) hits--;
+                        if (HT_Search(res_exact, (Pointer) word)) hits--;
                         break;
                     case MT_HAMMING_DIST:
-                        if (LL_Exists(res_hamm[md-1][strlen(word)-MIN_WORD_LENGTH], (Pointer) word) > 0) hits--;
+                        if (HT_Search(res_hamm[md-1][strlen(word)-MIN_WORD_LENGTH], (Pointer) word)) hits--;
                         break;
                     case MT_EDIT_DIST:
-                        if (LL_Exists(res_edit[md-1], (Pointer) word) > 0) hits--;
+                        if (HT_Search(res_edit[md-1], (Pointer) word)) hits--;
                         break;
                     default:
                         //Destroy all lists
                         for (i = 0; i < MAX_DISTANCE; i++) {
-                            LL_Destroy(res_edit[i]);
+                            HT_Destroy(res_edit[i]);
                             for(j = 0; j < MAX_WORD_LENGTH-MIN_WORD_LENGTH+1; j++){
-                                LL_Destroy(res_hamm[i][j]);
+                                HT_Destroy(res_hamm[i][j]);
                             }
                             free(res_hamm[i]);
                         }
@@ -349,9 +352,9 @@ ErrorCode MatchDocument(DocID doc_id, const char *doc_str){
     //Free all allocated memory
     
     for (i = 0; i < MAX_DISTANCE; i++) {
-        LL_Destroy(res_edit[i]);
+        HT_Destroy(res_edit[i]);
         for(j = 0; j < MAX_WORD_LENGTH-MIN_WORD_LENGTH+1; j++){
-            LL_Destroy(res_hamm[i][j]);
+            HT_Destroy(res_hamm[i][j]);
         }
         free(res_hamm[i]);
     }
