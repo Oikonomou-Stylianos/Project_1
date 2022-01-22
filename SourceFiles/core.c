@@ -143,12 +143,12 @@ ErrorCode EndQuery(QueryID query_id){
 
 ErrorCode MatchDocument(DocID doc_id, const char *doc_str){
 
-    void *parameters = (void **)malloc(sizeof(void *) * 2);
+    unsigned int offset = 0;
+    void *parameters = (void *)malloc(sizeof(DocID) + sizeof(char *));
     if(parameters == NULL) return EC_FAIL;
-    parameters[0] = (void *)malloc(sizeof(DocID ));
-    *parameters[0] = doc_id; 
-    parameters[1] = (void *)malloc(sizeof(char *));
-    strcpy(*parameters[1], doc_str); 
+    *(parameters+offset) = doc_id; 
+    offset += sizeof(DocID);
+    strcpy(parameters+offset, doc_str); 
 
     if(JobSceduler_Submit(JOB_SCHEDULER, createJob(&MatchDocument_routine, parameters)) == 1) return EC_FAIL;
 

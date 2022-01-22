@@ -36,13 +36,14 @@ ErrorCode MatchDocument_routine(void *args){
 
     if(args == NULL) return EC_FAIL;
 
-    DocID doc_id = (DocID )((args[0])[0]);
+    unsigned int offset = 0;
+    DocID doc_id = (DocID )(args[0]+offset);
+    offset += sizeof(DocID);
     char *doc_str;
-    strcpy(doc_str, (char *)((args[0])[1]);
+    strcpy(doc_str, (char *)(args[0]+offset);
     int thread_flag = args[1];
 
-    free((args[0])[0]);
-    free((args[0])[1]);
+    free(args[0]);
     free(args[1]);
 
     //Process:
