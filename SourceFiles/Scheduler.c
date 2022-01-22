@@ -54,6 +54,7 @@ int JobSceduler_Destroy(JobScheduler js){
 
     if(LL_Destroy(js->queue) == 1) return 1;
     free(js->tids);
+    free(js);
 
     return 0;
 }
