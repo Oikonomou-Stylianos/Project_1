@@ -30,7 +30,11 @@
 
 extern Index INDEX;
 
-ErrorCode MatchDocument_routine(DocID doc_id, const char *doc_str){
+ErrorCode MatchDocument_routine(void *args){
+
+    DocID doc_id = (DocID)(args[0]);
+    const char *doc_str = (char *)(&args[1]);
+
 
     //Process:
     //Read every query's type and distance and apply search for every word in the document
