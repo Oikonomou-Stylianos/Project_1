@@ -37,14 +37,16 @@ ErrorCode MatchDocument_routine(void *args){
     if(args == NULL) return EC_FAIL;
 
     unsigned int offset = 0;
-    DocID doc_id = *(DocID *)(args[0]+offset);
-    offset += sizeof(DocID);
-    char *doc_str;
-    strcpy(doc_str, (char *)(args[0]+offset);
-    int thread_flag = args[1];
+    int thread_flag = *(int *)(args+offset);
+    offset += sizeof(int *);
 
-    free(args[0]);
-    free(args[1]);
+    DocID doc_id = *(DocID *)(args+offset);
+    offset += sizeof(DocID);
+
+    char *doc_str;
+    strcpy(doc_str, (char *)(args]+offset);
+
+    free(args);
 
     //Process:
     //Read every query's type and distance and apply search for every word in the document

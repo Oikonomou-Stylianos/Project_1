@@ -151,8 +151,9 @@ ErrorCode EndQuery(QueryID query_id){
 ErrorCode MatchDocument(DocID doc_id, const char *doc_str){
 
     unsigned int offset = 0;
-    void *parameters = (void *)malloc(sizeof(DocID) + sizeof(char *));
+    void *parameters = (void *)malloc(sizeof(int *) + sizeof(DocID) + sizeof(char *));
     if(parameters == NULL) return EC_FAIL;
+    offset += sizeof(int *);
     *(parameters+offset) = doc_id; 
     offset += sizeof(DocID);
     strcpy(parameters+offset, doc_str); 
