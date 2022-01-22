@@ -13,7 +13,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <pthreads.h>
+#include <pthread.h>
 
 #include "LinkedList.h"
 
@@ -31,7 +31,7 @@ JobScheduler JobScheduler_Create(int execution_threads){
     if(js->queue == NULL) { free(js); return NULL; }
 
     js->tids = (pthread_t *)malloc(sizeof(pthread_t) * js->execution_threads);
-    if(js->tids == NULL) { free(js); return NULL; }
+    if(js->tids == NULL) { LL_Destroy(js->queue); free(js); return NULL; }
     int i;
     for(i = 0; i < js->execution_threads; i++)
         js->tids[i] = 0;
