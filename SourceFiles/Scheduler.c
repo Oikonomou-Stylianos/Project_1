@@ -73,9 +73,6 @@ int JobScheduler_Run(JobSceduler js){
 
     if(js == NULL) return 1;
 
-    LLNode lln = LL_GetHead(js->queue);
-    Job first_job = (Job )(lln->data);
-
     while(1){
    
         pthread_mutex_lock(&(js->mutex_threads));
@@ -91,13 +88,10 @@ int JobScheduler_Run(JobSceduler js){
         for (i = 0; i < js->max_threads; i++)
             if (!active_thread_flags[i]) break;
 
-        //In case no thread is available - should be impossible
-        //if (i == js->max_threads) pthread_join()
-
         void **arguments = malloc(2*sizeof(void *));
         if (!arguments) return 1;
         arguments[0] = js->parameters;
-        arguments[1] = (void *)malloc(sizeof(int));
+        arguments[1] = (void *)malloc(sizeof(int ));
         if (!arguments[1]) { free(arguments); return 1; }
         *(int *)arguments[1] = i;
 
@@ -107,6 +101,7 @@ int JobScheduler_Run(JobSceduler js){
         JobScheduler_Pop(js);
 
         js->active_threads_count++;
+        js->active_thread_flags[i] = 1;
 
         pthread_mutex_unlock(&(js->mutex_threads));
     }

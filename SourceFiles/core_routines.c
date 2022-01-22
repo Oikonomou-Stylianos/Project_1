@@ -22,6 +22,7 @@
 #include "BKTree.h"
 #include "HashTable.h"
 
+#include "core_routines.h"
 #include "constructors.h"
 #include "common_types.h"
 #include "core.h"
@@ -29,12 +30,20 @@
 #define MAX_DISTANCE 3
 
 extern Index INDEX;
+extern JobScheduler JOB_SCHEDULER;
 
 ErrorCode MatchDocument_routine(void *args){
 
-    DocID doc_id = (DocID)(args[0]);
-    const char *doc_str = (char *)(&args[1]);
+    if(args == NULL) return EC_FAIL;
 
+    DocID doc_id = (DocID )((args[0])[0]);
+    char *doc_str;
+    strcpy(doc_str, (char *)((args[0])[1]);
+    int thread_flag = args[1];
+
+    free((args[0])[0]);
+    free((args[0])[1]);
+    free(args[1]);
 
     //Process:
     //Read every query's type and distance and apply search for every word in the document

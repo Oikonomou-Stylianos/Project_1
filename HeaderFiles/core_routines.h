@@ -8,18 +8,9 @@
 // Students: Stylianos Oikonomou , Anastasios Triantafyllou
 // ID : 1115201500243 , 1115201600173 
 // --------------------------------
-// File : common_types.h
+// File : core_routines.h
 ///////////////////////////////////
 
 #pragma once
 
-#include "common_types.h"
-#include "core.h"
-
-#define MAX_THREADS 8
-
-//////////////////////////////////////////////
-
-JobScheduler JobScheduler_Create(int );
-int JobSceduler_Submit(JobScheduler , Job );
-int JobSceduler_Destroy(JobScheduler );
+ErrorCode MatchDocument_routine(void *);
