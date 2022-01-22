@@ -157,6 +157,7 @@ typedef struct{
     //mutex, condvar...
     pthread_mutex_t mutex_threads;
     pthread_cond_t cond_threads;
+    pthread_mutex_t mutex_thread_count;
 
 }jobscheduler;
 

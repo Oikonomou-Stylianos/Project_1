@@ -44,6 +44,7 @@ JobScheduler JobScheduler_Create(int max_threads){
 
     pthread_mutex_init(&(js->mutex_threads)), NULL);
     pthread_cond_init(&(js->cond_threads)), NULL);
+    pthread_mutex_init(&(js->mutex_thread_count)), NULL);
 
     return js;
 }
@@ -95,8 +96,10 @@ int JobScheduler_Run(JobSceduler js){
         if (!arguments[1]) { free(arguments); return 1; }
         *(int *)arguments[1] = i;
 
-        if(pthread_create(&(js->tids[i]), NULL, (first_job->routine), &arguments))
+        if(pthread_create(&(js->tids[i]), NULL, (first_job->routine), &arguments) != 0){
             printf("Error : [JobScheduler_Run] : Failed to create a thread, errno = %d\n", errno);
+            return 1;
+        }
 
         JobScheduler_Pop(js);
 
