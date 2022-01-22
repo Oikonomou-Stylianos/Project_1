@@ -19,5 +19,5 @@
 //////////////////////////////////////////////
 
 JobScheduler JobScheduler_Create(int );
-int JobSceduler_Submit(JobSceduler , Job );
+int JobSceduler_Submit(JobScheduler , Job );
 int JobSceduler_Destroy(JobScheduler );
