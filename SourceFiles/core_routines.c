@@ -277,5 +277,11 @@ ErrorCode MatchDocument_routine(void *args){
 
     printf("Exiting MatchDocument | doc_id = %d\n", doc_id);
 
+    JOB_SCHEDULER->active_threads_flags[thread_flag] = 0;
+    pthread_mutex_lock(&(JOB_SCHEDULER->mutex_thread_count));
+    JOB_SCHEDULER->active_threads_count--;
+    pthread_mutex_unlock(&(JOB_SCHEDULER->mutex_thread_count));
+    pthread_cond_signal(&(JOB_SCHEDULER->cond_threads)));
+
     return EC_SUCCESS;
 }

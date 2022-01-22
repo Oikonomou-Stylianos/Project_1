@@ -51,11 +51,16 @@ ErrorCode InitializeIndex(){
     JOB_SCHEDULER = JobScheduler_Create(MAX_THREADS);
     if(JOB_SCHEDULER == NULL) return EC_FAIL;
 
+    pthread_t sch;
+    if(pthread_create(&sch, NULL, &JobScheduler_Run, (void *)JOB_SCHEDULER) != 0){
+        printf("Error : [InitializeIndex] : Failed to create a thread, errno = %d\n", errno);
+        return EC_FAIL;
+    }
+
     return EC_SUCCESS;
 }
 
 ErrorCode DestroyIndex(){
-
 
     if(LL_Destroy(INDEX.entry_list) == 1)  return EC_FAIL;
     if(LL_Destroy(INDEX.query_list) == 1)  return EC_FAIL;
@@ -67,6 +72,8 @@ ErrorCode DestroyIndex(){
     for(i = 0; i < MAX_WORD_LENGTH - MIN_WORD_LENGTH + 1; i++)
         if(BKT_Destroy(INDEX.hamming_distance_bkt[i]) == 1) return EC_FAIL;
     if(BKT_Destroy(INDEX.edit_distance_bkt) == 1) return EC_FAIL;
+
+    if(JobSceduler_Destroy(JOB_SCHEDULER) return EC_FAIL;
 
     return EC_SUCCESS;
 }
