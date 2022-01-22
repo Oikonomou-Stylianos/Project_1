@@ -34,9 +34,13 @@ JobScheduler JobScheduler_Create(int max_threads){
 
     js->tids = (pthread_t *)malloc(sizeof(pthread_t) * js->max_threads);
     if(js->tids == NULL) { LL_Destroy(js->queue); free(js); return NULL; }
+    js->active_thread_flags = (char *)malloc(js->max_threads*sizeof(char));
+    if (!(js->active_thread_flags)){ LL_Destroy(js->queue); free(js->tids); free(js); return NULL; }
     int i;
-    for(i = 0; i < js->max_threads; i++)
+    for(i = 0; i < js->max_threads; i++){
         js->tids[i] = 0;
+        js->active_thread_flags[i] = 0;
+    }
 
     pthread_mutex_init(&(js->mutex_threads)), NULL);
     pthread_cond_init(&(js->cond_threads)), NULL);
@@ -83,9 +87,21 @@ int JobScheduler_Run(JobSceduler js){
         lln = LL_GetHead(js->queue);
         first_job = (Job )(lln->data);
 
+        int i = 0;
+        for (i = 0; i < js->max_threads; i++)
+            if (!active_thread_flags[i]) break;
 
+        //In case no thread is available - should be impossible
+        //if (i == js->max_threads) pthread_join()
 
-        if(pthread_create(&threads[i], NULL, &routine, (void *)&arguments[i]))
+        void **arguments = malloc(2*sizeof(void *));
+        if (!arguments) return 1;
+        arguments[0] = js->parameters;
+        arguments[1] = (void *)malloc(sizeof(int));
+        if (!arguments[1]) { free(arguments); return 1; }
+        *(int *)arguments[1] = i;
+
+        if(pthread_create(&(js->tids[i]), NULL, (first_job->routine), &arguments))
             printf("Error : [JobScheduler_Run] : Failed to create a thread, errno = %d\n", errno);
 
         JobScheduler_Pop(js);
