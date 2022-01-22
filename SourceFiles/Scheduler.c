@@ -89,12 +89,8 @@ int JobScheduler_Run(JobSceduler js){
         for (i = 0; i < js->max_threads; i++)
             if (!active_thread_flags[i]) break;
 
-        void **arguments = malloc(2*sizeof(void *));
-        if (!arguments) return 1;
-        arguments[0] = js->parameters;
-        arguments[1] = (void *)malloc(sizeof(int ));
-        if (!arguments[1]) { free(arguments); return 1; }
-        *(int *)arguments[1] = i;
+        void *arguments = js->parameters;
+        *(int *)arguments = i;
 
         if(pthread_create(&(js->tids[i]), NULL, (first_job->routine), &arguments) != 0){
             printf("Error : [JobScheduler_Run] : Failed to create a thread, errno = %d\n", errno);
