@@ -37,7 +37,7 @@ ErrorCode MatchDocument_routine(void *args){
     if(args == NULL) return EC_FAIL;
 
     unsigned int offset = 0;
-    DocID doc_id = (DocID )(args[0]+offset);
+    DocID doc_id = *(DocID *)(args[0]+offset);
     offset += sizeof(DocID);
     char *doc_str;
     strcpy(doc_str, (char *)(args[0]+offset);
