@@ -13,14 +13,13 @@
 
 #pragma once
 
+#include "common_types.h"
 #include "core.h"
-
-#define THREAD_NUM 10
 
 struct JobScheduler{
 
-    int execution_thread;
-    List
+    unsigned int active_threads, max_threads;
+    List queue;
     p_thread_t *tids;
 
     //mutex, condvar...

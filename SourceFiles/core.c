@@ -16,6 +16,7 @@
 #include <string.h>
 #include <time.h>
 #include <limits.h>
+#include <pthreads.h>
 
 #include "LinkedList.h"
 #include "BKTree.h"
