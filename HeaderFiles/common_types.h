@@ -150,7 +150,7 @@ typedef job *Job;
 typedef struct{
 
     unsigned int execution_threads;
-    List queue;
+    LList queue;
     pthread_t *tids;
 
     //mutex, condvar...
