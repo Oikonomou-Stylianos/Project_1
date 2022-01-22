@@ -166,7 +166,7 @@ ErrorCode MatchDocument(DocID doc_id, const char *doc_str){
         if (!word) { HT_Destroy(doc_words_ht); return EC_FAIL; }
         strcpy(word, token);
         
-        if (!HT_Insert(doc_words_ht, (Pointer )word)) { free(word); HT_Destroy(doc_words_ht); return EC_FAIL; }
+        if (!HT_InsertUnique(doc_words_ht, (Pointer )word)) { free(word); HT_Destroy(doc_words_ht); return EC_FAIL; }
 
         i = 0;  // Reset the word index
         if (*doc_str) doc_str++; else break;
