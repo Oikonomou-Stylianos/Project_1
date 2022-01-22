@@ -48,6 +48,8 @@ int JobSceduler_Submit(JobSceduler js, Job j){
     return 0;
 }
 
+int JobScheduler_
+
 int JobSceduler_Destroy(JobScheduler js){
 
     if(js == NULL) return 1;
