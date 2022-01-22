@@ -14,6 +14,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <pthread.h>
+#include <errno.h>
 
 #include "LinkedList.h"
 
@@ -21,20 +22,24 @@
 #include "common_types.h"
 #include "core.h"
 
-JobScheduler JobScheduler_Create(int execution_threads){
+JobScheduler JobScheduler_Create(int max_threads){
 
     JobSceduler js = (JobSceduler )malloc(sizeof(jobscheduler));
     if(js == NULL) return NULL;
 
-    js->execution_threads = execution_threads;
+    js->max_threads = max_threads;
+    js->active_threads_count = 0;
     js->queue = LL_Create(JobType, &destoryJob, NULL);
     if(js->queue == NULL) { free(js); return NULL; }
 
-    js->tids = (pthread_t *)malloc(sizeof(pthread_t) * js->execution_threads);
+    js->tids = (pthread_t *)malloc(sizeof(pthread_t) * js->max_threads);
     if(js->tids == NULL) { LL_Destroy(js->queue); free(js); return NULL; }
     int i;
-    for(i = 0; i < js->execution_threads; i++)
+    for(i = 0; i < js->max_threads; i++)
         js->tids[i] = 0;
+
+    pthread_mutex_init(&(js->mutex_threads)), NULL);
+    pthread_cond_init(&(js->cond_threads)), NULL);
 
     return js;
 }
@@ -44,11 +49,52 @@ int JobSceduler_Submit(JobSceduler js, Job j){
     if(js == NULL || j == NULL) return 1;
 
     if(LL_InsertTail(js->queue, (Pointer )j) == NULL) return 1;
+    // pthread_mutex_lock(&(js->mutex_threads));
+    // js->active_threads_count++;
+    // pthread_mutex_unlock(&(js->mutex_threads));
 
     return 0;
 }
 
-int JobScheduler_
+int JobScheduler_Pop(JobScheduler js){
+
+    if(js == NULL) return 1;
+
+    if(LL_DeleteHead(js->queue, (Pointer )j) == NULL) return 1;
+
+    return 0;
+}
+
+int JobScheduler_Run(JobSceduler js){
+
+    if(js == NULL) return 1;
+
+    LLNode lln = LL_GetHead(js->queue);
+    Job first_job = (Job )(lln->data);
+
+    while(1){
+   
+        pthread_mutex_lock(&(js->mutex_threads));
+        while(js->active_threads_count == js->max_threads){
+
+            pthread_cond_wait(&(js->cond_threads), &(js->mutex_threads));
+        }
+
+        lln = LL_GetHead(js->queue);
+        first_job = (Job )(lln->data);
+
+
+
+        if(pthread_create(&threads[i], NULL, &routine, (void *)&arguments[i]))
+            printf("Error : [JobScheduler_Run] : Failed to create a thread, errno = %d\n", errno);
+
+        JobScheduler_Pop(js);
+
+        js->active_threads_count++;
+
+        pthread_mutex_unlock(&(js->mutex_threads));
+    }
+}
 
 int JobSceduler_Destroy(JobScheduler js){
 

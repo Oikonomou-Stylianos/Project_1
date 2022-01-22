@@ -11,11 +11,13 @@
 void *routine(void *number){
 
     printf("Printing from thread %d\n", *(int *)number);
-    sleep(3);
+    sleep(5);
     printf("Exiting thread %d\n", *(int *)number);
 
     int *poweroftwo = (int *)malloc(sizeof(int ));      // threads return pointers so their values have to be allocated in the heap and deallocated from caller function
     *poweroftwo = (int )pow((double )(*(int *)number), 2);
+
+    
 
     return (void *)poweroftwo;
 }
@@ -34,22 +36,25 @@ int main(void){
     for(i = 0; i < THREAD_NUM; i++){
 
         arguments[i] = i;
+        printf("before create pthread_t = %ld\n", threads[i]);
         if(pthread_create(&threads[i], NULL, &routine, (void *)&arguments[i]))
             printf("Error : %d\n", errno);
-        printf("pthread_t = %ld\n", threads[i]);
+        printf("after create pthread_t = %ld\n", threads[i]);
     }
 
     for(i = 0; i < THREAD_NUM; i++){
 
         if(pthread_join(threads[i], (void *)&return_values[i]))     // join the threads in separate loop or else they will not execute in parallel
             printf("Error : %d\n", errno);
+        printf("pthread_t = %ld\n", threads[i]);
     }
 
     for(i = 0; i < THREAD_NUM; i++){
 
         printf("Return value of thread %d : %d\n", i, *(int *)return_values[i]);
     }
-
+    sleep(10);
+    printf("MAIN END\n");
     for(i = 0; i < THREAD_NUM; i++){ free(return_values[i]); }
     free(return_values);
     free(arguments);

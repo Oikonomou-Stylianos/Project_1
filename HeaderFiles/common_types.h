@@ -149,11 +149,15 @@ typedef job *Job;
 ///////////////////////
 typedef struct{
 
-    unsigned int execution_threads;
+    unsigned int max_threads, active_threads_count;
     LList queue;
     pthread_t *tids;
+    char *active_threads_flags;
 
     //mutex, condvar...
+    pthread_mutex_t mutex_threads;
+    pthread_cond_t cond_threads;
+
 }jobscheduler;
 
 typedef jobscheduler *JobScheduler;
