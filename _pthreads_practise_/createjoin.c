@@ -36,6 +36,7 @@ int main(void){
         arguments[i] = i;
         if(pthread_create(&threads[i], NULL, &routine, (void *)&arguments[i]))
             printf("Error : %d\n", errno);
+        printf("pthread_t = %ld\n", threads[i]);
     }
 
     for(i = 0; i < THREAD_NUM; i++){

@@ -29,7 +29,8 @@ typedef enum{
     UIntType,
     QueryType,
     BKTNodeType,      // Candidate List in BK-Tree
-    QueryResultType
+    QueryResultType,
+    JobType
 
 }DataType;
 
@@ -137,3 +138,23 @@ typedef struct{
     BKTree hamming_distance_bkt[MAX_WORD_LENGTH - MIN_WORD_LENGTH + 1];
 
 }Index;
+//////////////////////////////////////////////
+typedef struct{
+
+    ErrorCode (*routine)(void *);
+    void *parameters;
+}job;
+
+typedef job *Job;
+///////////////////////
+typedef struct{
+
+    unsigned int execution_threads;
+    List queue;
+    pthread_t *tids;
+
+    //mutex, condvar...
+}jobscheduler;
+
+typedef jobscheduler *JobScheduler;
+//////////////////////////////////////////////

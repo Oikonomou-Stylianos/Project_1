@@ -200,7 +200,7 @@ void destroyQueryResult(Pointer qr){
 
     if(qr == NULL) return;
 
-    //free(((QueryResult )qr)->query_ids); //Is free'd by the testdriver executable, for some reason
+    //free(((QueryResult )qr)->query_ids); // Is free'd by the testdriver
     free(qr);
 }
 int compareQueryResult(Pointer qr1, Pointer qr2){
@@ -209,3 +209,21 @@ int compareQueryResult(Pointer qr1, Pointer qr2){
 
     return compareUInt((Pointer )(&((QueryResult )qr1)->doc_id), (Pointer )(&((QueryResult )qr2)->doc_id));
 }
+//////////////////////////////////////////////
+Job createJob(ErrorCode (*routine)(void *), void *parameters){
+
+    Job j = (Job )malloc(sizeof(job ));
+    if(j == NULL) return NULL;
+
+    j->routine = routine;
+    j->parameters = parameters;
+
+    return j;
+}
+void destroyJob(Pointer j){
+
+    if(j == NULL) return;
+
+    free(j);
+}
+//////////////////////////////////////////////

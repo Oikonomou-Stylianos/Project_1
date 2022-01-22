@@ -16,7 +16,7 @@
 #include <string.h>
 #include <time.h>
 #include <limits.h>
-#include <pthreads.h>
+#include <pthread.h>
 
 #include "LinkedList.h"
 #include "BKTree.h"
@@ -28,10 +28,11 @@
 
 #define MAX_DISTANCE 3
 
-static Index INDEX;
+Index INDEX;
 
 ErrorCode InitializeIndex(){
 
+    // Initilize Index
     INDEX.entry_list    = LL_Create(EntryType, &destroyEntry, &compareEntry);
     INDEX.query_list    = LL_Create(QueryType, &destroyQuery, &compareQuery);
     INDEX.query_ht      = HT_Create(QueryType, NULL, NULL, &compareQuery);
