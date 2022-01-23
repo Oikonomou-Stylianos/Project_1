@@ -166,14 +166,17 @@ ErrorCode MatchDocument(DocID doc_id, const char *doc_str){
 }
 
 ErrorCode GetNextAvailRes(DocID *p_doc_id, unsigned int *p_num_res, QueryID **p_query_ids){
-    static unsigned int N = 0;
-    // Get the Nth result from the Index's ResultList
-    LLNode next_result = LL_GetNth(INDEX.result_list, N++);
-    if(next_result == NULL) return EC_NO_AVAIL_RES;
-    // Return the QueryResult values
-    *p_doc_id = ((QueryResult )(next_result->data))->doc_id;
-    *p_num_res = ((QueryResult )(next_result->data))->num_res;
-    *p_query_ids = ((QueryResult )(next_result->data))->query_ids;
+    
+    void *parameters = (void *)malloc(sizeof(int *) + 3*sizeof(void *));
+    unsigned int offset = sizeof(int *);
+    
+    if(JobSceduler_Submit(JOB_SCHEDULER, createJob(&GetNextAvailRes_routine, parameters)) == 1) return EC_FAIL;
+    
+    //Need to wait here for the call to finish
+
+    *p_doc_id = *(DocID *)(parameters+offset+0);
+    *p_num_res = *(unsigned int *)(parameters+offset+1);
+    *p_query_ids = *(QueryID **)(parameters+offset+2);
 
     printf("Exiting GetNextAvailRes\n");
 

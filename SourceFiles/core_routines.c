@@ -288,3 +288,23 @@ ErrorCode MatchDocument_routine(void *args){
 
     return EC_SUCCESS;
 }
+
+ErrorCode GetNextAvailRes_routine(void *args){
+
+    unsigned int offset = 0;
+    int thread_id = *(int *)args;
+    offset += sizeof(int *);
+    
+    static unsigned int N = 0;
+    // Get the Nth result from the Index's ResultList
+    LLNode next_result = LL_GetNth(INDEX.result_list, N++);
+    if(next_result == NULL) return EC_NO_AVAIL_RES;
+    // Return the QueryResult values
+    (args+offset)[0] = &(((QueryResult )(next_result->data))->doc_id);
+    (args+offset)[1] = &(((QueryResult )(next_result->data))->num_res);
+    (args+offset)[2] = &(((QueryResult )(next_result->data))->query_ids);
+
+    printf("Exiting GetNextAvailRes\n");
+
+    return EC_SUCCESS;
+}
