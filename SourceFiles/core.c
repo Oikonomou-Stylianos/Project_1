@@ -154,7 +154,7 @@ ErrorCode MatchDocument(DocID doc_id, const char *doc_str){
     void *parameters = (void *)malloc(sizeof(int *) + sizeof(DocID) + sizeof(char *));
     if(parameters == NULL) return EC_FAIL;
     offset += sizeof(int *);
-    *(parameters+offset) = doc_id; 
+    *(DocID *)(parameters+offset) = doc_id; 
     offset += sizeof(DocID);
     strcpy(parameters+offset, doc_str); 
 
