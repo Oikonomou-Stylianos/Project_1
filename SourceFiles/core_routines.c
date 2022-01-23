@@ -32,9 +32,9 @@
 extern Index INDEX;
 extern JobScheduler JOB_SCHEDULER;
 
-ErrorCode MatchDocument_routine(void *args){
+void *MatchDocument_routine(void *args){
 
-    if(args == NULL) return EC_FAIL;
+    if(args == NULL) return NULL;
 
     unsigned int offset = 0;
     int thread_flag = *(int *)(args+offset);
@@ -44,7 +44,7 @@ ErrorCode MatchDocument_routine(void *args){
     offset += sizeof(DocID);
 
     char *doc_str;
-    strcpy(doc_str, (char *)(args]+offset);
+    strcpy(doc_str, (char *)(args+offset);
 
     free(args);
 
@@ -58,11 +58,11 @@ ErrorCode MatchDocument_routine(void *args){
     //point in continuing if this information is invalid
     unsigned int qcount = LL_GetSize(INDEX.query_list);
     LLNode query_node = LL_GetHead(INDEX.query_list);
-    if(!query_node) return EC_FAIL;
+    if(!query_node) return NULL;
 
     //Tokenize and deduplicate document string
     HashTable doc_words_ht = HT_Create(StringType, &djb2, NULL, &compareString);
-    if(!doc_words_ht) return EC_FAIL;
+    if(!doc_words_ht) return NULL;
 
     char token[MAX_WORD_LENGTH + 1], *word = NULL;
     int i = 0;
@@ -75,10 +75,10 @@ ErrorCode MatchDocument_routine(void *args){
         token[i] = '\0';
 
         word = (char *)malloc((i + 1) * sizeof(char ));     // i = length of the word
-        if (!word) { HT_Destroy(doc_words_ht); return EC_FAIL; }
+        if (!word) { HT_Destroy(doc_words_ht); return NULL; }
         strcpy(word, token);
         
-        if (!HT_InsertUnique(doc_words_ht, (Pointer )word)) { free(word); HT_Destroy(doc_words_ht); return EC_FAIL; }
+        if (!HT_InsertUnique(doc_words_ht, (Pointer )word)) { free(word); HT_Destroy(doc_words_ht); return NULL; }
 
         i = 0;  // Reset the word index
         if (*doc_str) doc_str++; else break;
@@ -90,9 +90,9 @@ ErrorCode MatchDocument_routine(void *args){
     //Definitions and allocations of helper structures
     HashTable res_exact = NULL;
     HashTable *res_edit = (HashTable *)malloc((MAX_DISTANCE) * sizeof(LList));
-    if (!res_edit) { LL_Destroy(doc_words); return EC_FAIL; }
+    if (!res_edit) { LL_Destroy(doc_words); return NULL; }
     HashTable **res_hamm = (HashTable **)malloc((MAX_DISTANCE) * sizeof(LList *));
-    if (!res_hamm) { free(res_edit); LL_Destroy(doc_words); return EC_FAIL; }
+    if (!res_hamm) { free(res_edit); LL_Destroy(doc_words); return NULL; }
 
     int j = 0;
     for (i = 0; i < MAX_DISTANCE; i++) {
@@ -105,7 +105,7 @@ ErrorCode MatchDocument_routine(void *args){
             free(res_edit);
             free(res_hamm);
             LL_Destroy(doc_words);
-            return EC_FAIL;
+            return NULL;
         }
         for (j = 0; j < MAX_WORD_LENGTH - MIN_WORD_LENGTH + 1; j++) res_hamm[i][j] = NULL;
     }
@@ -166,7 +166,7 @@ ErrorCode MatchDocument_routine(void *args){
                     HT_Destroy(res_exact);
                     LL_Destroy(doc_words);
                     LL_Destroy(res_ids);
-                    return EC_FAIL;
+                    return NULL;
             }
 
             LLNode doc_node = LL_GetHead(doc_words);
@@ -210,7 +210,7 @@ ErrorCode MatchDocument_routine(void *args){
                         HT_Destroy(res_exact);
                         LL_Destroy(doc_words);
                         LL_Destroy(res_ids);
-                        return EC_FAIL;
+                        return NULL;
                 }
 
                 doc_node = LL_Next(doc_words, doc_node);
@@ -249,7 +249,7 @@ ErrorCode MatchDocument_routine(void *args){
                         HT_Destroy(res_exact);
                         LL_Destroy(doc_words);
                         LL_Destroy(res_ids);
-                        return EC_FAIL;
+                        return NULL;
                 }
                 q_word_node = LL_Next(qw, q_word_node);
             }
@@ -280,11 +280,29 @@ ErrorCode MatchDocument_routine(void *args){
 
     printf("Exiting MatchDocument | doc_id = %d\n", doc_id);
 
-    JOB_SCHEDULER->active_threads_flags[thread_flag] = 0;
+    JOB_SCHEDULER->active_threads_flags[thread_flag] = 0;           // Set thread flag to 0, indicates that the thread id is inactive
+
     pthread_mutex_lock(&(JOB_SCHEDULER->mutex_thread_count));
-    JOB_SCHEDULER->active_threads_count--;
+    JOB_SCHEDULER->active_threads_count--;                          // Reduces the active thread count
     pthread_mutex_unlock(&(JOB_SCHEDULER->mutex_thread_count));
-    pthread_cond_signal(&(JOB_SCHEDULER->cond_threads)));
+
+    pthread_cond_signal(&(JOB_SCHEDULER->cond_threads)));           // Signal the JobScheduler that a thread has finished its excecution
+
+    // return EC_SUCCESS;
+}
+
+ErrorCode GetNextAvailRes_routine(void *args){
+
+    static unsigned int N = 0;
+    // Get the Nth result from the Index's ResultList
+    LLNode next_result = LL_GetNth(INDEX.result_list, N++);
+    if(next_result == NULL) return EC_NO_AVAIL_RES;
+    // Return the QueryResult values
+    *p_doc_id = ((QueryResult )(next_result->data))->doc_id;
+    *p_num_res = ((QueryResult )(next_result->data))->num_res;
+    *p_query_ids = ((QueryResult )(next_result->data))->query_ids;
+
+    printf("Exiting GetNextAvailRes\n");
 
     return EC_SUCCESS;
 }

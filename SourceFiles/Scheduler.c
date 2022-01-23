@@ -70,9 +70,9 @@ int JobScheduler_Pop(JobScheduler js){
     return 0;
 }
 
-int JobScheduler_Run(JobSceduler js){
+void *JobScheduler_Run(void *js){
 
-    if(js == NULL) return 1;
+    if(js == NULL) return NULL;
 
     while(1){
    
@@ -94,7 +94,7 @@ int JobScheduler_Run(JobSceduler js){
 
         if(pthread_create(&(js->tids[i]), NULL, (first_job->routine), &arguments) != 0){
             printf("Error : [JobScheduler_Run] : Failed to create a thread, errno = %d\n", errno);
-            return 1;
+            return NULL;
         }
 
         JobScheduler_Pop(js);
@@ -104,6 +104,8 @@ int JobScheduler_Run(JobSceduler js){
 
         pthread_mutex_unlock(&(js->mutex_threads));
     }
+
+    return js;
 }
 
 int JobSceduler_Destroy(JobScheduler js){

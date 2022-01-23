@@ -22,4 +22,5 @@
 
 JobScheduler JobScheduler_Create(int );
 int JobSceduler_Submit(JobScheduler , Job );
+void *JobScheduler_Run(void *);
 int JobSceduler_Destroy(JobScheduler );

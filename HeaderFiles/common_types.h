@@ -141,7 +141,7 @@ typedef struct{
 //////////////////////////////////////////////
 typedef struct{
 
-    ErrorCode (*routine)(void *);
+    void *(*routine)(void *);
     void *parameters;
 }job;
 
