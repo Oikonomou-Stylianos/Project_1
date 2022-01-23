@@ -17,6 +17,7 @@
 #include <time.h>
 #include <limits.h>
 #include <pthread.h>
+#include <errno.h>
 
 #include "LinkedList.h"
 #include "BKTree.h"
@@ -73,7 +74,7 @@ ErrorCode DestroyIndex(){
         if(BKT_Destroy(INDEX.hamming_distance_bkt[i]) == 1) return EC_FAIL;
     if(BKT_Destroy(INDEX.edit_distance_bkt) == 1) return EC_FAIL;
 
-    if(JobSceduler_Destroy(JOB_SCHEDULER) return EC_FAIL;
+    if(JobSceduler_Destroy(JOB_SCHEDULER) == 1) return EC_FAIL;
 
     return EC_SUCCESS;
 }
