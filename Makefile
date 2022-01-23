@@ -43,7 +43,7 @@ testdriver:
 
 	mv test.o core.o LinkedList.o BKTree.o HashTable.o constructors.o distance.o core_routines.o Scheduler.o $(OF)
 
-	$(CC) $(FLAGS) -shared -o libcore.so $(OF)/core.o $(OF)/LinkedList.o $(OF)/BKTree.o $(OF)/HashTable.o $(OF)/constructors.o $(OF)/distance.o $(OF)/core_routines.o $(OF)/Scheduler.o
+	$(CC) $(FLAGS) -shared -pthread -o libcore.so $(OF)/core.o $(OF)/LinkedList.o $(OF)/BKTree.o $(OF)/HashTable.o $(OF)/constructors.o $(OF)/distance.o $(OF)/core_routines.o $(OF)/Scheduler.o
 	mv libcore.so $(OF)
 	
 	$(CXX) $(FLAGS) -o $(OUT) $(OF)/test.o $(OF)/libcore.so

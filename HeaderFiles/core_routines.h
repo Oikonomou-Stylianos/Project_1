@@ -14,4 +14,3 @@
 #pragma once
 
 void *MatchDocument_routine(void *);
-void *GetNextAvailRes_routine(void *);

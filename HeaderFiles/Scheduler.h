@@ -20,7 +20,7 @@
 
 //////////////////////////////////////////////
 
-JobScheduler JobScheduler_Create(int );
-int JobSceduler_Submit(JobScheduler , Job );
+int JobScheduler_Initialize(int );
+int JobScheduler_Submit(Job );
 void *JobScheduler_Run(void *);
-int JobSceduler_Destroy(JobScheduler );
+int JobScheduler_Destroy();

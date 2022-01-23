@@ -48,14 +48,11 @@ ErrorCode InitializeIndex(){
         INDEX.hamming_distance_bkt[i] = BKT_Create(MT_HAMMING_DIST, EntryType, NULL);
     INDEX.edit_distance_bkt = BKT_Create(MT_EDIT_DIST, EntryType, NULL);
 
-    JOB_SCHEDULER = JobScheduler_Create(MAX_THREADS);
+    JobScheduler_Initialize(MAX_THREADS);
     if(JOB_SCHEDULER == NULL) return EC_FAIL;
 
     pthread_t sch;
-    if(pthread_create(&sch, NULL, &JobScheduler_Run, (void *)JOB_SCHEDULER) != 0){
-        printf("Error : [InitializeIndex] : Failed to create a thread, errno = %d\n", errno);
-        return EC_FAIL;
-    }
+    if(pthread_create(&sch, NULL, &JobScheduler_Run, NULL) != 0) return EC_FAIL;
 
     return EC_SUCCESS;
 }
@@ -73,7 +70,7 @@ ErrorCode DestroyIndex(){
         if(BKT_Destroy(INDEX.hamming_distance_bkt[i]) == 1) return EC_FAIL;
     if(BKT_Destroy(INDEX.edit_distance_bkt) == 1) return EC_FAIL;
 
-    if(JobSceduler_Destroy(JOB_SCHEDULER) == 1) return EC_FAIL;
+    if(JobScheduler_Destroy(JOB_SCHEDULER) == 1) return EC_FAIL;
 
     return EC_SUCCESS;
 }
@@ -138,9 +135,10 @@ ErrorCode StartQuery(QueryID        query_id,
 ErrorCode EndQuery(QueryID query_id){
 
     //Toggle query active status
-    LLNode node = HT_Search(INDEX.query_ht, (Pointer )&query_id);
-    if (!node) return EC_FAIL;
-    Query q = (Query )(node->data);
+    LLNode query_node = HT_Search(INDEX.query_ht, (Pointer )&query_id);
+    if (!query_node) return EC_FAIL;
+
+    Query q = (Query )(query_node->data);
     query_active_false(q);
     
     printf("Exiting EndQuery | query_id = %d\n", query_id);
@@ -150,15 +148,14 @@ ErrorCode EndQuery(QueryID query_id){
 
 ErrorCode MatchDocument(DocID doc_id, const char *doc_str){
 
-    unsigned int offset = 0;
-    void *parameters = (void *)malloc(sizeof(int *) + sizeof(DocID) + sizeof(char *));
+    void *parameters = (void **)malloc(sizeof(void *) * 2);
     if(parameters == NULL) return EC_FAIL;
-    offset += sizeof(int *);
-    *(DocID *)(parameters+offset) = doc_id; 
-    offset += sizeof(DocID);
-    strcpy(parameters+offset, doc_str); 
+    parameters[0] = (void *)malloc(sizeof(DocID ));
+    *parameters[0] = doc_id; 
+    parameters[1] = (void *)malloc(sizeof(char *));
+    strcpy(*parameters[1], doc_str); 
 
-    if(JobSceduler_Submit(JOB_SCHEDULER, createJob(&MatchDocument_routine, parameters)) == 1) return EC_FAIL;
+    if(JobScheduler_Submit(JOB_SCHEDULER, createJob(&MatchDocument_routine, parameters)) == 1) return EC_FAIL;
 
     printf("Exiting MatchDocument | doc_id = %d\n", doc_id);
 
@@ -166,19 +163,15 @@ ErrorCode MatchDocument(DocID doc_id, const char *doc_str){
 }
 
 ErrorCode GetNextAvailRes(DocID *p_doc_id, unsigned int *p_num_res, QueryID **p_query_ids){
-    
-    void *parameters = (void *)malloc(sizeof(int *) + 3*sizeof(void *));
-    unsigned int offset = sizeof(int *);
-    
-    if(JobSceduler_Submit(JOB_SCHEDULER, createJob(&GetNextAvailRes_routine, parameters)) == 1) return EC_FAIL;
-    
-    //Need to wait here for the call to finish
 
-    *p_doc_id = *(DocID *)(parameters+offset);
-    offset += sizeof(void *);
-    *p_num_res = *(unsigned int *)(parameters+offset);
-    offset += sizeof(void *);
-    *p_query_ids = *(QueryID **)(parameters+offset);
+    LLNode next_result = LL_GetHead(INDEX.result_list);
+    if(next_result == NULL) return EC_NO_AVAIL_RES;
+
+    *p_doc_id = ((QueryResult )(next_result->data))->doc_id;
+    *p_num_res = ((QueryResult )(next_result->data))->num_res;
+    *p_query_ids = ((QueryResult )(next_result->data))->query_ids;
+
+    if(LL_DeleteHead(INDEX.result_list) == 1) return EC_FAIL;
 
     printf("Exiting GetNextAvailRes\n");
 
