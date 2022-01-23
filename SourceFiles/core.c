@@ -174,9 +174,11 @@ ErrorCode GetNextAvailRes(DocID *p_doc_id, unsigned int *p_num_res, QueryID **p_
     
     //Need to wait here for the call to finish
 
-    *p_doc_id = *(DocID *)(parameters+offset+0);
-    *p_num_res = *(unsigned int *)(parameters+offset+1);
-    *p_query_ids = *(QueryID **)(parameters+offset+2);
+    *p_doc_id = *(DocID *)(parameters+offset);
+    offset += sizeof(void *);
+    *p_num_res = *(unsigned int *)(parameters+offset);
+    offset += sizeof(void *);
+    *p_query_ids = *(QueryID **)(parameters+offset);
 
     printf("Exiting GetNextAvailRes\n");
 

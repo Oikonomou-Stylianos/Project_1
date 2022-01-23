@@ -45,7 +45,7 @@ void *MatchDocument_routine(void *args){
     DocID doc_id = *(DocID *)(args+offset);
     offset += sizeof(DocID);
 
-    char *doc_str;
+    char *doc_str = NULL;
     strcpy(doc_str, (char *)(args+offset));
 
     free(args);
@@ -296,7 +296,7 @@ void *MatchDocument_routine(void *args){
 void *GetNextAvailRes_routine(void *args){
 
     unsigned int offset = 0;
-    int thread_id = *(int *)args;
+    //int thread_id = *(int *)args; //Comment out if uninitialized warning
     offset += sizeof(int *);
     
     static unsigned int N = 0;
@@ -304,9 +304,11 @@ void *GetNextAvailRes_routine(void *args){
     LLNode next_result = LL_GetNth(INDEX.result_list, N++);
     if(next_result == NULL) return NULL;
     // Return the QueryResult values
-    (DocID *)(args+offset+0) = &(((QueryResult )(next_result->data))->doc_id);
-    (unsigned int *)(args+offset+1) = &(((QueryResult )(next_result->data))->num_res);
-    (QueryID **)(args+offset+2) = &(((QueryResult )(next_result->data))->query_ids);
+    *(DocID *)(args+offset) = (((QueryResult )(next_result->data))->doc_id);
+    offset += sizeof(void *);
+    *(unsigned int *)(args+offset) = (((QueryResult )(next_result->data))->num_res);
+    offset += sizeof(void *);
+    *(QueryID **)(args+offset) = (((QueryResult )(next_result->data))->query_ids);
 
     printf("Exiting GetNextAvailRes\n");
 
