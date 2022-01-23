@@ -22,7 +22,9 @@
 #include "BKTree.h"
 #include "HashTable.h"
 
+#include "Scheduler.h"
 #include "core_routines.h"
+
 #include "constructors.h"
 #include "common_types.h"
 #include "core.h"
@@ -44,7 +46,7 @@ void *MatchDocument_routine(void *args){
     offset += sizeof(DocID);
 
     char *doc_str;
-    strcpy(doc_str, (char *)(args+offset);
+    strcpy(doc_str, (char *)(args+offset));
 
     free(args);
 
@@ -286,28 +288,12 @@ void *MatchDocument_routine(void *args){
     JOB_SCHEDULER->active_threads_count--;                          // Reduces the active thread count
     pthread_mutex_unlock(&(JOB_SCHEDULER->mutex_thread_count));
 
-    pthread_cond_signal(&(JOB_SCHEDULER->cond_threads)));           // Signal the JobScheduler that a thread has finished its excecution
+    pthread_cond_signal(&(JOB_SCHEDULER->cond_threads));           // Signal the JobScheduler that a thread has finished its excecution
 
-    // return EC_SUCCESS;
+    return NULL;
 }
 
-ErrorCode GetNextAvailRes_routine(void *args){
-
-    static unsigned int N = 0;
-    // Get the Nth result from the Index's ResultList
-    LLNode next_result = LL_GetNth(INDEX.result_list, N++);
-    if(next_result == NULL) return EC_NO_AVAIL_RES;
-    // Return the QueryResult values
-    *p_doc_id = ((QueryResult )(next_result->data))->doc_id;
-    *p_num_res = ((QueryResult )(next_result->data))->num_res;
-    *p_query_ids = ((QueryResult )(next_result->data))->query_ids;
-
-    printf("Exiting GetNextAvailRes\n");
-
-    return EC_SUCCESS;
-}
-
-ErrorCode GetNextAvailRes_routine(void *args){
+void *GetNextAvailRes_routine(void *args){
 
     unsigned int offset = 0;
     int thread_id = *(int *)args;
@@ -316,13 +302,13 @@ ErrorCode GetNextAvailRes_routine(void *args){
     static unsigned int N = 0;
     // Get the Nth result from the Index's ResultList
     LLNode next_result = LL_GetNth(INDEX.result_list, N++);
-    if(next_result == NULL) return EC_NO_AVAIL_RES;
+    if(next_result == NULL) return NULL;
     // Return the QueryResult values
-    (args+offset)[0] = &(((QueryResult )(next_result->data))->doc_id);
-    (args+offset)[1] = &(((QueryResult )(next_result->data))->num_res);
-    (args+offset)[2] = &(((QueryResult )(next_result->data))->query_ids);
+    (DocID *)(args+offset+0) = &(((QueryResult )(next_result->data))->doc_id);
+    (unsigned int *)(args+offset+1) = &(((QueryResult )(next_result->data))->num_res);
+    (QueryID **)(args+offset+2) = &(((QueryResult )(next_result->data))->query_ids);
 
     printf("Exiting GetNextAvailRes\n");
 
-    return EC_SUCCESS;
+    return NULL;
 }

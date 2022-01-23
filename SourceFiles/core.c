@@ -37,7 +37,6 @@ JobScheduler JOB_SCHEDULER;
 
 ErrorCode InitializeIndex(){
 
-    // Initilize Index
     INDEX.entry_list    = LL_Create(EntryType, &destroyEntry, &compareEntry);
     INDEX.query_list    = LL_Create(QueryType, &destroyQuery, &compareQuery);
     INDEX.query_ht      = HT_Create(QueryType, NULL, NULL, &compareQuery);

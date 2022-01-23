@@ -37,9 +37,13 @@ testdriver:
 	$(CC) $(FLAGS) -c $(SF)/HashTable.c
 	$(CC) $(FLAGS) -c $(SF)/constructors.c
 	$(CC) $(FLAGS) -c $(SF)/distance.c
-	mv test.o core.o LinkedList.o BKTree.o HashTable.o constructors.o distance.o $(OF)
 
-	$(CC) $(FLAGS) -shared -o libcore.so $(OF)/core.o $(OF)/LinkedList.o $(OF)/BKTree.o $(OF)/HashTable.o $(OF)/constructors.o $(OF)/distance.o
+	$(CC) $(FLAGS) -c $(SF)/core_routines.c
+	$(CC) $(FLAGS) -c $(SF)/Scheduler.c
+
+	mv test.o core.o LinkedList.o BKTree.o HashTable.o constructors.o distance.o core_routines.o Scheduler.o $(OF)
+
+	$(CC) $(FLAGS) -shared -o libcore.so $(OF)/core.o $(OF)/LinkedList.o $(OF)/BKTree.o $(OF)/HashTable.o $(OF)/constructors.o $(OF)/distance.o $(OF)/core_routines.o $(OF)/Scheduler.o
 	mv libcore.so $(OF)
 	
 	$(CXX) $(FLAGS) -o $(OUT) $(OF)/test.o $(OF)/libcore.so
@@ -110,7 +114,7 @@ val-ref: valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes $(
 ##################################
 
 clean:
-	rm -f $(OF)/*.o $(OF)/*.so $(EXE)/$(OUT) $(EXE)/*_test
+	rm -f $(OF)/*.o $(OF)/*.so $(EXE)/$(OUT) $(EXE)/*_test ./*.o
 count:
 	wc $(SF)/* $(HF)/* $(TEST)/*
 

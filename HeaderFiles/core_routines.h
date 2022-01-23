@@ -13,4 +13,5 @@
 
 #pragma once
 
-ErrorCode MatchDocument_routine(void *);
+void *MatchDocument_routine(void *);
+void *GetNextAvailRes_routine(void *);
