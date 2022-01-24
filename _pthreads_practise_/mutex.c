@@ -27,7 +27,7 @@ int main(void){
 
     pthread_t *threads;
     threads = (pthread_t *)malloc(sizeof(pthread_t ) * THREAD_NUM);
-    pthread_mutex_init(&mutex, NULL);
+    pthread_mutex_init(& , NULL);
 
     int i;
     for(i = 0; i < THREAD_NUM; i++){

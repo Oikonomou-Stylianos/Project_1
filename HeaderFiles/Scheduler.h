@@ -21,7 +21,7 @@
 //////////////////////////////////////////////
 
 int JobScheduler_Initialize(int );
-int JobScheduler_Submit(Job );
-int JobScheduler_Pop();
+int JobScheduler_EnqueueJob(Job );
+int JobScheduler_DequeueJob();
 void *JobScheduler_Run(void *);
 int JobScheduler_Destroy();

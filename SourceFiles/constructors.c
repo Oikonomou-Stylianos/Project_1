@@ -210,7 +210,7 @@ int compareQueryResult(Pointer qr1, Pointer qr2){
     return compareUInt((Pointer )(&((QueryResult )qr1)->doc_id), (Pointer )(&((QueryResult )qr2)->doc_id));
 }
 //////////////////////////////////////////////
-Job createJob(void *(*routine)(void *), void *parameters){
+Job createJob(void *(*routine)(void *), void **parameters){
 
     Job j = (Job )malloc(sizeof(job ));
     if(j == NULL) return NULL;

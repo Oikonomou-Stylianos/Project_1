@@ -46,5 +46,5 @@ QueryResult createQueryResult(unsigned int , unsigned int , unsigned int *);
 void destroyQueryResult(Pointer );
 int compareQueryResult(Pointer , Pointer );
 
-Job createJob(void *(*)(void *), void *);
+Job createJob(void *(*)(void *), void **);
 void destroyJob(Pointer );

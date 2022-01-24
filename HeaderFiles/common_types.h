@@ -154,10 +154,12 @@ typedef struct{
     pthread_t *tids;
     char *active_threads_flags;
 
-    //mutex, condvar...
-    pthread_mutex_t mutex_threads;
-    pthread_cond_t cond_threads;
-    pthread_mutex_t mutex_thread_count;
+    pthread_mutex_t mutex_queue, 
+                    mutex_threads,
+                    mutex_active_threads_count,
+                    mutex_query_result;
+    pthread_cond_t  cond_threads,
+                    cond_query_result;
 
 }jobscheduler;
 

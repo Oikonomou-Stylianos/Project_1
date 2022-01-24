@@ -17,6 +17,7 @@
 #include <time.h>
 #include <limits.h>
 #include <pthread.h>
+#include <unistd.h>
 
 #include "LinkedList.h"
 #include "BKTree.h"
@@ -36,15 +37,13 @@ extern JobScheduler JOB_SCHEDULER;
 
 void *MatchDocument_routine(void *parameters){
 
-    if(args == NULL) return NULL;
+    if(parameters == NULL) return NULL;
 
-    void **js_param = *parameters;
-    void **md_param = js_param[1]
+    void **js_param = *(void ***)parameters;
+    void **md_param = (void **)js_param[1];
     int thread_flag = *(int *)js_param[0];
-    DocID doc_id = 
-    char *doc_str = 
-
-
+    DocID doc_id = *(DocID *)md_param[0];
+    char *doc_str = (char *)md_param[1];
 
     //Process:
     //Read every query's type and distance and apply search for every word in the document
@@ -258,9 +257,9 @@ void *MatchDocument_routine(void *parameters){
     }
 
     //Save doc_id, res_ids->size and res_ids contents in INDEX.result_list
-
+    pthread_mutex_lock(&(JOB_SCHEDULER->mutex_query_result));
     LL_InsertTail(INDEX.result_list, (Pointer)createQueryResult(doc_id, LL_GetSize(res_ids), (unsigned int *)LL_ToArray(res_ids)));
-
+    pthread_mutex_unlock(&(JOB_SCHEDULER->mutex_query_result));
     //Free all allocated memory
     
     for (i = 0; i < MAX_DISTANCE; i++) {
@@ -276,15 +275,22 @@ void *MatchDocument_routine(void *parameters){
     LL_Destroy(doc_words);
     LL_Destroy(res_ids);
 
-    printf("Exiting MatchDocument | doc_id = %d\n", doc_id);
+    // Deallocate parameters
+    // free(md_param[0]);
+    // free(md_param[1]);
+    // free(md_param);
+    // free(js_param[0]);
+    // free(js_param);
 
     JOB_SCHEDULER->active_threads_flags[thread_flag] = 0;           // Set thread flag to 0, indicates that the thread id is inactive
 
-    pthread_mutex_lock(&(JOB_SCHEDULER->mutex_thread_count));
-    JOB_SCHEDULER->active_threads_count--;                          // Reduces the active thread count
-    pthread_mutex_unlock(&(JOB_SCHEDULER->mutex_thread_count));
+    pthread_mutex_lock(&(JOB_SCHEDULER->mutex_active_threads_count));
+    JOB_SCHEDULER->active_threads_count--;                          // Reduce the active threads count
+    pthread_mutex_unlock(&(JOB_SCHEDULER->mutex_active_threads_count));
 
-    pthread_cond_signal(&(JOB_SCHEDULER->cond_threads));           // Signal the JobScheduler that a thread has finished its excecution
-
+    pthread_cond_signal(&(JOB_SCHEDULER->cond_threads));            // Signal the JobScheduler that a thread has finished its excecution
+    
+    printf("Exiting MatchDocument | doc_id = %d\n", doc_id);
+    
     return NULL;
 }

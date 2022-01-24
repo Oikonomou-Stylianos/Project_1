@@ -51,8 +51,8 @@ ErrorCode InitializeIndex(){
     JobScheduler_Initialize(MAX_THREADS);
     if(JOB_SCHEDULER == NULL) return EC_FAIL;
 
-    pthread_t sch;
-    if(pthread_create(&sch, NULL, &JobScheduler_Run, NULL) != 0) return EC_FAIL;
+    pthread_t j_sch;
+    if(pthread_create(&j_sch, NULL, &JobScheduler_Run, NULL) != 0) return EC_FAIL;
 
     return EC_SUCCESS;
 }
@@ -128,6 +128,7 @@ ErrorCode StartQuery(QueryID        query_id,
     }
 
     printf("Exiting StartQuery | query_id = %d\n", query_id);
+    fflush(NULL);
 
     return EC_SUCCESS;
 }
@@ -142,6 +143,7 @@ ErrorCode EndQuery(QueryID query_id){
     query_active_false(q);
     
     printf("Exiting EndQuery | query_id = %d\n", query_id);
+    fflush(NULL);
 
     return EC_SUCCESS;
 }
@@ -155,14 +157,21 @@ ErrorCode MatchDocument(DocID doc_id, const char *doc_str){
     parameters[1] = (void *)malloc(sizeof(char ) * (strlen(doc_str) + 1));
     strcpy((char *)parameters[1], doc_str); 
 
-    if(JobScheduler_Submit(createJob(&MatchDocument_routine, parameters)) == 1) return EC_FAIL;
+    if(JobScheduler_EnqueueJob(createJob(&MatchDocument_routine, parameters)) == 1) return EC_FAIL;
 
     printf("Exiting MatchDocument | doc_id = %d\n", doc_id);
+    fflush(NULL);
 
     return EC_SUCCESS;
 }
 
 ErrorCode GetNextAvailRes(DocID *p_doc_id, unsigned int *p_num_res, QueryID **p_query_ids){
+
+    pthread_mutex_lock(&(JOB_SCHEDULER->mutex_query_result));
+    while(LL_IsEmpty(INDEX.result_list) == 1){
+
+        pthread_cond_wait(&(JOB_SCHEDULER->cond_query_result), &(JOB_SCHEDULER->mutex_query_result));
+    }
 
     LLNode next_result = LL_GetHead(INDEX.result_list);
     if(next_result == NULL) return EC_NO_AVAIL_RES;
@@ -173,7 +182,10 @@ ErrorCode GetNextAvailRes(DocID *p_doc_id, unsigned int *p_num_res, QueryID **p_
 
     if(LL_DeleteHead(INDEX.result_list) == 1) return EC_FAIL;
 
+    pthread_mutex_unlock(&(JOB_SCHEDULER->mutex_query_result));
+
     printf("Exiting GetNextAvailRes\n");
+    fflush(NULL);
 
     return EC_SUCCESS;
 }
