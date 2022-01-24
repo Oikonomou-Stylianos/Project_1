@@ -148,14 +148,14 @@ ErrorCode EndQuery(QueryID query_id){
 
 ErrorCode MatchDocument(DocID doc_id, const char *doc_str){
 
-    void *parameters = (void **)malloc(sizeof(void *) * 2);
+    void **parameters = (void **)malloc(sizeof(void *) * 2);
     if(parameters == NULL) return EC_FAIL;
     parameters[0] = (void *)malloc(sizeof(DocID ));
-    *parameters[0] = doc_id; 
-    parameters[1] = (void *)malloc(sizeof(char *));
-    strcpy(*parameters[1], doc_str); 
+    *(DocID *)parameters[0] = doc_id; 
+    parameters[1] = (void *)malloc(sizeof(char ) * (strlen(doc_str) + 1));
+    strcpy((char *)parameters[1], doc_str); 
 
-    if(JobScheduler_Submit(JOB_SCHEDULER, createJob(&MatchDocument_routine, parameters)) == 1) return EC_FAIL;
+    if(JobScheduler_Submit(createJob(&MatchDocument_routine, parameters)) == 1) return EC_FAIL;
 
     printf("Exiting MatchDocument | doc_id = %d\n", doc_id);
 

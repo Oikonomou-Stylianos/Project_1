@@ -113,7 +113,7 @@ void TestSigmod(const char* test_file_str)
 					fflush(NULL);
 					return;
 				}
-				else if(err!=EC_SUCCESS)111111
+				else if(err!=EC_SUCCESS)
 				{
 					printf("The call to GetNextAvailRes() returned unknown error code.\n");
 					fflush(NULL);

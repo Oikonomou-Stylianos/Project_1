@@ -34,21 +34,17 @@
 extern Index INDEX;
 extern JobScheduler JOB_SCHEDULER;
 
-void *MatchDocument_routine(void *args){
+void *MatchDocument_routine(void *parameters){
 
     if(args == NULL) return NULL;
 
-    unsigned int offset = 0;
-    int thread_flag = *(int *)(args+offset);
-    offset += sizeof(int *);
+    void **js_param = *parameters;
+    void **md_param = js_param[1]
+    int thread_flag = *(int *)js_param[0];
+    DocID doc_id = 
+    char *doc_str = 
 
-    DocID doc_id = *(DocID *)(args+offset);
-    offset += sizeof(DocID);
 
-    char *doc_str = (char *)malloc(sizeof(char) * (strlen((char *)(args+offset)) + 1));
-    strcpy(doc_str, (char *)(args+offset));
-
-    free(args);
 
     //Process:
     //Read every query's type and distance and apply search for every word in the document
