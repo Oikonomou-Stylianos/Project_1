@@ -113,9 +113,9 @@ void *JobScheduler_Run(void *NULL_param){
             return NULL;
         }
 
-        JobScheduler_DequeueJob();
-
         pthread_mutex_unlock(&(JOB_SCHEDULER->mutex_threads));
+        JobScheduler_DequeueJob();
+        
     }
 
     return JOB_SCHEDULER;

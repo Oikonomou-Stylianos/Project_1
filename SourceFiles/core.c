@@ -127,8 +127,8 @@ ErrorCode StartQuery(QueryID        query_id,
         if (*query_str) query_str++; else break;
     }
 
-    printf("Exiting StartQuery | query_id = %d\n", query_id);
-    fflush(NULL);
+    // printf("Exiting StartQuery | query_id = %d\n", query_id);
+    // fflush(stdout);
 
     return EC_SUCCESS;
 }
@@ -143,7 +143,7 @@ ErrorCode EndQuery(QueryID query_id){
     query_active_false(q);
     
     printf("Exiting EndQuery | query_id = %d\n", query_id);
-    fflush(NULL);
+    fflush(stdout);
 
     return EC_SUCCESS;
 }
@@ -159,8 +159,8 @@ ErrorCode MatchDocument(DocID doc_id, const char *doc_str){
 
     if(JobScheduler_EnqueueJob(createJob(&MatchDocument_routine, parameters)) == 1) return EC_FAIL;
 
-    printf("Exiting MatchDocument | doc_id = %d\n", doc_id);
-    fflush(NULL);
+    // printf("Exiting MatchDocument | doc_id = %d\n", doc_id);
+    // fflush(stdout);
 
     return EC_SUCCESS;
 }
@@ -184,8 +184,8 @@ ErrorCode GetNextAvailRes(DocID *p_doc_id, unsigned int *p_num_res, QueryID **p_
 
     pthread_mutex_unlock(&(JOB_SCHEDULER->mutex_query_result));
 
-    printf("Exiting GetNextAvailRes\n");
-    fflush(NULL);
+    // printf("Exiting GetNextAvailRes\n");
+    // fflush(stdout);
 
     return EC_SUCCESS;
 }
