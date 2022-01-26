@@ -16,7 +16,7 @@
 #include "common_types.h"
 #include "core.h"
 
-#define MAX_THREADS 64
+#define MAX_THREADS 8
 
 //////////////////////////////////////////////
 

@@ -142,7 +142,7 @@ typedef struct{
 typedef struct{
 
     void *(*routine)(void *);
-    void *parameters;
+    void **parameters;
 }job;
 
 typedef job *Job;
@@ -157,7 +157,7 @@ typedef struct{
     pthread_mutex_t mutex_queue,                    // Used to add / remove jobs from the Scheduler's queue
                     mutex_threads,                  // Used to 
                     mutex_active_threads_count,
-                    mutex_query_result;
+                    mutex_query_result,
                     mutex_exit;
 
     pthread_cond_t  cond_threads,

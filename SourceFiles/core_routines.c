@@ -259,7 +259,7 @@ void *MatchDocument_routine(void *parameters){
     }
 
     pthread_mutex_lock(&(JOB_SCHEDULER.mutex_query_result));
-    // if(LL_Search(INDEX.result_list, (Pointer )&doc_id) == NULL)
+    if(LL_Search(INDEX.result_list, (Pointer )&doc_id) == NULL)
         LL_InsertTail(INDEX.result_list, (Pointer)createQueryResult(doc_id, LL_GetSize(res_ids), (unsigned int *)LL_ToArray(res_ids)));
     pthread_mutex_unlock(&(JOB_SCHEDULER.mutex_query_result));
     pthread_cond_signal(&(JOB_SCHEDULER.cond_query_result));
@@ -279,11 +279,11 @@ void *MatchDocument_routine(void *parameters){
     LL_Destroy(res_ids);
 
     // Deallocate parameters
-    free(md_param[0]);
-    free(md_param[1]);
-    free(md_param);
-    free(js_param[0]);
-    free(js_param);
+    // free(md_param[0]);
+    // free(md_param[1]);
+    // free(md_param);
+    // free(js_param[0]);
+    // free(js_param);
 
     JOB_SCHEDULER.active_threads_flags[thread_flag] = 0;           // Set thread flag to 0, indicates that the thread id is inactive
 
@@ -293,7 +293,7 @@ void *MatchDocument_routine(void *parameters){
 
     pthread_cond_signal(&(JOB_SCHEDULER.cond_threads));            // Signal the JobScheduler that a thread has finished its excecution
     
-    printf("Exiting MatchDocument_routine | doc_id = %u , thread_flag = %d\n", doc_id, thread_flag);
+    // printf("Exiting MatchDocument_routine | doc_id = %u , thread_flag = %d\n", doc_id, thread_flag);
 
     return NULL;
 }

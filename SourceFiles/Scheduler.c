@@ -93,7 +93,9 @@ int JobScheduler_WaitJobs(){
 
     JOB_SCHEDULER.exit_status = 1;
 
-    pthread_cond_wait(&(JOB_SCHEDULER.cond_exit), &(JOB_SCHEDULER.mutex_exit))
+    pthread_mutex_lock(&(JOB_SCHEDULER.mutex_exit));
+    pthread_cond_wait(&(JOB_SCHEDULER.cond_exit), &(JOB_SCHEDULER.mutex_exit));
+    pthread_mutex_unlock(&(JOB_SCHEDULER.mutex_exit));
 
     // CHECK ACTIVE THREADS AND QUEUE
 
@@ -114,6 +116,7 @@ void *JobScheduler_Run(void *NULL_param){
         // pthread_mutex_lock(&(JOB_SCHEDULER.mutex_queue));
         // char empty_queue = LL_IsEmpty(JOB_SCHEDULER.queue);
         // pthread_mutex_unlock(&(JOB_SCHEDULER.mutex_queue));
+
         pthread_mutex_lock(&(JOB_SCHEDULER.mutex_threads));
         while(LL_IsEmpty(JOB_SCHEDULER.queue) == 1 || JOB_SCHEDULER.active_threads_count == JOB_SCHEDULER.max_threads){
 
@@ -121,13 +124,14 @@ void *JobScheduler_Run(void *NULL_param){
         }
         pthread_mutex_unlock(&(JOB_SCHEDULER.mutex_threads));
         // Exit condition
-        if(LL_IsEmpty(JOB_SCHEDULER.queue) == 1 && JOB_SCHEDULER.active_threads_count == 0 && JOB_SCHEDULER.exit_status == 1)
-            break;
+        // if(LL_IsEmpty(JOB_SCHEDULER.queue) == 1 && JOB_SCHEDULER.active_threads_count == 0 && JOB_SCHEDULER.exit_status == 1)
+        //     break;
 
         pthread_mutex_lock(&(JOB_SCHEDULER.mutex_queue));
         lln = LL_GetHead(JOB_SCHEDULER.queue);
-        pthread_mutex_unlock(&(JOB_SCHEDULER.mutex_queue));
         j = (Job )(lln->data);
+        if(LL_DeleteHead(JOB_SCHEDULER.queue) == 1) return NULL;
+        pthread_mutex_unlock(&(JOB_SCHEDULER.mutex_queue));
 
         for (i = 0; i < JOB_SCHEDULER.max_threads; i++)
             if(!JOB_SCHEDULER.active_threads_flags[i]) break;
@@ -138,6 +142,9 @@ void *JobScheduler_Run(void *NULL_param){
         parameters[0] = (void *)malloc(sizeof(int ));
         *(int *)parameters[0] = i;
         parameters[1] = (void *)(j->parameters);
+
+        printf("JobScheduler_Run | doc_id = %d\n", *(DocID *)((void **)parameters[1])[0]);
+
         // Call thread
         if(pthread_create(&(JOB_SCHEDULER.tids[i]), NULL, j->routine, (void *)&parameters) != 0){
             printf("Error : [JobScheduler_Run] : Failed to create a thread, errno = %d\n", errno);
@@ -149,9 +156,9 @@ void *JobScheduler_Run(void *NULL_param){
         printf("Active threads = %d\n", JOB_SCHEDULER.active_threads_count);
         pthread_mutex_unlock(&(JOB_SCHEDULER.mutex_active_threads_count));
         
-        pthread_mutex_lock(&(JOB_SCHEDULER.mutex_queue));
-        if(LL_DeleteHead(JOB_SCHEDULER.queue) == 1) return NULL;
-        pthread_mutex_unlock(&(JOB_SCHEDULER.mutex_queue));
+        destroyJob(j);
+        // pthread_mutex_lock(&(JOB_SCHEDULER.mutex_queue));
+        // pthread_mutex_unlock(&(JOB_SCHEDULER.mutex_queue));
     }
 
     pthread_cond_signal(&(JOB_SCHEDULER.cond_exit));

@@ -58,7 +58,7 @@ ErrorCode InitializeIndex(){
 
 ErrorCode DestroyIndex(){
 
-    if(JobScheduler_WaitJobs() == 1) return EC_FAIL;
+    // if(JobScheduler_WaitJobs() == 1) return EC_FAIL;
 
     if(LL_Destroy(INDEX.entry_list) == 1)  return EC_FAIL;
     if(LL_Destroy(INDEX.query_list) == 1)  return EC_FAIL;
@@ -125,8 +125,8 @@ ErrorCode StartQuery(QueryID        query_id,
         if (*query_str) query_str++; else break;
     }
 
-    printf("Exiting StartQuery | query_id = %d\n", query_id);
-    fflush(stdout);
+    // printf("Exiting StartQuery | query_id = %d\n", query_id);
+    // fflush(stdout);
 
     return EC_SUCCESS;
 }
@@ -140,8 +140,8 @@ ErrorCode EndQuery(QueryID query_id){
     Query q = (Query )(query_node->data);
     query_active_false(q);
     
-    printf("Exiting EndQuery | query_id = %d\n", query_id);
-    fflush(stdout);
+    // printf("Exiting EndQuery | query_id = %d\n", query_id);
+    // fflush(stdout);
 
     return EC_SUCCESS;
 }
@@ -153,7 +153,7 @@ ErrorCode MatchDocument(DocID doc_id, const char *doc_str){
     parameters[0] = (void *)malloc(sizeof(DocID ));
     *(DocID *)parameters[0] = doc_id; 
     parameters[1] = (void *)malloc(sizeof(char ) * (strlen(doc_str) + 1));
-    strcpy((char *)parameters[1], doc_str); 
+    strcpy((char *)parameters[1], doc_str);
 
     if(JobScheduler_SubmitJob(createJob(&MatchDocument_routine, parameters)) == 1) return EC_FAIL;
 
@@ -183,7 +183,7 @@ ErrorCode GetNextAvailRes(DocID *p_doc_id, unsigned int *p_num_res, QueryID **p_
     pthread_mutex_unlock(&(JOB_SCHEDULER.mutex_query_result));
 
     // printf("Exiting GetNextAvailRes\n");
-    fflush(stdout);
+    // fflush(stdout);
 
     return EC_SUCCESS;
 }
