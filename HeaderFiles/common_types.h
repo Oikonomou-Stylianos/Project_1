@@ -151,7 +151,7 @@ typedef struct{
 
     unsigned int max_threads, active_threads_count;
     LList queue;
-    pthread_t *tids;
+    pthread_t *tids, self;
     char *active_threads_flags, exit_status;
 
     pthread_mutex_t mutex_queue,                    // Used to add / remove jobs from the Scheduler's queue

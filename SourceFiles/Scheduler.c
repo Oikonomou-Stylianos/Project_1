@@ -119,7 +119,7 @@ void *JobScheduler_Run(void *NULL_param){
 
         pthread_mutex_lock(&(JOB_SCHEDULER.mutex_threads));
         while(LL_IsEmpty(JOB_SCHEDULER.queue) == 1 || JOB_SCHEDULER.active_threads_count == JOB_SCHEDULER.max_threads){
-
+            pthread_cond_signal(&(JOB_SCHEDULER.cond_threads));
             pthread_cond_wait(&(JOB_SCHEDULER.cond_threads), &(JOB_SCHEDULER.mutex_threads));
         }
         pthread_mutex_unlock(&(JOB_SCHEDULER.mutex_threads));
@@ -191,13 +191,19 @@ int JobScheduler_WaitAllThreads(){
     //     pthread_cond_wait(&(JOB_SCHEDULER.cond_threads), &(JOB_SCHEDULER.mutex_active_threads_count));
     // pthread_mutex_unlock(&(JOB_SCHEDULER.mutex_active_threads_count));
 
+    while (!LL_IsEmpty(JOB_SCHEDULER.queue)){
+        pthread_cond_signal(&(JOB_SCHEDULER.cond_threads));
+        pthread_cond_wait(&(JOB_SCHEDULER.cond_threads), &(JOB_SCHEDULER.mutex_threads));
+    }
+        
+
     int i;
     printf("\nTrying to join the threads...\n");
     fflush(stdout);
     for (i = 0; i < JOB_SCHEDULER.max_threads; i++) {
         printf("Thread %d: ", i);
         fflush(stdout);
-        pthread_join(JOB_SCHEDULER.tids[i], NULL);
+        if (JOB_SCHEDULER.active_threads_flags[i]) pthread_join(JOB_SCHEDULER.tids[i], NULL);
         printf("OK\n");
         fflush(stdout);
     }

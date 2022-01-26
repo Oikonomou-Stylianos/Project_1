@@ -52,6 +52,7 @@ ErrorCode InitializeIndex(){
 
     pthread_t j_sch;
     if(pthread_create(&j_sch, NULL, &JobScheduler_Run, NULL) != 0) return EC_FAIL;
+    JOB_SCHEDULER.self = j_sch;
 
     return EC_SUCCESS;
 }
@@ -59,6 +60,9 @@ ErrorCode InitializeIndex(){
 ErrorCode DestroyIndex(){
 
     // if(JobScheduler_WaitJobs() == 1) return EC_FAIL;
+    printf("\n\nIn DestroyIndex\n");
+    fflush(stdout);
+    pthread_join(JOB_SCHEDULER.self, NULL);
 
     if(LL_Destroy(INDEX.entry_list) == 1)  return EC_FAIL;
     if(LL_Destroy(INDEX.query_list) == 1)  return EC_FAIL;
