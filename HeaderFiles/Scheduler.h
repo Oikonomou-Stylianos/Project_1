@@ -16,12 +16,12 @@
 #include "common_types.h"
 #include "core.h"
 
-#define MAX_THREADS 8
+#define MAX_THREADS 64
 
 //////////////////////////////////////////////
 
 int JobScheduler_Initialize(int );
-int JobScheduler_EnqueueJob(Job );
-int JobScheduler_DequeueJob();
+int JobScheduler_SubmitJob(Job );
+int JobScheduler_WaitJobs();
 void *JobScheduler_Run(void *);
 int JobScheduler_Destroy();

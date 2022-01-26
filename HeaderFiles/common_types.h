@@ -152,16 +152,18 @@ typedef struct{
     unsigned int max_threads, active_threads_count;
     LList queue;
     pthread_t *tids;
-    char *active_threads_flags;
+    char *active_threads_flags, exit_status;
 
-    pthread_mutex_t mutex_queue, 
-                    mutex_threads,
+    pthread_mutex_t mutex_queue,                    // Used to add / remove jobs from the Scheduler's queue
+                    mutex_threads,                  // Used to 
                     mutex_active_threads_count,
                     mutex_query_result;
+                    mutex_exit;
+
     pthread_cond_t  cond_threads,
-                    cond_query_result;
+                    cond_query_result,
+                    cond_exit;
 
-}jobscheduler;
+}JobScheduler;
 
-typedef jobscheduler *JobScheduler;
 //////////////////////////////////////////////

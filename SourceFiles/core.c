@@ -48,8 +48,7 @@ ErrorCode InitializeIndex(){
         INDEX.hamming_distance_bkt[i] = BKT_Create(MT_HAMMING_DIST, EntryType, NULL);
     INDEX.edit_distance_bkt = BKT_Create(MT_EDIT_DIST, EntryType, NULL);
 
-    JobScheduler_Initialize(MAX_THREADS);
-    if(JOB_SCHEDULER == NULL) return EC_FAIL;
+    if(JobScheduler_Initialize(MAX_THREADS) == 1) return EC_FAIL;
 
     pthread_t j_sch;
     if(pthread_create(&j_sch, NULL, &JobScheduler_Run, NULL) != 0) return EC_FAIL;
@@ -58,6 +57,8 @@ ErrorCode InitializeIndex(){
 }
 
 ErrorCode DestroyIndex(){
+
+    if(JobScheduler_WaitJobs() == 1) return EC_FAIL;
 
     if(LL_Destroy(INDEX.entry_list) == 1)  return EC_FAIL;
     if(LL_Destroy(INDEX.query_list) == 1)  return EC_FAIL;
@@ -80,10 +81,7 @@ ErrorCode StartQuery(QueryID        query_id,
                      MatchType      match_type,
                      unsigned int   match_dist)
 {
-    //...
-
     //Crete query and initialize entry list as empty
-
     Query q = createQuery(query_id, match_type, match_dist);
     LL_InsertTail(INDEX.query_list, (Pointer )q);
     HT_Insert(INDEX.query_ht, (Pointer )q);
@@ -127,8 +125,8 @@ ErrorCode StartQuery(QueryID        query_id,
         if (*query_str) query_str++; else break;
     }
 
-    // printf("Exiting StartQuery | query_id = %d\n", query_id);
-    // fflush(stdout);
+    printf("Exiting StartQuery | query_id = %d\n", query_id);
+    fflush(stdout);
 
     return EC_SUCCESS;
 }
@@ -157,7 +155,7 @@ ErrorCode MatchDocument(DocID doc_id, const char *doc_str){
     parameters[1] = (void *)malloc(sizeof(char ) * (strlen(doc_str) + 1));
     strcpy((char *)parameters[1], doc_str); 
 
-    if(JobScheduler_EnqueueJob(createJob(&MatchDocument_routine, parameters)) == 1) return EC_FAIL;
+    if(JobScheduler_SubmitJob(createJob(&MatchDocument_routine, parameters)) == 1) return EC_FAIL;
 
     // printf("Exiting MatchDocument | doc_id = %d\n", doc_id);
     // fflush(stdout);
@@ -167,10 +165,10 @@ ErrorCode MatchDocument(DocID doc_id, const char *doc_str){
 
 ErrorCode GetNextAvailRes(DocID *p_doc_id, unsigned int *p_num_res, QueryID **p_query_ids){
 
-    pthread_mutex_lock(&(JOB_SCHEDULER->mutex_query_result));
+    pthread_mutex_lock(&(JOB_SCHEDULER.mutex_query_result));
     while(LL_IsEmpty(INDEX.result_list) == 1){
 
-        pthread_cond_wait(&(JOB_SCHEDULER->cond_query_result), &(JOB_SCHEDULER->mutex_query_result));
+        pthread_cond_wait(&(JOB_SCHEDULER.cond_query_result), &(JOB_SCHEDULER.mutex_query_result));
     }
 
     LLNode next_result = LL_GetHead(INDEX.result_list);
@@ -182,10 +180,10 @@ ErrorCode GetNextAvailRes(DocID *p_doc_id, unsigned int *p_num_res, QueryID **p_
 
     if(LL_DeleteHead(INDEX.result_list) == 1) return EC_FAIL;
 
-    pthread_mutex_unlock(&(JOB_SCHEDULER->mutex_query_result));
+    pthread_mutex_unlock(&(JOB_SCHEDULER.mutex_query_result));
 
     // printf("Exiting GetNextAvailRes\n");
-    // fflush(stdout);
+    fflush(stdout);
 
     return EC_SUCCESS;
 }

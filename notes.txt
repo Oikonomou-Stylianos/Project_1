@@ -1,0 +1,10 @@
+
+TESTING
+
+The efficiency of our implementaion was tested exclusively on the input data subset file "input30m" (Size: 30mb) as it provided reasonable excecution times for both the single and multy-thread versions of the program.
+
+BEFORE PARALLELISM
+
+We quickly realized by using a larger input file than the one we used in the first two assignments, that our program was flawed. .....
+
+-Removing O(n) operations by replacing Linked List data structures with Hash Tables 
