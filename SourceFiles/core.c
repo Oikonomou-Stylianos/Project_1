@@ -83,7 +83,7 @@ ErrorCode StartQuery(QueryID        query_id,
 {
     printf("\nIn Start Query with id %u, before wait\n\n", query_id);
     fflush(stdout);
-    JobScheduler_WaitAllThreads();
+    // JobScheduler_WaitAllThreads();
     printf("\nIn Start Query with id %u, after wait\n\n", query_id);
     fflush(stdout);
     //Crete query and initialize entry list as empty
@@ -138,7 +138,7 @@ ErrorCode StartQuery(QueryID        query_id,
 
 ErrorCode EndQuery(QueryID query_id){
 
-    JobScheduler_WaitAllThreads();
+    // JobScheduler_WaitAllThreads();
     //Toggle query active status
     LLNode query_node = HT_Search(INDEX.query_ht, (Pointer )&query_id);
     if (!query_node) return EC_FAIL;

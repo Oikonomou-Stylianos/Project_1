@@ -38,8 +38,8 @@ extern JobScheduler JOB_SCHEDULER;
 void *MatchDocument_routine(void *parameters){
 
     if(parameters == NULL) return NULL;
-    //   -*           *V
-    void ***js_param = (void ***)parameters;
+
+    void **js_param = (void **)parameters;
     void **md_param = (void **)js_param[1];
     int thread_flag = *(int *)js_param[0];
     DocID doc_id = *(DocID *)md_param[0];
