@@ -77,7 +77,9 @@ void *MatchDocument_routine(void *parameters){
         if (!word) { HT_Destroy(doc_words_ht); return NULL; }
         strcpy(word, token);
         
+        unsigned int previous_size = HT_GetSize(doc_words_ht);        
         if (!HT_InsertUnique(doc_words_ht, (Pointer )word)) { free(word); HT_Destroy(doc_words_ht); return NULL; }
+        if (previous_size == HT_GetSize(doc_words_ht)) free(word);
 
         i = 0;  // Reset the word index
         if (*doc_str) doc_str++; else break;
