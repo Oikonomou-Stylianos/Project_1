@@ -81,6 +81,11 @@ ErrorCode StartQuery(QueryID        query_id,
                      MatchType      match_type,
                      unsigned int   match_dist)
 {
+    printf("\nIn Start Query with id %u, before wait\n\n", query_id);
+    fflush(stdout);
+    JobScheduler_WaitAllThreads();
+    printf("\nIn Start Query with id %u, after wait\n\n", query_id);
+    fflush(stdout);
     //Crete query and initialize entry list as empty
     Query q = createQuery(query_id, match_type, match_dist);
     LL_InsertTail(INDEX.query_list, (Pointer )q);
@@ -133,6 +138,7 @@ ErrorCode StartQuery(QueryID        query_id,
 
 ErrorCode EndQuery(QueryID query_id){
 
+    JobScheduler_WaitAllThreads();
     //Toggle query active status
     LLNode query_node = HT_Search(INDEX.query_ht, (Pointer )&query_id);
     if (!query_node) return EC_FAIL;
@@ -165,6 +171,9 @@ ErrorCode MatchDocument(DocID doc_id, const char *doc_str){
 
 ErrorCode GetNextAvailRes(DocID *p_doc_id, unsigned int *p_num_res, QueryID **p_query_ids){
 
+    static unsigned int N = 0;
+    printf("--------In GNAR %u\n", N);
+    fflush(stdout);
     pthread_mutex_lock(&(JOB_SCHEDULER.mutex_query_result));
     while(LL_IsEmpty(INDEX.result_list) == 1){
 
@@ -182,8 +191,8 @@ ErrorCode GetNextAvailRes(DocID *p_doc_id, unsigned int *p_num_res, QueryID **p_
 
     pthread_mutex_unlock(&(JOB_SCHEDULER.mutex_query_result));
 
-    // printf("Exiting GetNextAvailRes\n");
-    // fflush(stdout);
+    printf("--------Exiting GNAR %u, delivered docID %u\n", N++, *p_doc_id);
+    fflush(stdout);
 
     return EC_SUCCESS;
 }

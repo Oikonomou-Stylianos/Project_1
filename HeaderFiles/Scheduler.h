@@ -25,3 +25,4 @@ int JobScheduler_SubmitJob(Job );
 int JobScheduler_WaitJobs();
 void *JobScheduler_Run(void *);
 int JobScheduler_Destroy();
+int JobScheduler_WaitAllThreads();

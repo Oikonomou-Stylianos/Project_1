@@ -143,17 +143,17 @@ void *JobScheduler_Run(void *NULL_param){
         *(int *)parameters[0] = i;
         parameters[1] = (void *)(j->parameters);
 
-        printf("JobScheduler_Run | doc_id = %d\n", *(DocID *)((void **)parameters[1])[0]);
+        printf("\nJobScheduler_Run | doc_id = %d\n", *(DocID *)((void **)parameters[1])[0]);
 
-        // Call thread
-        if(pthread_create(&(JOB_SCHEDULER.tids[i]), NULL, j->routine, (void *)&parameters) != 0){
+        // Call thread                                                       &V
+        if(pthread_create(&(JOB_SCHEDULER.tids[i]), NULL, j->routine, (void *)parameters) != 0){
             printf("Error : [JobScheduler_Run] : Failed to create a thread, errno = %d\n", errno);
             return NULL;
         }
 
         pthread_mutex_lock(&(JOB_SCHEDULER.mutex_active_threads_count));
         JOB_SCHEDULER.active_threads_count++;
-        printf("Active threads = %d\n", JOB_SCHEDULER.active_threads_count);
+        printf("JSRUN | Active threads = %d\n\n", JOB_SCHEDULER.active_threads_count);
         pthread_mutex_unlock(&(JOB_SCHEDULER.mutex_active_threads_count));
         
         destroyJob(j);
@@ -178,5 +178,32 @@ int JobScheduler_Destroy(){
     if(pthread_cond_destroy(&(JOB_SCHEDULER.cond_threads)) != 0) return 1;
     if(pthread_cond_destroy(&(JOB_SCHEDULER.cond_query_result)) != 0) return 1;
 
+    return 0;
+}
+
+int JobScheduler_WaitAllThreads(){
+
+    //TODO check if job q is empty before continuing.
+
+    pthread_mutex_lock(&(JOB_SCHEDULER.mutex_threads));
+    // pthread_mutex_lock(&(JOB_SCHEDULER.mutex_active_threads_count));
+    // while (JOB_SCHEDULER.active_threads_count)
+    //     pthread_cond_wait(&(JOB_SCHEDULER.cond_threads), &(JOB_SCHEDULER.mutex_active_threads_count));
+    // pthread_mutex_unlock(&(JOB_SCHEDULER.mutex_active_threads_count));
+
+    int i;
+    printf("\nTrying to join the threads...\n");
+    fflush(stdout);
+    for (i = 0; i < JOB_SCHEDULER.max_threads; i++) {
+        printf("Thread %d: ", i);
+        fflush(stdout);
+        pthread_join(JOB_SCHEDULER.tids[i], NULL);
+        printf("OK\n");
+        fflush(stdout);
+    }
+    printf("\nDone.\n");
+    fflush(stdout);
+
+    pthread_mutex_unlock(&(JOB_SCHEDULER.mutex_threads));
     return 0;
 }

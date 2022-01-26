@@ -38,8 +38,8 @@ extern JobScheduler JOB_SCHEDULER;
 void *MatchDocument_routine(void *parameters){
 
     if(parameters == NULL) return NULL;
-
-    void **js_param = *(void ***)parameters;
+    //   -*           *V
+    void ***js_param = (void ***)parameters;
     void **md_param = (void **)js_param[1];
     int thread_flag = *(int *)js_param[0];
     DocID doc_id = *(DocID *)md_param[0];
@@ -259,9 +259,11 @@ void *MatchDocument_routine(void *parameters){
     }
 
     pthread_mutex_lock(&(JOB_SCHEDULER.mutex_query_result));
-    if(LL_Search(INDEX.result_list, (Pointer )&doc_id) == NULL)
+    //if(LL_Search(INDEX.result_list, (Pointer )&doc_id) == NULL)
         LL_InsertTail(INDEX.result_list, (Pointer)createQueryResult(doc_id, LL_GetSize(res_ids), (unsigned int *)LL_ToArray(res_ids)));
     pthread_mutex_unlock(&(JOB_SCHEDULER.mutex_query_result));
+    printf("\nMD Added doc %u for delivery before exiting\n\n", doc_id);
+    fflush(stdout);
     pthread_cond_signal(&(JOB_SCHEDULER.cond_query_result));
     //Free all allocated memory
     
@@ -288,12 +290,14 @@ void *MatchDocument_routine(void *parameters){
     JOB_SCHEDULER.active_threads_flags[thread_flag] = 0;           // Set thread flag to 0, indicates that the thread id is inactive
 
     pthread_mutex_lock(&(JOB_SCHEDULER.mutex_active_threads_count));
-    JOB_SCHEDULER.active_threads_count--;                          // Reduce the active threads count
+    JOB_SCHEDULER.active_threads_count--;   
+    printf("\nMDRExit atc = %u\n", JOB_SCHEDULER.active_threads_count);                  // Reduce the active threads count
     pthread_mutex_unlock(&(JOB_SCHEDULER.mutex_active_threads_count));
 
     pthread_cond_signal(&(JOB_SCHEDULER.cond_threads));            // Signal the JobScheduler that a thread has finished its excecution
     
-    // printf("Exiting MatchDocument_routine | doc_id = %u , thread_flag = %d\n", doc_id, thread_flag);
+    printf("Exiting MatchDocument_routine | doc_id = %u , thread_flag = %d\n", doc_id, thread_flag);
+    fflush(stdout);
 
     return NULL;
 }
