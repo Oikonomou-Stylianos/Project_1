@@ -8,7 +8,7 @@
 // Students: Stylianos Oikonomou , Anastasios Triantafyllou
 // ID : 1115201500243 , 1115201600173 
 // --------------------------------
-// File : common_types.h
+// File : Scheduler.h
 ///////////////////////////////////
 
 #pragma once
