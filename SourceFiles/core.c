@@ -14,7 +14,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <time.h>
 #include <limits.h>
 #include <pthread.h>
 #include <errno.h>
@@ -50,6 +49,7 @@ ErrorCode InitializeIndex(){
 
     if(JobScheduler_Initialize(MAX_THREADS) == 1) return EC_FAIL;
 
+    // Run the Scheduler as a thread
     pthread_t j_sch;
     if(pthread_create(&j_sch, NULL, &JobScheduler_Run, NULL) != 0) return EC_FAIL;
 
@@ -58,7 +58,7 @@ ErrorCode InitializeIndex(){
 
 ErrorCode DestroyIndex(){
 
-    // if(JobScheduler_WaitJobs() == 1) return EC_FAIL;
+    if(JobScheduler_Destroy() == 1) return EC_FAIL;
 
     if(LL_Destroy(INDEX.entry_list) == 1)  return EC_FAIL;
     if(LL_Destroy(INDEX.query_list) == 1)  return EC_FAIL;
@@ -71,8 +71,6 @@ ErrorCode DestroyIndex(){
         if(BKT_Destroy(INDEX.hamming_distance_bkt[i]) == 1) return EC_FAIL;
     if(BKT_Destroy(INDEX.edit_distance_bkt) == 1) return EC_FAIL;
 
-    if(JobScheduler_Destroy(JOB_SCHEDULER) == 1) return EC_FAIL;
-
     return EC_SUCCESS;
 }
 
@@ -81,16 +79,10 @@ ErrorCode StartQuery(QueryID        query_id,
                      MatchType      match_type,
                      unsigned int   match_dist)
 {
-    printf("\nIn Start Query with id %u, before wait\n\n", query_id);
-    fflush(stdout);
-    // JobScheduler_WaitAllThreads();
-    printf("\nIn Start Query with id %u, after wait\n\n", query_id);
-    fflush(stdout);
-    //Crete query and initialize entry list as empty
+    // Crete query and insert it in the query structures
     Query q = createQuery(query_id, match_type, match_dist);
     LL_InsertTail(INDEX.query_list, (Pointer )q);
     HT_Insert(INDEX.query_ht, (Pointer )q);
-    //Create entries or update existing entries based on the query string tokens and update query's entry list pointers/contents
 
     char token[MAX_WORD_LENGTH + 1];
     int i = 0;
@@ -102,18 +94,17 @@ ErrorCode StartQuery(QueryID        query_id,
         }
         token[i] = '\0';
         
-        if(i >= MIN_WORD_LENGTH && i <= MAX_WORD_LENGTH){   //i = current token length
+        if(i >= MIN_WORD_LENGTH && i <= MAX_WORD_LENGTH){   // i = current token length
 
             LLNode node = HT_Search(INDEX.exact_match_ht, (Pointer )token);
             Entry e;
-            if (!node){
-                //Create new entry and add it to list
+            if(!node){
                 
+                // Create new entry and add it to list
                 e = createEntry(token);
                 LL_InsertTail(INDEX.entry_list, (Pointer )e);
                 
-                //Update Index pointers on any new entries | (done below) and update all entries' payloads to contain new query
-
+                // Update query helper structures
                 HT_Insert(INDEX.exact_match_ht, (Pointer )e);
                 BKT_Insert(INDEX.hamming_distance_bkt[i - MIN_WORD_LENGTH], (Pointer )e);
                 BKT_Insert(INDEX.edit_distance_bkt, (Pointer )e);
@@ -130,50 +121,47 @@ ErrorCode StartQuery(QueryID        query_id,
         if (*query_str) query_str++; else break;
     }
 
-    // printf("Exiting StartQuery | query_id = %d\n", query_id);
-    // fflush(stdout);
+    printf("StartQuery | query_id = %d\n", query_id);
+    fflush(stdout);
 
     return EC_SUCCESS;
 }
 
 ErrorCode EndQuery(QueryID query_id){
 
-    // JobScheduler_WaitAllThreads();
     //Toggle query active status
     LLNode query_node = HT_Search(INDEX.query_ht, (Pointer )&query_id);
-    if (!query_node) return EC_FAIL;
+    if(!query_node) return EC_FAIL;
 
     Query q = (Query )(query_node->data);
     query_active_false(q);
-    
-    // printf("Exiting EndQuery | query_id = %d\n", query_id);
-    // fflush(stdout);
+
+    printf("EndQuery | query_id = %d\n", query_id);
+    fflush(stdout);
 
     return EC_SUCCESS;
 }
 
 ErrorCode MatchDocument(DocID doc_id, const char *doc_str){
 
+    // Create MatchDocument_routine parameters. Will be sent to the Scheduler.
     void **parameters = (void **)malloc(sizeof(void *) * 2);
     if(parameters == NULL) return EC_FAIL;
     parameters[0] = (void *)malloc(sizeof(DocID ));
+    if(parameters[0] == NULL) { free(parameters); return EC_FAIL; }
     *(DocID *)parameters[0] = doc_id; 
     parameters[1] = (void *)malloc(sizeof(char ) * (strlen(doc_str) + 1));
+    if(parameters[1] == NULL) { free(parameters[0]); free(parameters); return EC_FAIL; }
     strcpy((char *)parameters[1], doc_str);
 
-    if(JobScheduler_SubmitJob(createJob(&MatchDocument_routine, parameters)) == 1) return EC_FAIL;
-
-    // printf("Exiting MatchDocument | doc_id = %d\n", doc_id);
-    // fflush(stdout);
+    if(JobScheduler_SubmitJob(createJob(&MatchDocument_routine, parameters)) == 1) { free(parameters[0]); free(parameters[1]); free(parameters); return EC_FAIL;}
 
     return EC_SUCCESS;
 }
 
 ErrorCode GetNextAvailRes(DocID *p_doc_id, unsigned int *p_num_res, QueryID **p_query_ids){
 
-    static unsigned int N = 0;
-    printf("--------In GNAR %u\n", N);
-    fflush(stdout);
+    // If there are no query results in the query result list wait  
     pthread_mutex_lock(&(JOB_SCHEDULER.mutex_query_result));
     while(LL_IsEmpty(INDEX.result_list) == 1){
 
@@ -190,9 +178,6 @@ ErrorCode GetNextAvailRes(DocID *p_doc_id, unsigned int *p_num_res, QueryID **p_
     if(LL_DeleteHead(INDEX.result_list) == 1) return EC_FAIL;
 
     pthread_mutex_unlock(&(JOB_SCHEDULER.mutex_query_result));
-
-    printf("--------Exiting GNAR %u, delivered docID %u\n", N++, *p_doc_id);
-    fflush(stdout);
 
     return EC_SUCCESS;
 }

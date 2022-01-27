@@ -158,11 +158,11 @@ typedef struct{
                     mutex_threads,                  // Used to 
                     mutex_active_threads_count,
                     mutex_query_result,
-                    mutex_exit;
+                    mutex_wait;
 
     pthread_cond_t  cond_threads,
                     cond_query_result,
-                    cond_exit;
+                    cond_wait;
 
 }JobScheduler;
 

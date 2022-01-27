@@ -52,7 +52,8 @@ testdriver:
 run:
 	$(EXE)/$(OUT)
 val:
-	valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes --gen-suppressions=yes $(EXE)/$(OUT)
+#--gen-suppressions=yes
+	valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes $(EXE)/$(OUT)
 
 ##################################
 
