@@ -1,5 +1,5 @@
 University: UoA DIT  
-Course : [K23a] Software Development for Computer Systems  
+Course : [[K23a] Software Development for Computer Systems](https://www.di.uoa.gr/en/studies/undergraduate/263)  
 Semester : Fall 2021-2022  
 Professor : Yannis Ioannidis  
 Assistant : Sarantis Paskalis  
